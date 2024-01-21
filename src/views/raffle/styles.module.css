@@ -161,6 +161,7 @@
 .container .products div .controls {
   display: flex;
 }
+
 .container .products div .controls h4,
 .container .products div .controls button {
   border: 1px solid #797979;
@@ -203,6 +204,12 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
+}
+.paginationPages {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
 }
 .prevButton {
   background: url("../../static/arrow.png") no-repeat center center/contain;

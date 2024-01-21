@@ -2,25 +2,22 @@ import { connect } from "react-redux";
 import React, { useState } from "react";
 import s from "./styles.module.css";
 
-interface Data {
-  date: string;
-  time: string;
-  method: string;
+interface Props {
+  playerCheck: any;
+  data: {
+    date: string;
+    time: string;
+    method: string;
+  };
 }
 
-const MeetUp: React.FC = () => {
-  const placeholderData: Data = {
-    date: "january 1 2024",
-    time: "13:00 EST",
-    method: "Google Meet",
-  };
-
+const MeetUp: React.FC<Props> = ({playerCheck, data}) => {
   return (
     <div className={s.optionsView}>
       <div className={s.meetUp}>
-        <h2>I'm setting up a {placeholderData.method}</h2>
+        <h2>I'm setting up a {data?.method}</h2>
         <p>
-          On {placeholderData.date} at {placeholderData.time}
+          On {data?.date} at {data?.time} EST
         </p>
         <div className={s.meetOptions}>
           <div>
@@ -29,6 +26,7 @@ const MeetUp: React.FC = () => {
               id="confirmRadio"
               name="meetupGroup"
               value="No"
+              disabled={playerCheck}
             />
             <label htmlFor="confirmRadio">
               I'd love to, but I can't make that time
@@ -40,11 +38,12 @@ const MeetUp: React.FC = () => {
               id="rejectRadio"
               name="meetupGroup"
               value="Yes"
+              disabled={playerCheck}
             />
             <label htmlFor="rejectRadio">I'm in</label>
           </div>
         </div>
-        <button className={s.meetSubmit}></button>
+        <button disabled={playerCheck} className={s.meetSubmit}></button>
       </div>
     </div>
   );

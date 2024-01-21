@@ -1,88 +1,69 @@
-.form {
-  position: relative;
+/* <======================================/ Reset \======================================> */
+.form[id="resetPasswordForm"] {
+  padding: 26px 0 0 34px;
 }
 
-.form fieldset {
-  position:relative;
-  margin:35px 0;
-  padding: 0;
-  border: 0;
-  outline: none;
-}
-
-.form fieldset:first-child {
-  margin:0;
-}
-
-.form fieldset label {
-  margin: 0 1rem 0 0;
-  font-weight: bold;
-  text-transform: uppercase;
-  color: #895734;
-}
-
-.form fieldset input,
-.form fieldset select {
+.form[id="resetPasswordForm"] > div {
   width: 100%;
-  padding: 0 6px;
-  border: 0;
-  min-height: 34px;
-  border-radius: 6px;
-  box-shadow: 3px 3px 7px rgba(0, 0, 0, 0.35);
-  outline: none;
-  background-color: #f5f5f5;
+  max-width: 335px;
+}
+.form[id="resetPasswordForm"] > div:first-child {
+  margin-bottom: 2rem;
+}
+.form[id="resetPasswordForm"] > div:last-child {
+  text-align: right;
+  max-width: 437px;
 }
 
-.form fieldset select {
-  margin-right: 1rem;
-  padding: 8px 6px;
+@media screen and (max-width: 494px) {
+  .form[id="resetPasswordForm"] > div:last-child button {
+    margin-top: 0.75rem;
+  }
 }
 
-.form fieldset input[readonly],
-.form fieldset select[disabled] {
-  color: #000;
-  opacity: 0.75;
-  background: #fff;
-  border: 1px solid #ddd;
+@media screen and (max-width: 403px) {
+  .form[id="resetPasswordForm"] {
+    padding: 26px 0 0 0;
+  }
 }
 
-.form fieldset select[readonly] option {
-  color: #000;
+/* <======================================/ Shared \======================================> */
+.form > div {
+  position: relative;
+  text-align: left;
 }
 
-.form fieldset button {
-  cursor: pointer;
-  font-size: 14px;
-  font-weight: 700;
-  background-color: #777;
-  color: #f2f2f2;
-  padding: 10px;
-  border: 0;
-  border-radius: 6px;
-  transition: 0.15s ease-in-out all;
+.form div input {
+  width: 100%;
 }
 
-.form fieldset input[data-valid="0"] + small {
-  display:inline-block;
+.form div small:global(.formError) {
+  width: fit-content;
+  margin-top: 6px;
 }
 
-.form fieldset small {
-  display:none;
-  position:absolute;
-  bottom:-24px;
-  left:0;
-  padding:5px;
-  color:#FFF;
-  font-size:10px;
-  background:#F00;
+/* <======================================/ Profile \======================================> */
+.form[id="updatePasswordForm"] {
+  --_labelWidth: 105.5px;
+
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
 }
 
-.form fieldset label:not(.profileInfo .form fieldset label) {
-  display: block;
-  margin-bottom: 8px;
-}
+@media screen and (min-width: 664px) {
+  .form[id="updatePasswordForm"] > div {
+    display: flex;
+  }
+  .form[id="updatePasswordForm"] > div:last-child {
+    margin-left: calc(var(--_labelWidth) + 0.5rem);
+  }
 
-.form fieldset input[data-valid="0"], .form fieldset select[data-valid="0"], .error {
-  border:1px solid #F00;
+  .form[id="updatePasswordForm"] div label {
+    position: relative;
+    top: 4px;
+    white-space: nowrap;
+    margin-right: 0.5rem;
+    min-width: var(--_labelWidth);
+  }
 }
-
