@@ -1,4 +1,6 @@
 import { connect } from "react-redux";
+import { useEffect } from "react";
+
 import history from "../../utils/History";
 import Layout from "@components/layout";
 import Header from "@components/header";
@@ -6,7 +8,8 @@ import Content from "@components/content";
 import Status from "@components/status";
 
 // temporary useParams
-import { useParams } from "react-router-dom";
+import { useLocation, useParams } from "react-router-dom";
+import { isNotPlayer } from "@root/redux/actions/user";
 
 import Video from "./slides/Video";
 import Question from "./slides/Question";
@@ -15,52 +18,27 @@ import MeetUp from "./slides/MeetUp";
 import s from "./styles.module.css";
 import React, { useState, ChangeEvent } from "react";
 
-type BusinessDetailsType = {
-  [key: string]: {
-    logo: any;
-    info: string;
-  };
-};
+interface PlayerProps {
+  isNotPlayer: (
+    useNotification: boolean,
+    message?: string | null
+  ) => void;
+}
 
-const businessDetails: BusinessDetailsType = {
-  "HOP Group": {
-    logo: require("@static/businessLogos/HOPGroup.jpg"),
-    info: "something about HOP Group",
-  },
-  KnowledgeFlow: {
-    logo: require("@static/businessLogos/KnowledgeFlow.png"),
-    info: "something about KnowledgeFlow Cybersafety Foundation",
-  },
-  Matrix: {
-    logo: require("@static/businessLogos/matrix.png"),
-    info: "something about Matrix",
-  },
-  "Meridian Stories": {
-    logo: require("@static/businessLogos/meridianstories.png"),
-    info: "something about Meridian Stories",
-  },
-  Porter: {
-    logo: require("@static/businessLogos/Porter.jpg"),
-    info: "something about Porter",
-  },
-  "Robotics For All": {
-    logo: require("@static/businessLogos/roboticsforall.png"),
-    info: "something about Robotics For All",
-  },
-};
-
-const Details: React.FC = () => {
-  const { details } = useParams<{ details: string }>();
-
+const Details: React.FC<PlayerProps> = ({isNotPlayer}) => {
+  // passed through Link component
+  const {state} = useLocation()
   const [selectedOption, setSelectedOption] = useState<string>("Video");
-  const selectedBusiness = businessDetails[details ? details : ""];
 
   const contentView: { [key: string]: React.ReactNode } = {
-    Video: <Video />,
-    Question: <Question />,
-    MeetUp: <MeetUp />,
+    Video: <Video data={state?.video}/>,
+    Question: <Question data={state?.challenge} playerCheck={isNotPlayer(false)} />,
+    MeetUp: <MeetUp data={state?.meetUp} playerCheck={isNotPlayer(false)} />,
   };
-
+  useEffect(() => {
+    isNotPlayer(true, "Only players have access to certain features on this page")
+  }, [])
+ 
   const handleRadioChange = (event: ChangeEvent<HTMLInputElement>) => {
     setSelectedOption(event.target.value);
   };
@@ -82,12 +60,12 @@ const Details: React.FC = () => {
         <div className={s.details}>
           <div className={s.detailsHeader}>
             <img
-              src={selectedBusiness.logo}
-              alt={selectedBusiness + "'s logo"}
+              src={state?.logo}
+              alt={state?.name + "'s logo"}
             />
             <div className={s.businessTitle}>
-              <h2>{details}</h2>
-              <p>{selectedBusiness.info}</p>
+              <h2>{state?.name}</h2>
+              <p>{state?.description}</p>
             </div>
           </div>
           <div className={s.detailsContent}>
@@ -124,7 +102,10 @@ const Details: React.FC = () => {
                   onChange={handleRadioChange}
                   checked={selectedOption === "MeetUp"}
                 />
-                <label htmlFor="meetupRadio" className={s.meetupLabel}></label>
+                <label
+                  htmlFor="meetupRadio"
+                  className={s.meetupLabel}
+                ></label>
               </div>
               <a
                 href="#"
@@ -144,7 +125,10 @@ const Details: React.FC = () => {
   );
 };
 
-const mapStateToProps = ({}) => ({});
-const mapDispatchToProps = (dispatch: Function) => ({});
+const mapStateToProps = () => ({});
+const mapDispatchToProps = (dispatch: Function) => ({
+  isNotPlayer: (useNotification: boolean, message?: string | null) =>
+    dispatch(isNotPlayer(useNotification, message)),
+});
 
 export default connect(mapStateToProps, mapDispatchToProps)(Details);

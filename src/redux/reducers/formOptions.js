@@ -1,26 +1,24 @@
 import {
-  GET_GRADES_SUCCESS,
-  GET_EDUCATION_SUCCESS,
+  SET_GRADES,
+  SET_EDUCATIONS,
   SET_COUNTRIES,
   SET_REGIONS,
   SET_CITIES,
-  // GET_COIN_TYPES_SUCCESS,
 } from "@actions/index";
 
 const initialState = {
-  grades: [],
   education: [],
+  grades: [],
   countries: [],
   regions: [],
   cities: [],
-  coinTypes: [],
 };
 
 const formOptions = (state = initialState, action) => {
   switch (action.type) {
-    case GET_GRADES_SUCCESS:
+    case SET_GRADES:
       return { ...state, grades: action.payload };
-    case GET_EDUCATION_SUCCESS:
+    case SET_EDUCATIONS:
       return { ...state, education: action.payload };
     case SET_COUNTRIES:
       return { ...state, countries: action.payload };
@@ -31,9 +29,6 @@ const formOptions = (state = initialState, action) => {
       };
     case SET_CITIES:
       return { ...state, cities: action.payload };
-
-    // case GET_COIN_TYPES_SUCCESS:
-    //   return { ...state, coinTypes: action.payload };
     default:
       return state;
   }

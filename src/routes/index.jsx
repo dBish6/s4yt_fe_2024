@@ -1,75 +1,67 @@
-import { Routes, Route, Navigate, useParams } from "react-router-dom";
+import { Routes, Route, Navigate } from "react-router-dom";
 import Gate from "@components/gate";
 
 import Register from "@views/register";
 import VerifyEmail from "@views/register/verifyEmail";
 import VerifySuccess from "@views/register/verifyEmail/VerifySuccess";
+
 import Login from "@views/login";
-import PasswordReset from "@views/password/reset";
+import ForgotPassword from "@views/login/forgot";
+import ResetPassword from "@views/resetPassword";
+
+import Profile from "@views/profile";
 
 import Home from "@views/home";
-import Profile from "@views/profile";
-import Raffle from "@views/raffle";
 import Sponsors from "@views/sponsors";
+import Raffle from "@views/raffle";
 import Businesses from "@views/businesses";
 import Details from "@views/businesses/Details";
 
 import Error404 from "@views/errors/Error404";
+import Error409 from "@views/errors/Error409";
 import Error500 from "@views/errors/Error500";
 
-const RoutesProvider = () => {
-  // temporary useParams for business details
-  const { details } = useParams();
+export const routes = [
+  { path: "/register", view: Register, restricted: 2 },
+  { path: "/register/verify-email", view: VerifyEmail, restricted: 0 },
+  {
+    path: "/register/verify-email/success",
+    view: VerifySuccess,
+    restricted: 0,
+  },
 
+  { path: "/login", view: Login, restricted: 2 },
+  { path: "/login/forgot", view: ForgotPassword, restricted: 2 },
+  { path: "/password-reset", view: ResetPassword, restricted: 2 },
+
+  { path: "/profile", view: Profile, restricted: 1 },
+
+  { path: "/", view: Home, restricted: 1 },
+  { path: "/sponsors", view: Sponsors, restricted: 1 },
+  { path: "/raffle", view: Raffle, restricted: 1 },
+  { path: "/businesses", view: Businesses, restricted: 1 },
+  { path: "/businesses/:details", view: Details, restricted: 1 },
+  // { path: "/results", view: SomeComponent, restricted: 1 },
+
+  { path: "/error-409", view: Error409, restricted: 1 },
+  { path: "/error-404", view: Error404, restricted: 0 },
+  { path: "/error-500", view: Error500, restricted: 0 },
+];
+
+const RoutesProvider = () => {
   return (
     <Routes>
-      <Route
-        path="/register"
-        element={<Gate view={<Register />} restricted={0} />}
-      />
-      <Route
-        path="/register/verify-email"
-        element={<Gate view={<VerifyEmail />} restricted={0} />}
-      />
-      <Route
-        path="/register/verify-email/success"
-        element={<Gate view={<VerifySuccess />} restricted={0} />}
-      />
-      <Route path="/login" element={<Gate view={<Login />} restricted={0} />} />
-      <Route
-        path="/password-reset"
-        element={<Gate view={<PasswordReset />} restricted={0} />}
-      />
-      <Route path="/" element={<Gate view={<Home />} restricted={1} />} />
-      <Route
-        path="/profile"
-        element={<Gate view={<Profile />} restricted={1} />}
-      />
-      <Route
-        path="/raffle"
-        element={<Gate view={<Raffle />} restricted={1} />}
-      />
-      <Route
-        path="/sponsors"
-        element={<Gate view={<Sponsors />} restricted={1} />}
-      />
-      <Route
-        path="/businesses"
-        element={<Gate view={<Businesses />} restricted={1} />}
-      />
-      <Route
-        path="/businesses/:details"
-        element={<Gate view={<Details />} restricted={1} />}
-      />
-      {/* <Route path="/results" element={<Gate view={< />} restricted={1} />} /> */}
-      <Route
-        path="/error-500"
-        element={<Gate view={<Error500 />} restricted={0} />}
-      />
-      <Route
-        path="/error-404"
-        element={<Gate view={<Error404 />} restricted={0} />}
-      />
+      {routes.map((route) => (
+        <Route
+          key={route.path}
+          path={route.path}
+          element={
+            <Gate restricted={route.restricted}>
+              <route.view />
+            </Gate>
+          }
+        />
+      ))}
       <Route path="*" element={<Navigate to="/error-404" />} />
     </Routes>
   );

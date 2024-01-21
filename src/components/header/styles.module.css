@@ -1,7 +1,7 @@
 .container {
   position: relative;
   margin: 1.5rem 0 3rem 0;
-  max-width: 900px;
+  /* max-width: 900px; */
 }
 @media screen and (max-width: 916px) {
   .container {
@@ -29,6 +29,10 @@
 }
 .container.full hr {
   height: 118px;
+}
+
+.checkoutPersist {
+  display: none;
 }
 
 /* FIXME: This is currently only for Instructions,
@@ -87,9 +91,31 @@
   font-size: 64px;
   text-align: left;
 }
-.container.full .right h1 {
+.container.full .right:not(.isProfile) h1 {
   font-size: 42px;
   margin: 0 0.5rem 0 0;
+}
+
+/* Profile Header */
+.container.full.isProfile img {
+  position: relative;
+  right: 13px;
+  transform: scale(1.1);
+}
+
+.container.full.isProfile .right {
+  justify-content: flex-start;
+  width: fit-content;
+  gap: 2.85rem;
+}
+@media screen and (min-width: 851px) and (max-width: 874px) {
+  .container.full.isProfile .right {
+    gap: 1.5rem;
+  }
+}
+.container.full.isProfile .right h1 {
+  /* 1350px to 350px viewports. */
+  font-size: clamp(2.625rem, 2.14375rem + 2.1999999999999997vw, 4rem);
 }
 
 @media screen and (max-width: 520px) {
@@ -191,7 +217,6 @@
       center/contain;
   }
 
-  /* TODO: Need actual image. */
   .container.full .right nav button {
     width: 64px;
     height: 64px;
@@ -284,6 +309,23 @@
     align-items: center;
     margin: 1.5rem 2rem 2.5rem 2rem;
   }
+
+  .checkoutPersist {
+    display: block;
+    width: 82px;
+    height: 82px;
+    background: url("../../static/btn_checkout_normal.png") no-repeat center
+      center/contain;
+  }
+  .checkoutPersist:hover {
+    background: url("../../static/btn_checkout_hover.png") no-repeat center
+      center/contain;
+  }
+  .checkoutPersist:active {
+    background: url("../../static/btn_checkout_pressed.png") no-repeat center
+      center/contain;
+  }
+
   @media screen and (max-width: 446px) {
     .container.full .right .menu > div:first-of-type {
       margin: 1.5rem 0.5rem 2.5rem 0.5rem;
@@ -373,20 +415,6 @@
   .container.full nav div .mainMap:active {
     background: url("../../static/btn_mainmap_pressed.png") no-repeat center
       center/contain;
-  }
-
-  /* TODO: Need images. */
-  .container.full nav div .questions {
-    background: url("../../static/btn_question_normal.png") no-repeat center
-      center/contain;
-  }
-  .container.full nav div .questions:hover {
-    /* background: url("../../static/btn_question_hover.png") no-repeat center
-      center/contain; */
-  }
-  .container.full nav div .questions:active {
-    /* background: url("../../static/btn_question_pressed.png") no-repeat center
-      center/contain; */
   }
 
   .container.full nav div .chat {

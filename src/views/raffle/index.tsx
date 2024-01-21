@@ -5,6 +5,8 @@ import {
   retrieveCoins,
   initializeCoins,
 } from "@root/redux/actions/coinTracker";
+import { isNotPlayer } from "@root/redux/actions/user";
+import usePagination from "@root/hooks/usePagination";
 
 import Layout from "@components/layout";
 import Header from "@components/header";
@@ -23,6 +25,7 @@ interface Props {
   initializeCoins: any;
   storeCoins: any;
   storeEntries: any;
+  isNotPlayer: (useNotification: boolean, message?: string | null) => void;
 }
 
 const products = [
@@ -187,10 +190,8 @@ const Raffle: React.FC<Props> = ({
   initializeCoins,
   storeCoins,
   storeEntries,
+  isNotPlayer
 }) => {
-  const [slideIndex, setSlideIndex] = useState(0),
-    [isOpened, setIsOpened] = useState(false);
-
   // Track product entries all have a default value of 0 at their respective index
   const [totaleDublunes, setTotalDublunes] = useState(
     storeCoins ? storeCoins : 0
@@ -204,15 +205,22 @@ const Raffle: React.FC<Props> = ({
     }
   }, []);
 
-  // Variables to create 'slides' of products showing 8 at a time for any given page (slideIndex)
+  // Pagination hook
   const maxItems = 8;
-  const startIndex = slideIndex * maxItems;
-  const displayedProducts = products.slice(startIndex, startIndex + maxItems);
 
+  const {
+    currentPage,
+    currentItems,
+    totalPages,
+    goToPage,
+    nextPage,
+    prevPage,
+  } = usePagination({data: products, maxPerPage: maxItems});
+  
   // Adds/Subtracts entries that correspond with product index and adjust total Dubulunes
-  const handleProductEntries = (index: number, value: number) => {
-    const item = products[index + startIndex];
-
+  const handleProductEntries = (itemId: number, value: number) => {
+    console.log(itemId)
+    const item = products.find((product) => product.id === itemId);
     if (value > 0) {
       spendCoins(item, value);
     } else {
@@ -220,6 +228,9 @@ const Raffle: React.FC<Props> = ({
     }
     setTotalDublunes((prev) => prev - value);
   };
+  useEffect(() => {
+    isNotPlayer(true, "Only players can assign Dubl-U-Nes to raffle items");
+  }, []);
 
   return (
     <Layout
@@ -272,18 +283,17 @@ const Raffle: React.FC<Props> = ({
             </div>
           </div>
           <div className={s.products}>
-            {displayedProducts.map((item, i) => (
+            {currentItems.map((item, i) => (
               <div aria-label={item.name} key={i}>
                 <div className={s.imgBox}>
                   <img src={item.img} alt={item.name} />
                   <RaffleItemModal
-                    setShow={setIsOpened}
-                    products={products[i + startIndex]}
+                    products={item}
                   />
                   <img
                     className={s.entryNotification}
                     src={
-                      storeEntries[i + startIndex]?.entries > 0
+                      storeEntries.find((entry) => entry.id === item.id)?.entries > 0
                         ? goldCoin
                         : silverCoin
                     }
@@ -293,19 +303,19 @@ const Raffle: React.FC<Props> = ({
                 <h4 className={s.name}>{item.name}</h4>
                 <div className={s.controls}>
                   <button
-                    disabled={storeEntries[i + startIndex]?.entries === 0}
-                    onClick={() => handleProductEntries(i, -1)}
+                    disabled={storeEntries.find((entry) => entry.id === item.id)?.entries === 0 || isNotPlayer()}
+                    onClick={() => handleProductEntries(item.id, -1)}
                     aria-label="Subtract"
                   >
                     -
                   </button>
                   <h4>
                     {storeEntries.length !== 0 &&
-                      storeEntries[i + startIndex].entries}
+                      storeEntries.find((entry) => entry.id === item.id)?.entries}
                   </h4>
                   <button
-                    disabled={totaleDublunes === 0}
-                    onClick={() => handleProductEntries(i, +1)}
+                    disabled={totaleDublunes === 0 || isNotPlayer()}
+                    onClick={() => handleProductEntries(item.id, +1)}
                     aria-label="Add"
                   >
                     +
@@ -315,21 +325,23 @@ const Raffle: React.FC<Props> = ({
             ))}
           </div>
           <div className={s.paginationButtons}>
-            {/* Don't show prev button if at start of slide */}
-            {startIndex !== 0 && (
+            {currentPage > 1 && (
               <button
                 className={`${s.prevButton}`}
                 aria-label="Previous page"
-                onClick={() => setSlideIndex((prev) => prev - 1)}
+                onClick={() => prevPage()}
               />
             )}
-            {/* Don't show next button if no items on next slide */}
-
-            {startIndex + 8 < products.length && (
+            {totalPages > 0 && (
+              <span
+                className={s.paginationPages}
+              >{`Page ${currentPage} of ${totalPages}`}</span>
+            )}
+            {currentPage < totalPages && (
               <button
                 className={s.nextButton}
                 aria-label="Next page"
-                onClick={() => setSlideIndex((prev) => prev + 1)}
+                onClick={() => nextPage()}
               />
             )}
           </div>
@@ -350,6 +362,8 @@ const mapDispatchToProps = (dispatch: Function) => ({
     dispatch(retrieveCoins(item, numEntries)),
   initializeCoins: ({ products, remainingCoins }) =>
     dispatch(initializeCoins({ products, remainingCoins })),
+     isNotPlayer: (useNotification: boolean, message?: string | null) =>
+    dispatch(isNotPlayer(useNotification, message)),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(Raffle);

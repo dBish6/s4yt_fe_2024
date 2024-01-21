@@ -1,16 +1,29 @@
+import { UserReduxState } from "@reducers/user";
+
 import { NavLink } from "react-router-dom";
-import s from "./styles.module.css";
+import { connect } from "react-redux";
+
+import { logoutPlayer } from "@actions/user";
+
 import CurrentDoblons from "../currentDoblons";
 import Hamburger from "./Hamburger";
+
+import s from "./styles.module.css";
+import { Dispatch } from "redux";
 
 interface Props {
   title?: string;
   style?: React.CSSProperties;
+  userToken?: string;
+  logoutPlayer: () => void;
 }
 
+// FIXME: The styles and this code need to cleaned up.
 const Header: React.FC<Props> & React.HTMLAttributes<HTMLDivElement> = ({
   title,
   style,
+  userToken,
+  logoutPlayer,
   ...options
 }) => {
   const addFullHeader =
@@ -19,7 +32,7 @@ const Header: React.FC<Props> & React.HTMLAttributes<HTMLDivElement> = ({
       title === "Sponsors" ||
       title === "Login" ||
       title === "Register" ||
-      title === "Reset");
+      title === "Profile");
 
   const hasSpace = (title: string) => {
     const parts = title.split(" ");
@@ -34,7 +47,11 @@ const Header: React.FC<Props> & React.HTMLAttributes<HTMLDivElement> = ({
 
   return (
     <header
-      className={addFullHeader ? `${s.container} ${s.full}` : s.container}
+      className={
+        addFullHeader
+          ? `${s.container} ${s.full} ${title === "Profile" ? s.isProfile : ""}`
+          : s.container
+      }
       style={style}
       {...options}
     >
@@ -52,7 +69,7 @@ const Header: React.FC<Props> & React.HTMLAttributes<HTMLDivElement> = ({
               {title === "Login" ||
               title === "Register" ||
               title.includes("Email") ||
-              title === "Reset" ? (
+              title.includes("Password") ? (
                 <>
                   <h1 className={s.mainTitle}>{title}</h1>
                   <a
@@ -63,7 +80,9 @@ const Header: React.FC<Props> & React.HTMLAttributes<HTMLDivElement> = ({
                     className={s.checkout}
                   />
                 </>
-              ) : title === "Sponsors" || title.includes(" ") ? (
+              ) : title === "Sponsors" ||
+                title === "Profile" ||
+                title.includes(" ") ? (
                 <>
                   <h1 className={s.mainTitle}>
                     {title === "Sponsors" ? title : hasSpace(title)}
@@ -71,7 +90,10 @@ const Header: React.FC<Props> & React.HTMLAttributes<HTMLDivElement> = ({
                   <nav>
                     <NavLink to="/" className={s.mainMap} />
                     <NavLink to="/businesses" className={s.busMap} />
-                    <button aria-label="Logout" />
+                    <button
+                      aria-label="Logout"
+                      onClick={() => logoutPlayer()}
+                    />
                   </nav>
                 </>
               ) : (
@@ -79,7 +101,17 @@ const Header: React.FC<Props> & React.HTMLAttributes<HTMLDivElement> = ({
                   {title}
                 </h1>
               )}
-              <Hamburger />
+              {userToken ? (
+                <Hamburger logoutPlayer={logoutPlayer} />
+              ) : (
+                <a
+                  aria-label="building-U Website"
+                  href="https://building-u.com/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={s.checkoutPersist}
+                />
+              )}
             </div>
           </>
         )}
@@ -89,4 +121,11 @@ const Header: React.FC<Props> & React.HTMLAttributes<HTMLDivElement> = ({
   );
 };
 
-export default Header;
+const mapStateToProps = ({ user }: { user: UserReduxState }) => ({
+  userToken: user.token,
+});
+const mapDispatchToProps = (dispatch: Dispatch<any>) => ({
+  logoutPlayer: () => dispatch(logoutPlayer()),
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(Header);

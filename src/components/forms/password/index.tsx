@@ -1,154 +1,209 @@
-import React, { useState, useEffect } from "react";
+import { UserReduxState } from "@reducers/user";
+import NotificationValues from "@typings/NotificationValues";
+
+import { useRef, useState } from "react";
+import { Dispatch } from "redux";
 import { connect } from "react-redux";
-import { userProfile } from "@actions/user";
+
+import updateField from "@utils/forms/updateField";
+import checkValidity from "@utils/forms/checkValidity";
+import checkMatchingPasswords from "@utils/forms/checkMatchingPasswords";
+
+import { resetPassword } from "@actions/user";
+import { updatePassword } from "@actions/user";
 import { addNotification } from "@actions/notifications";
+
 import s from "./styles.module.css";
 
 interface Props {
-  data: Array<String>;
-  userProfile: Function;
-  addNotification: Function;
+  playerId?: string | null;
+  userToken?: string;
+  resetPassword: (userData: any) => Promise<any>;
+  updatePassword: (userData: any) => Promise<any>;
+  addNotification: (data: Omit<NotificationValues, "id">) => void;
 }
 
-// FIXME: This one is in profile...
-const Password: React.FC<Props> = ({ user, userProfile, addNotification }) => {
-  const [form, setForm] = useState({
-    processing: false,
-    valid: false,
-    submitted: false,
-    error: null,
-  });
-  const [data, setData] = useState({
-    ...user,
-    player: user.player
-      ? {
-          grade_id: user.player.grade_id,
-          education_id: user.player.education_id,
-          instagram: user.player.instagram,
-          country_iso: user.player.country_iso,
-          state_iso: user.player.state_iso,
-          city_id: user.player.city_id,
-        }
-      : {},
-  });
+interface FromData {
+  player_id?: string;
+  old_password?: string;
+  password: string;
+  password_confirmation: string;
+}
 
-  const submit = (e) => {
+const PasswordForm: React.FC<Props> = ({
+  playerId,
+  userToken,
+  resetPassword,
+  updatePassword,
+  addNotification,
+}) => {
+  const formRef = useRef<HTMLFormElement>(null),
+    [form, setForm] = useState({
+      processing: false,
+    }),
+    // FIXME: Weird type errors.
+    [currentData, setCurrentData] = useState<FormData>({
+      ...(userToken ? { old_password: "" } : { player_id: playerId }),
+      password: "",
+      password_confirmation: "",
+    });
+
+  const submit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    const fields = document.querySelectorAll("#userForm input");
-    let valid = true;
+    if (!userToken && !currentData.player_id)
+      return alert(
+        "Somehow you were brought to this page without us finding your player_id, you should only get redirected here."
+      );
 
-    for (let x = 0; x < fields.length; x++) {
-      fields[x].setAttribute("data-valid", fields[x].validity.valid ? 1 : 0);
+    const fields = document.querySelectorAll<HTMLInputElement>(
+      "#updatePasswordForm input, #resetPasswordForm input"
+    );
+    let valid = true,
+      passwordValue: string;
 
-      if (!fields[x].validity.valid && valid) {
-        valid = false;
+    for (let i = 0; i < fields.length; i++) {
+      const field = fields[i];
+      if (field.name === "password") passwordValue = field.value;
+      if (field.name === "password_confirmation") {
+        checkMatchingPasswords(field, passwordValue!);
+      } else {
+        checkValidity(field);
       }
+
+      if (!field.validity.valid && valid) valid = false;
     }
 
     if (valid) {
-      userProfile({ ...data, _method: "PUT" }, (res) => {
-        if (!res.errors) {
-          fields[0].value = "";
-          fields[0].value = "";
+      setForm((prev) => ({ ...prev, processing: true }));
 
-          addNotification({
-            display: true,
-            error: false,
-            content: "Password updated!",
-            timed: true,
-          });
+      let res: any;
+      userToken
+        ? (res = await updatePassword(currentData))
+        : (res = await resetPassword(currentData));
 
-          if (data.id) {
-            setForm({
-              data: {
-                ...res.data,
-                password: null,
-                password_confirmation: null,
-              },
-              ...form,
-              processing: false,
-            });
-          }
-        } else {
-          const key = Object.keys(res.errors)[0];
-
-          addNotification({
-            display: true,
-            error: true,
-            content: res.errors[key],
-            timed: true,
-          });
-          setForm({ ...form, processing: false });
-        }
-      });
+      if (!res.errors) {
+        formRef.current!.reset();
+        addNotification({
+          error: false,
+          content: userToken
+            ? "Your password was successfully updated ✔"
+            : "Your password reset successfully ✔",
+          close: false,
+          duration: 4000,
+        });
+      } else {
+        addNotification({
+          error: true,
+          content:
+            res.errors && Object.keys(res.errors).length
+              ? Object.keys(res.errors)[0]
+              : res.message,
+          close: false,
+          duration: 0,
+        });
+      }
+      setForm((prev) => ({ ...prev, processing: false }));
     }
-
-    setForm({ ...form, valid: valid, submitted: true, processing: valid });
-
-    return false;
-  };
-
-  const updateField = (event) => {
-    const node = event.target;
-    const key = node.getAttribute("name");
-
-    if (form.submitted) {
-      node.setAttribute("data-valid", node.validity.valid ? 1 : 0);
-    }
-
-    setData({ ...data, [key]: node.value });
   };
 
   return (
     <form
-      id="userForm"
+      id={userToken ? "updatePasswordForm" : "resetPasswordForm"}
       className={s.form}
-      onSubmit={submit}
+      onSubmit={(e) => submit(e)}
+      ref={formRef}
       autoComplete="off"
       noValidate
     >
-      <fieldset>
-        <label htmlFor="password">New Pass</label>
+      {userToken && (
+        <div role="presentation">
+          <label htmlFor="old_password">Current Pass</label>
+          <input
+            id="old_password"
+            name="old_password"
+            type="old_password"
+            onChange={(e) => updateField<FromData>(e, setCurrentData)}
+            disabled={form.processing}
+            autoComplete="off"
+            required
+          />
+        </div>
+      )}
+
+      <div role="presentation">
+        <label aria-label="Password" htmlFor="password">
+          Pass
+        </label>
         <input
+          aria-describedby="formError"
           id="password"
           name="password"
           type="password"
-          onKeyUp={updateField}
-          readOnly={form.processing}
+          onChange={(e) => updateField<FromData>(e, setCurrentData)}
+          disabled={form.processing}
           autoComplete="off"
-          minLength="8"
-          maxLength="24"
+          minLength={8}
+          maxLength={24}
           required
         />
-        <small>Must be between 8 and 24 characters</small>
-      </fieldset>
-      <fieldset>
-        <label htmlFor="password_confirmation">Confirm Pass</label>
+        <small aria-live="assertive" id="formError" className="formError">
+          Must be between 8 and 24 characters
+        </small>
+      </div>
+
+      <div role="presentation">
+        <label aria-label="Confirm Password" htmlFor="password_confirmation">
+          Confirm Pass
+        </label>
         <input
+          aria-describedby="formError"
           id="password_confirmation"
           name="password_confirmation"
           type="password"
-          onKeyUp={updateField}
-          readOnly={form.processing}
+          onChange={(e) => updateField<FromData>(e, setCurrentData)}
+          disabled={form.processing}
           autoComplete="off"
-          minLength="8"
-          maxLength="24"
+          minLength={8}
+          maxLength={24}
           required
         />
-        <small>Passwords do not match</small>
-      </fieldset>
-      <fieldset>
-        <button disabled={form.processing}>Update</button>
-      </fieldset>
+        <small aria-live="assertive" id="formError" className="formError">
+          Passwords do not match
+        </small>
+      </div>
+
+      <div>
+        {userToken ? (
+          <button
+            type="submit"
+            className="updateBtn"
+            disabled={form.processing}
+          >
+            Update
+          </button>
+        ) : (
+          <button
+            type="submit"
+            className="okBtn flip"
+            disabled={form.processing}
+          />
+        )}
+      </div>
     </form>
   );
 };
 
-const mapStateToProps = ({}) => ({});
-const mapDispatchToProps = (dispatch: Function) => ({
-  userProfile: (data, callback) => dispatch(userProfile(data, callback)),
-  addNotification: (notification) => dispatch(addNotification(notification)),
+const mapStateToProps = ({ user }: { user: UserReduxState }) => ({
+  userToken: user.token,
+});
+const mapDispatchToProps = (dispatch: Dispatch<any>) => ({
+  resetPassword: (userData: FromData) =>
+    dispatch(resetPassword(userData) as unknown) as Promise<any>,
+  updatePassword: (userData: FromData) =>
+    dispatch(updatePassword(userData) as unknown) as Promise<any>,
+  addNotification: (notification: Omit<NotificationValues, "id">) =>
+    dispatch(addNotification(notification)),
 });
 
-export default connect(mapStateToProps, mapDispatchToProps)(Password);
+export default connect(mapStateToProps, mapDispatchToProps)(PasswordForm);

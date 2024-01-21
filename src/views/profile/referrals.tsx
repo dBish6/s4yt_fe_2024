@@ -1,182 +1,103 @@
-import React, { useState, useEffect } from "react";
+import UserCredentials from "@typings/UserCredentials";
+
+import { useState, useEffect } from "react";
+import { Dispatch } from "redux";
 import { connect } from "react-redux";
-import { getReferrals, createReferral } from "@actions/user";
-import { addNotification } from "@actions/notifications";
+
+import { getReferrals } from "@actions/user";
+import copyToClipboard from "@utils/copyToClipboard";
+
 import s from "./styles.module.css";
 
-interface Props {
-  getReferrals: Function;
-  createReferral: Function;
-  addNotification: Function;
+interface ReferralsDTO {
+  created_at: string;
+  name: string;
+  email: string;
 }
 
-const Referral: React.FC<Props> = ({
-  getReferrals,
-  createReferral,
-  addNotification,
-  configuration,
-}) => {
-  const [form, setForm] = useState({
-    processing: false,
-    valid: false,
-    submitted: false,
-    error: null,
-  });
-  const [data, setData] = useState({});
-  const [referrals, setReferrals] = useState([]);
+interface Props {
+  user: UserCredentials;
+  getReferrals: (
+    setReferrals: React.Dispatch<React.SetStateAction<ReferralsDTO[] | string>>
+  ) => Promise<any>;
+}
+
+const Referral: React.FC<Props> = ({ user, getReferrals }) => {
+  const [referrals, setReferrals] = useState<ReferralsDTO[] | string>([]);
 
   useEffect(() => {
-    getReferrals((res) => {
-      setReferrals(res.data);
-    });
+    if (!referrals.length) getReferrals(setReferrals);
   }, []);
-
-  const submit = (event) => {
-    event.preventDefault();
-
-    const fields = document.querySelectorAll("#referralForm input");
-    let valid = true;
-
-    for (let x = 0; x < fields.length; x++) {
-      fields[x].setAttribute("data-valid", fields[x].validity.valid ? 1 : 0);
-
-      if (!fields[x].validity.valid && valid) {
-        valid = false;
-      }
-    }
-
-    if (valid) {
-      createReferral(data, (res) => {
-        if (!res.errors) {
-          fields[0].value = "";
-          fields[1].value = "";
-
-          addNotification({
-            display: true,
-            error: false,
-            content: "A referral email has been sent to " + data.email,
-            timed: true,
-          });
-
-          getReferrals((res) => {
-            setReferrals(res.data);
-          });
-        } else {
-          const key = Object.keys(res.errors)[0];
-
-          addNotification({
-            display: true,
-            error: true,
-            content: res.errors[key],
-            timed: true,
-          });
-        }
-
-        setForm({ ...form, processing: false });
-      });
-    }
-
-    setForm({ ...form, valid: valid, submitted: true, processing: valid });
-
-    return false;
-  };
-
-  const updateField = (event) => {
-    const node = event.target;
-    const key = node.getAttribute("name");
-
-    if (form.submitted) {
-      node.setAttribute("data-valid", node.validity.valid ? 1 : 0);
-    }
-
-    setData({ ...data, [key]: node.value });
-  };
 
   return (
     <section className={s.referrals}>
       <h2>Referrals</h2>
-      <form
-        id="referralForm"
-        className={s.form}
-        autoComplete="off"
-        onSubmit={submit}
-        noValidate
+
+      <button
+        aria-label="Your Referral Link"
+        title="Copy Referral Link"
+        className={s.referralLink}
+        onClick={() => copyToClipboard(user.referral_link)}
       >
-        <fieldset>
-          <label htmlFor="referral_name">Name</label>
-          <input
-            id="referral_name"
-            name="name"
-            type="text"
-            onKeyUp={updateField}
-            readOnly={form.processing}
-            autoComplete="off"
-            required
-          />
-        </fieldset>
-        <fieldset>
-          <label htmlFor="referral_email">Email</label>
-          <input
-            id="referral_email"
-            name="email"
-            type="email"
-            onKeyUp={updateField}
-            readOnly={form.processing}
-            autoComplete="off"
-            required
-          />
-        </fieldset>
-        <fieldset>
-          <button>Send</button>
-        </fieldset>
-      </form>
+        {user.referral_link}
+      </button>
       {referrals.length > 0 && (
         <>
-          <h3>Added</h3>
-          <table>
-            <thead>
-              <tr>
-                <th>Date</th>
-                <th>Name</th>
-                <th>Email</th>
-                <th>Status</th>
-                <th>Points</th>
-              </tr>
-            </thead>
-            <tbody>
-              {referrals.map((referral, index) => {
-                const date = new Date(Date.parse(referral.created_at));
+          <h3 {...(typeof referrals !== "string" && { className: s.move })}>
+            Used
+          </h3>
+          {typeof referrals === "string" ? (
+            <span role="dialog" className={s.noReferralsMsg}>
+              {referrals}
+            </span>
+          ) : (
+            <table>
+              <thead>
+                <tr>
+                  <th>Date</th>
+                  <th>Name</th>
+                  <th>Email</th>
+                  <th>Points</th>
+                </tr>
+              </thead>
+              <tbody>
+                {referrals.map((referral, i) => {
+                  const date = new Date(Date.parse(referral.created_at));
 
-                return (
-                  <tr key={index}>
-                    <td>
-                      {date.getMonth() + 1}/{date.getDate()}/
-                      {date.getFullYear()}
-                    </td>
-                    <td>{referral.name}</td>
-                    <td>{referral.email}</td>
-                    <td>{referral.status}</td>
-                    <td>
-                      {referral.status === "accepted"
-                        ? configuration.instagram_coins
-                        : 0}
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
+                  return (
+                    <tr key={i}>
+                      <td>
+                        <span>Date</span>
+                        {date.getMonth() + 1}/{date.getDate()}/
+                        {date.getFullYear()}
+                      </td>
+                      <td>
+                        <span>Name</span>
+                        {referral.name}
+                      </td>
+                      <td>
+                        <span>Email</span>
+                        {referral.email}
+                      </td>
+                      <td>
+                        <span>Points</span>3
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          )}
         </>
       )}
     </section>
   );
 };
 
-const mapStateToProps = ({ configuration }) => ({ configuration });
-const mapDispatchToProps = (dispatch: Function) => ({
-  getReferrals: (callback) => dispatch(getReferrals(callback)),
-  createReferral: (data, callback) => dispatch(createReferral(data, callback)),
-  addNotification: (notification) => dispatch(addNotification(notification)),
+const mapDispatchToProps = (dispatch: Dispatch<any>) => ({
+  getReferrals: (
+    setReferrals: React.Dispatch<React.SetStateAction<ReferralsDTO[] | string>>
+  ) => dispatch(getReferrals(setReferrals) as unknown) as Promise<any>,
 });
 
-export default connect(mapStateToProps, mapDispatchToProps)(Referral);
+export default connect(null, mapDispatchToProps)(Referral);
