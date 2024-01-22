@@ -79,13 +79,7 @@ export const sendVerifyEmail =
     }
   };
 
-// export const setToken = (token) => (dispatch, getState) => {
-//   dispatch({ type: SET_TOKEN, payload: token });
-// };
-// export const setCurrentUser = (userData) => (dispatch, getState) => {
-//   dispatch({ type: SET_CURRENT_USER, payload: userData });
-// };
-// TODO: I don't know how I will determine if it's review_start.
+// TODO: We may get the timestamps instead of the countdown now.
 export const loginPlayer =
   (userData, setForm) => async (dispatch, getState) => {
     try {
@@ -93,10 +87,16 @@ export const loginPlayer =
 
       if (res.success) {
         const data = res.data,
-          user = res.data.user;
+          user = res.data.user,
+          restrictedAccess =
+            !data.countdown.includes(":") ||
+            (user.is_backup &&
+              (!user.password_updated || !user.profile_updated));
 
-        // For if the countdown is a message when the game ended, haven't started, etc.
-        if (!data.countdown.split(":").length)
+        dispatch({ type: SET_TOKEN, payload: data.token });
+
+        // For if the countdown is a message when the haven't started.
+        if (!data.countdown.includes(":"))
           dispatch(
             addNotification({
               error: true,
@@ -106,7 +106,7 @@ export const loginPlayer =
             })
           );
 
-        dispatch({ type: SET_TOKEN, payload: data.token });
+        // This is temporary for the backup users because they're data wasn't correct.
         if (
           user.is_backup &&
           (!user.password_updated || !user.profile_updated)
@@ -129,7 +129,11 @@ export const loginPlayer =
                 duration: 0,
               })
             );
+        } else {
+          history.push("/");
+        }
 
+        if (restrictedAccess) {
           dispatch(updateConfiguration({ restrictedAccess: true })); // Only allowed to profile.
           history.push("/profile");
         } else {
@@ -138,7 +142,6 @@ export const loginPlayer =
 
         dispatch({ type: SET_NEW_LOGIN_FLAG, payload: data });
 
-        // console.log("res.data", res.data);
         dispatch(
           addNotification({
             error: false,
