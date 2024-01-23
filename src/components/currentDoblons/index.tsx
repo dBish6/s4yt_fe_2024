@@ -1,4 +1,4 @@
-import CoinTrackerState from "@typings/redux/CoinTrackerState";
+import { CoinTrackerState } from "@reducers/coinTracker";
 
 import { connect } from "react-redux";
 
@@ -37,7 +37,7 @@ const CurrentDoblons = ({
         You got <br />
         <span>{isNotPlayer() ? 0 : coins}</span>
         <br />
-        Doblons
+        Dubl-u-nes
       </p>
     </div>
   );
