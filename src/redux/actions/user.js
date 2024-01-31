@@ -12,7 +12,7 @@ import {
 } from "@actions/index";
 import { addNotification } from "./notifications";
 import { updateConfiguration } from "./gameConfig";
-import { retrieveCoins } from "./coinTracker";
+import { initializeCoins } from "./coinTracker";
 
 export const updateCurrentUser = (data) => (dispatch, getState) => {
   dispatch({ type: UPDATE_CURRENT_USER, payload: data });
@@ -333,8 +333,8 @@ export const getReferrals = (setReferrals) => (dispatch, getState) => {
 
 // Web Sockets
 export const referralUsedListener = () => (dispatch, getState) => {
-  window.Echo.private("App.Models.User.ID").notification((data) => {
-    console.log(data.message);
-    dispatch(retrieveCoins(null, data.coins));
+  window.Echo.private("App.Models.User.ID").notification((e) => {
+    console.log("referralUsedListener", e);
+    dispatch(initializeCoins(null, e.coins));
   });
 };
