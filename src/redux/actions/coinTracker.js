@@ -102,5 +102,6 @@ export const sendSponsorQuizCoins =
 export const sliverAndGoldCoinsListener = () => (dispatch, getState) => {
   window.Echo.channel("raffle-update").listen("RealTimeMessage", (e) => {
     console.log("sliverAndGoldCoinsListener", e);
+    // e.raffle.foreach
   });
 };
