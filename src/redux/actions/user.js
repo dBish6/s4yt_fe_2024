@@ -1,11 +1,15 @@
-import { SET_TOKEN, SET_NEW_LOGIN_FLAG, LOGOUT } from "@actions/index";
-
-import history from "@utils/History";
-
 import { Api } from "@services/index";
 import errorHandler from "@services/errorHandler";
 
-import { UPDATE_CURRENT_USER } from "@actions/index";
+import history from "@utils/History";
+
+import {
+  UPDATE_CURRENT_USER,
+  SET_TOKEN,
+  SET_NEW_LOGIN_FLAG,
+  LOGOUT,
+  CLEAR_CURRENT_CONFIG,
+} from "@actions/index";
 import { addNotification } from "./notifications";
 import { updateConfiguration } from "./gameConfig";
 import { retrieveCoins } from "./coinTracker";
@@ -184,6 +188,7 @@ export const loginPlayer =
   };
 export const logoutPlayer = () => (dispatch, getState) => {
   dispatch({ type: LOGOUT });
+  dispatch({ type: CLEAR_CURRENT_CONFIG });
   alert("User session timed out.");
 };
 
@@ -282,8 +287,7 @@ export const updateProfile =
             })
           );
         } else {
-          // TODO: Test.
-          updateCurrentUser(userData);
+          dispatch(updateCurrentUser(userData));
         }
       } else {
         const key = Object.keys(res.errors)[0];

@@ -17,9 +17,10 @@ export const SET_CURRENT_USER = "user.SET_CURRENT_USER";
 export const UPDATE_CURRENT_USER = "user.UPDATE_CURRENT_USER";
 export const LOGOUT = "user.LOGOUT";
 
-// configuration
+// gameConfig
 export const UPDATE_CONFIGURATION = "gameConfig.UPDATE_CONFIGURATION";
 export const UPDATE_NEW_PERIOD = "gameConfig.UPDATE_NEW_PERIOD";
+export const CLEAR_CURRENT_CONFIG = "gameConfig.CLEAR_CURRENT_CONFIG";
 
 // coinTracker
 export const SPEND_COINS = "coinTracker.SPEND_COINS";
