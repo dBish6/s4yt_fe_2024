@@ -1,6 +1,7 @@
 import { GameConfigReduxState } from "@reducers/gameConfig";
 
 import { useRef } from "react";
+import { Link } from "react-router-dom";
 import { Dispatch } from "redux";
 import { connect } from "react-redux";
 
@@ -77,7 +78,13 @@ const GameClosed: React.FC<Props> = ({
                 to see the results
               </>
             ) : (
-              <>Why are you on this page? The game isn't closed, go play!</>
+              <>
+                Why are you on this page? The game isn't closed, go play!
+                <br />
+                <Link to="/" className="fade move">
+                  Go to Main Map
+                </Link>
+              </>
             )}
           </p>
         </div>

@@ -14,7 +14,7 @@ import delay from "@utils/delay";
 
 const useContinueCountdown = (
   counterRef: React.RefObject<HTMLTimeElement>,
-  isGameClosedCounter: boolean
+  isGameClosedCounter?: boolean
 ) => {
   const timestamps = useSelector(
       (state: { gameConfig: GameConfigReduxState }) =>
