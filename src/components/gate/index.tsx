@@ -15,7 +15,7 @@ import socketProvider from "@services/socketProvider";
 import { isNotPlayer } from "@actions/user";
 import { SET_CURRENT_USER, SET_NEW_LOGIN_FLAG } from "@actions/index";
 import { initializeCoins } from "@actions/coinTracker";
-// import { referralUsedListener } from "@actions/user";
+import { referralUsedListener } from "@actions/user";
 
 import initializeFirebase from "@utils/initializeFirebase";
 import history from "@utils/History";
@@ -31,6 +31,7 @@ interface Props extends React.PropsWithChildren<{}> {
   isNotPlayer: (useNotification?: boolean, message?: string) => boolean;
   setUserCredentials: (user: UserCredentials) => void;
   initializeCoins: (data: Omit<CoinTrackerState, "items">) => void;
+  referralUsedListener: () => void;
   clearNewLoginFlag: () => void;
 }
 
@@ -57,13 +58,17 @@ const Gate: React.FC<Props> = ({
   isNotPlayer,
   setUserCredentials,
   initializeCoins,
+  referralUsedListener,
   clearNewLoginFlag,
 }) => {
   const location = useLocation();
 
   useEffect(() => {
-    socketProvider(); // So we can listen to real-time events.
-    return () => window.Echo && window.Echo.disconnect();
+    const connectionCheckInterval = socketProvider(); // So we can listen to real-time events.
+    return () => {
+      connectionCheckInterval && clearInterval(connectionCheckInterval);
+      window.Echo && window.Echo.disconnect();
+    };
   }, []);
 
   let redirect = "";
@@ -109,7 +114,7 @@ const Gate: React.FC<Props> = ({
 
       initializeFirebase(user.newLogin.user.email); // Temporary use of Firebase because some thing couldn't done in the back-end.
 
-      // referralUsedListener(); // Listen for if the referrer uses the referral to add coins to the user.
+      referralUsedListener(); // Listen for if the referrer uses the referral to add coins to the user.
 
       delay(2000, () => clearNewLoginFlag());
     }
@@ -139,6 +144,7 @@ const mapDispatchToProps = (dispatch: Dispatch<any>) => ({
     dispatch({ type: SET_CURRENT_USER, payload: user }),
   initializeCoins: (data: Omit<CoinTrackerState, "items">) =>
     dispatch(initializeCoins(data)),
+  referralUsedListener: () => dispatch(referralUsedListener()),
 
   clearNewLoginFlag: () =>
     dispatch({ type: SET_NEW_LOGIN_FLAG, payload: null }),

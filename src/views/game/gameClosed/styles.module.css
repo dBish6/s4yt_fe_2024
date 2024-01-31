@@ -40,6 +40,9 @@
   font-size: 100px;
   line-height: auto;
 }
+.right .timer a {
+  font-size: var(--heading-28);
+}
 
 @media screen and (max-width: 682px) {
   .left button {

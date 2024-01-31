@@ -1,4 +1,8 @@
-import { UPDATE_CONFIGURATION, UPDATE_NEW_PERIOD } from "@actions/index";
+import {
+  UPDATE_CONFIGURATION,
+  UPDATE_NEW_PERIOD,
+  CLEAR_CURRENT_CONFIG,
+} from "@actions/index";
 
 export interface GameConfigReduxState {
   timestamps?: {
@@ -29,6 +33,8 @@ const gameConfig = (
       return { ...state, ...action.payload };
     case UPDATE_NEW_PERIOD:
       return { ...state, newPeriod: state.newPeriod + 1 };
+    case CLEAR_CURRENT_CONFIG:
+      return initialState;
     default:
       return state;
   }
