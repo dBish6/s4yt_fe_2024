@@ -17,7 +17,7 @@ import { SET_CURRENT_USER, SET_NEW_LOGIN_FLAG } from "@actions/index";
 import { initializeCoins } from "@actions/coinTracker";
 // import { referralUsedListener } from "@actions/user";
 
-import initializeFirebase from "@utils/initializeFirebase";
+import initializeFirebase from "@root/services/initializeFirebase";
 import history from "@utils/History";
 import delay from "@utils/delay";
 
