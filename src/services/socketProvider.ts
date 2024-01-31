@@ -17,18 +17,21 @@ const socketProvider = () => {
         broadcaster: "pusher",
         key: process.env.REACT_APP_PUSHER_KEY,
         cluster: process.env.REACT_APP_PUSHER_CLUSTER,
-        wsHost: process.env.REACT_APP_PUSHER_HOST,
-        wsPort: process.env.REACT_APP_PUSHER_PORT,
-        wssPort: process.env.REACT_APP_PUSHER_PORT,
         forceTLS: true,
         enabledTransports: ["ws", "wss"],
       });
+
+      const connectionCheckInterval = setInterval(() => {
+        if (window.Echo && window.Pusher.isReady) {
+          console.log("Socket successfully connected:", window.Echo.socketId());
+          clearInterval(connectionCheckInterval);
+        }
+      }, 1000);
+      return connectionCheckInterval;
     } catch (error) {
       console.error("socketProvider error:\n", error);
     }
   }
-
-  // A test connection socket?
 };
 
 export default socketProvider;

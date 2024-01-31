@@ -335,6 +335,6 @@ export const getReferrals = (setReferrals) => (dispatch, getState) => {
 export const referralUsedListener = () => (dispatch, getState) => {
   window.Echo.private("App.Models.User.ID").notification((e) => {
     console.log("referralUsedListener", e);
-    dispatch(initializeCoins(null, e.coins));
+    dispatch(initializeCoins(e.coins));
   });
 };
