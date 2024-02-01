@@ -4,6 +4,8 @@ import { connect } from "react-redux";
 
 import { quizQuestions } from "@constants/temporaryDb/sponsors";
 
+import { sendSponsorQuizCoins } from "@actions/coinTracker";
+
 import Congrats from "./Congrats";
 
 import s from "./styles.module.css";
@@ -16,9 +18,14 @@ interface Props {
     }>
   >;
   scoreRef: React.MutableRefObject<string>;
+  sendSponsorQuizCoins: (finalScore: number) => void;
 }
 
-const More: React.FC<Props> = ({ setClicked, scoreRef }) => {
+const More: React.FC<Props> = ({
+  setClicked,
+  scoreRef,
+  sendSponsorQuizCoins,
+}) => {
   const [quizComplete, setQuizComplete] = useState({
     complete: false,
     results: true,
@@ -66,17 +73,21 @@ const More: React.FC<Props> = ({ setClicked, scoreRef }) => {
         }
       }
 
-      scoreRef.current = finalScore.toString();
-      setCorrectAnswers(correctCount);
-      !error && setQuizComplete({ complete: true, results: false });
-      !error && setClicked({ more: true, quizDone: true });
+      if (!error) {
+        scoreRef.current = finalScore.toString();
+        setCorrectAnswers(correctCount);
+
+        sendSponsorQuizCoins(finalScore);
+        setQuizComplete({ complete: true, results: false });
+        setClicked({ more: true, quizDone: true });
+      }
     }
   };
 
   const onRadioChange = (e: React.ChangeEvent<HTMLInputElement>, i: number) => {
     if (e.target.checked) {
       const isTrueRatio = e.target.name.startsWith("true");
-      console.log(e.target.value);
+
       const otherRadioName: any = isTrueRatio ? `false${i}` : `true${i}`,
         otherInput = formRef.current?.elements[
           otherRadioName
@@ -118,9 +129,9 @@ const More: React.FC<Props> = ({ setClicked, scoreRef }) => {
             ] as HTMLInputElement;
             const isTrueSelected = selectedTrue?.checked ?? false;
             const isFalseSelected = selectedFalse?.checked ?? false;
-            const isIncorrect =
-              (isTrueSelected && !question.answer) ||
-              (isFalseSelected && question.answer);
+            // const isIncorrect =
+            //   (isTrueSelected && !question.answer) ||
+            //   (isFalseSelected && question.answer);
             const isCorrect =
               (isTrueSelected && question.answer) ||
               (isFalseSelected && !question.answer);
@@ -128,7 +139,7 @@ const More: React.FC<Props> = ({ setClicked, scoreRef }) => {
             const linkQuestion =
               question.explanation.includes("https://") &&
               question.explanation.split(": ");
-            console.log("linkQuestion", linkQuestion);
+
             return (
               <li key={i}>
                 <div className={s.inputs}>
@@ -205,6 +216,9 @@ const More: React.FC<Props> = ({ setClicked, scoreRef }) => {
   );
 };
 
-const mapDispatchToProps = (dispatch: Dispatch<any>) => ({});
+const mapDispatchToProps = (dispatch: Dispatch<any>) => ({
+  sendSponsorQuizCoins: (finalScore: number) =>
+    dispatch(sendSponsorQuizCoins(finalScore)),
+});
 
 export default connect(null, mapDispatchToProps)(More);

@@ -1,7 +1,11 @@
+import { UserReduxState } from "@reducers/user";
+import NotificationValues from "@root/typings/NotificationValues";
+
 import { useState, useRef, useEffect } from "react";
 import { connect } from "react-redux";
 
 import { isNotPlayer } from "@actions/user";
+import { addNotification } from "@actions/notifications";
 
 import sponsors from "@constants/temporaryDb/sponsors";
 import history from "@utils/History";
@@ -10,16 +14,23 @@ import Layout from "@components/partials/layout";
 import Header from "@components/partials/header";
 import Content from "@components/partials/content";
 import Status from "@components/partials/status";
+import Image from "@components/Image";
 import More from "./More";
 // import Congrats from "./Congrats";
 
 import s from "./styles.module.css";
 
 interface PlayerProps {
+  quizSubmitted?: number;
   isNotPlayer: (useNotification?: boolean, message?: string) => boolean;
+  addNotification: (notification: Omit<NotificationValues, "id">) => void;
 }
 
-const Sponsors: React.FC<PlayerProps> = ({ isNotPlayer }) => {
+const Sponsors: React.FC<PlayerProps> = ({
+  quizSubmitted,
+  isNotPlayer,
+  addNotification,
+}) => {
   const [clicked, setClicked] = useState({ more: false, quizDone: false }),
     scoreRef = useRef("0");
 
@@ -82,15 +93,15 @@ const Sponsors: React.FC<PlayerProps> = ({ isNotPlayer }) => {
           // </>
           <>
             <div className={s.sponsors}>
-              {sponsors.map((sponsor, index) => (
-                <div key={index} className={s.spotlight}>
+              {sponsors.map((sponsor) => (
+                <div key={sponsor.name} className={s.spotlight}>
                   <a
                     className="fade move"
                     href={sponsor.link}
                     target="_blank"
                     rel="noopener noreferrer"
                   >
-                    <img
+                    <Image
                       key={sponsor.name}
                       src={sponsor.img.src as string}
                       alt={sponsor.img.alt}
@@ -112,8 +123,16 @@ const Sponsors: React.FC<PlayerProps> = ({ isNotPlayer }) => {
                 onClick={() =>
                   notPlayerRole
                     ? isNotPlayer(true, "Only players can win more Dubl-U-Nes")
+                    : quizSubmitted
+                    ? addNotification({
+                        error: true,
+                        content: "Quiz was already submitted",
+                        close: false,
+                        duration: 4000,
+                      })
                     : setClicked({ ...clicked, more: true })
                 }
+                {...(quizSubmitted && { "data-submitted": true })}
                 {...(notPlayerRole && { style: { cursor: "not-allowed" } })}
               />
             </div>
@@ -129,9 +148,14 @@ const Sponsors: React.FC<PlayerProps> = ({ isNotPlayer }) => {
   );
 };
 
+const mapStateToProps = ({ user }: { user: UserReduxState }) => ({
+  quizSubmitted: user.credentials?.quiz_submitted,
+});
 const mapDispatchToProps = (dispatch: Function) => ({
   isNotPlayer: (useNotification?: boolean, message?: string) =>
     dispatch(isNotPlayer(useNotification, message)),
+  addNotification: (notification: Omit<NotificationValues, "id">) =>
+    dispatch(addNotification(notification)),
 });
 
-export default connect(null, mapDispatchToProps)(Sponsors);
+export default connect(mapStateToProps, mapDispatchToProps)(Sponsors);

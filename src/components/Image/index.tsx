@@ -9,7 +9,7 @@ const Image: React.FC<Props> = ({ src, alt, ...options }) => {
   const blurRef = useRef<HTMLImageElement>(null);
 
   return (
-    <div className={s.blurLoad} ref={blurRef}>
+    <div className={`blur ${s.blurLoad}`} ref={blurRef}>
       <img
         src={src}
         alt={alt}

@@ -1,3 +1,6 @@
+import { Api } from "@services/index";
+import errorHandler from "@services/errorHandler";
+
 import {
   INITIALIZE_COINS,
   RETRIEVE_COINS,
@@ -5,9 +8,8 @@ import {
   SET_RAFFLE_ITEMS,
   SPEND_COINS,
 } from "@actions/index";
-import { Api } from "@services/index";
 import { addNotification } from "./notifications";
-import errorHandler from "@services/errorHandler";
+import { updateCurrentUser } from "./user";
 
 export const initializeCoins = (data) => (dispatch) => {
   dispatch({ type: INITIALIZE_COINS, payload: data });
@@ -31,29 +33,6 @@ export const raffleCooldown = (timeOnSubmit) => (dispatch) => {
   dispatch({ type: SET_RAFFLE_COOLDOWN, payload: timeOnSubmit });
 };
 
-export const getCoinsGainedHistory =
-  (setCoinsGainedHistory) => async (dispatch, getState) => {
-    try {
-      const res = await Api.get("/player/coins");
-
-      if (res.success) {
-        setCoinsGainedHistory(res.data.coin_details);
-      } else {
-        // Is there res.errors for this?
-        dispatch(
-          addNotification({
-            error: true,
-            content:
-              "Unexpected server error occurred getting your Dubl-u-nes gained history.",
-            close: false,
-            duration: 0,
-          })
-        );
-      }
-    } catch (error) {
-      errorHandler("getCoinsGainedHistory", error);
-    }
-  };
 export const getRaffleItems = () => async (dispatch, getState) => {
   try {
     const res = await Api.get("/raffle");
@@ -97,10 +76,59 @@ export const setRaffleItems = (raffle) => async (dispatch, getState) => {
   }
 };
 
+export const getCoinsGainedHistory =
+  (setCoinsGainedHistory) => async (dispatch, getState) => {
+    try {
+      const res = await Api.get("/player/coins");
+
+      if (res.success) {
+        setCoinsGainedHistory(res.data.coin_details);
+      } else {
+        dispatch(
+          addNotification({
+            error: true,
+            content: res.message
+              ? res.message
+              : "Unexpected server error occurred getting your Dubl-u-nes gained history.",
+            close: false,
+            duration: 0,
+          })
+        );
+      }
+    } catch (error) {
+      errorHandler("getCoinsGainedHistory", error);
+    }
+  };
+
+export const sendSponsorQuizCoins =
+  (finalScore) => async (dispatch, getState) => {
+    try {
+      const res = await Api.post("/player/coins/sponsor", {
+        coins: finalScore,
+      });
+
+      if (res.success) {
+        dispatch(retrieveCoins(null, finalScore));
+        dispatch(updateCurrentUser({ quiz_submitted: 1 }));
+      } else {
+        dispatch(
+          addNotification({
+            error: true,
+            content: res.message,
+            close: false,
+            duration: 0,
+          })
+        );
+      }
+    } catch (error) {
+      errorHandler("sendSponsorQuizCoins", error);
+    }
+  };
+
 // Web Sockets
 export const sliverAndGoldCoinsListener = () => (dispatch, getState) => {
-  // TODO: Not sure if this is a channel yet.
-  window.Echo.channel("raffle-update").listen("", (e) => {
-    console.log(e.message);
+  window.Echo.channel("raffle-update").listen("RealTimeMessage", (e) => {
+    console.log("sliverAndGoldCoinsListener", e);
+    // e.raffle.foreach
   });
 };
