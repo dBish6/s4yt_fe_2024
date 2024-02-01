@@ -1,3 +1,6 @@
+import { Api } from "@services/index";
+import errorHandler from "@services/errorHandler";
+
 import {
   SET_GRADES,
   SET_EDUCATIONS,
@@ -5,10 +8,6 @@ import {
   SET_REGIONS,
   SET_CITIES,
 } from "@actions/index";
-
-import { Api } from "@services/index";
-import errorHandler from "@services/errorHandler";
-
 import { addNotification } from "./notifications";
 
 const showError = (res, dispatch) => {

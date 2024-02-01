@@ -8,22 +8,26 @@ import { connect } from "react-redux";
 import updateField from "@utils/forms/updateField";
 import checkValidity from "@utils/forms/checkValidity";
 import checkMatchingPasswords from "@utils/forms/checkMatchingPasswords";
+import delay from "@utils/delay";
+import history from "@utils/History";
 
 import { resetPassword } from "@actions/user";
 import { updatePassword } from "@actions/user";
 import { addNotification } from "@actions/notifications";
+
+import Input from "@components/forms/controls/Input";
 
 import s from "./styles.module.css";
 
 interface Props {
   playerId?: string | null;
   userToken?: string;
-  resetPassword: (userData: any) => Promise<any>;
-  updatePassword: (userData: any) => Promise<any>;
+  resetPassword: (userData: PasswordFormData) => Promise<any>;
+  updatePassword: (userData: PasswordFormData) => Promise<any>;
   addNotification: (data: Omit<NotificationValues, "id">) => void;
 }
 
-interface FromData {
+interface PasswordFormData {
   player_id?: string;
   old_password?: string;
   password: string;
@@ -41,9 +45,8 @@ const PasswordForm: React.FC<Props> = ({
     [form, setForm] = useState({
       processing: false,
     }),
-    // FIXME: Weird type errors.
-    [currentData, setCurrentData] = useState<FormData>({
-      ...(userToken ? { old_password: "" } : { player_id: playerId }),
+    [currentData, setCurrentData] = useState<PasswordFormData>({
+      ...(userToken ? { old_password: "" } : { player_id: playerId as string }),
       password: "",
       password_confirmation: "",
     });
@@ -92,6 +95,7 @@ const PasswordForm: React.FC<Props> = ({
           close: false,
           duration: 4000,
         });
+        !userToken && delay(2500, () => history.push("/login"));
       } else {
         addNotification({
           error: true,
@@ -119,11 +123,11 @@ const PasswordForm: React.FC<Props> = ({
       {userToken && (
         <div role="presentation">
           <label htmlFor="old_password">Current Pass</label>
-          <input
+          <Input
             id="old_password"
             name="old_password"
-            type="old_password"
-            onChange={(e) => updateField<FromData>(e, setCurrentData)}
+            type="text"
+            onChange={(e) => updateField<PasswordFormData>(e, setCurrentData)}
             disabled={form.processing}
             autoComplete="off"
             required
@@ -135,42 +139,36 @@ const PasswordForm: React.FC<Props> = ({
         <label aria-label="Password" htmlFor="password">
           Pass
         </label>
-        <input
-          aria-describedby="formError"
+        <Input
           id="password"
           name="password"
           type="password"
-          onChange={(e) => updateField<FromData>(e, setCurrentData)}
+          errorMsg="Must be between 8 and 24 characters"
+          onChange={(e) => updateField<PasswordFormData>(e, setCurrentData)}
           disabled={form.processing}
           autoComplete="off"
           minLength={8}
           maxLength={24}
           required
         />
-        <small aria-live="assertive" id="formError" className="formError">
-          Must be between 8 and 24 characters
-        </small>
       </div>
 
       <div role="presentation">
         <label aria-label="Confirm Password" htmlFor="password_confirmation">
           Confirm Pass
         </label>
-        <input
-          aria-describedby="formError"
+        <Input
           id="password_confirmation"
           name="password_confirmation"
           type="password"
-          onChange={(e) => updateField<FromData>(e, setCurrentData)}
+          errorMsg="Passwords do not match"
+          onChange={(e) => updateField<PasswordFormData>(e, setCurrentData)}
           disabled={form.processing}
           autoComplete="off"
           minLength={8}
           maxLength={24}
           required
         />
-        <small aria-live="assertive" id="formError" className="formError">
-          Passwords do not match
-        </small>
       </div>
 
       <div>
@@ -198,9 +196,9 @@ const mapStateToProps = ({ user }: { user: UserReduxState }) => ({
   userToken: user.token,
 });
 const mapDispatchToProps = (dispatch: Dispatch<any>) => ({
-  resetPassword: (userData: FromData) =>
+  resetPassword: (userData: PasswordFormData) =>
     dispatch(resetPassword(userData) as unknown) as Promise<any>,
-  updatePassword: (userData: FromData) =>
+  updatePassword: (userData: PasswordFormData) =>
     dispatch(updatePassword(userData) as unknown) as Promise<any>,
   addNotification: (notification: Omit<NotificationValues, "id">) =>
     dispatch(addNotification(notification)),

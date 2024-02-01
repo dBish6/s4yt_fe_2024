@@ -1,17 +1,28 @@
-import { SPEND_COINS, RETRIEVE_COINS, INITIALIZE_COINS } from "@actions/index";
+import {
+  SPEND_COINS,
+  RETRIEVE_COINS,
+  INITIALIZE_COINS,
+  SET_RAFFLE_ITEMS,
+  SET_RAFFLE_COOLDOWN,
+} from "@actions/index";
 
 export interface Product {
-  img: string;
-  name: string;
   id: number;
-  sponsor: string;
-  sponsorLogo: string;
-  availability: number;
+  name: string;
   description: string;
+  image_src: string;
+  stock: number;
+  raffle_partner: {
+    organization_name: string;
+    logo_default: string;
+    resource_link: string;
+  };
   entries?: number;
+  coins?: number;
 }
 
 export interface CoinTrackerState {
+  lastSubmit?: string;
   remainingCoins: number;
   items: Product[];
 }
@@ -29,34 +40,50 @@ const coinTracker = (
     case SPEND_COINS:
       return {
         ...state,
-        items: state.items.map((item) =>
-          item.id === action.payload.item.id
-            ? { ...item, entries: item.entries + action.payload.numEntries }
-            : item
-        ),
+        ...(action.payload.item && {
+          items: state.items.map((item) =>
+            item.id === action.payload.item.id
+              ? { ...item, coins: item.coins + action.payload.numEntries }
+              : item
+          ),
+        }),
         remainingCoins: state.remainingCoins - action.payload.numEntries,
       };
     case RETRIEVE_COINS:
       return {
         ...state,
-        items: state.items.map((item) =>
-          item.id === action.payload.item.id
-            ? { ...item, entries: item.entries - action.payload.numEntries }
-            : item
-        ),
+        ...(action.payload.item && {
+          items: state.items.map((item) =>
+            item.id === action.payload.item.id
+              ? {
+                  ...item,
+                  coins:
+                    item.coins && item.coins - action.payload.numEntries,
+                }
+              : item
+          ),
+        }),
         remainingCoins: state.remainingCoins + action.payload.numEntries,
       };
     case INITIALIZE_COINS:
       return {
         ...state,
-        ...(action.payload.products && {
-          items: action.payload.products.map((product: any) => ({
-            ...product,
-            entries: 0,
-          })),
-        }),
         remainingCoins: action.payload.remainingCoins,
       };
+    case SET_RAFFLE_ITEMS:
+      return {
+        ...state,
+        items: action.payload.map((product: any) => ({
+          ...product,
+          entries: 0,
+          coins: product.coins ? product.coins : 0
+        })),
+      };
+      case SET_RAFFLE_COOLDOWN:
+        return {
+          ...state,
+          lastSubmit: action.payload
+        }
     default:
       return state;
   }

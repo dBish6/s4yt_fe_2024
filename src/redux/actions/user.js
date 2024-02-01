@@ -1,12 +1,22 @@
-import { SET_TOKEN, SET_NEW_LOGIN_FLAG, LOGOUT } from "@actions/index";
-
-import history from "@utils/History";
-
 import { Api } from "@services/index";
 import errorHandler from "@services/errorHandler";
 
+import history from "@utils/History";
+
+import {
+  UPDATE_CURRENT_USER,
+  SET_TOKEN,
+  SET_NEW_LOGIN_FLAG,
+  LOGOUT,
+  CLEAR_CURRENT_CONFIG,
+} from "@actions/index";
 import { addNotification } from "./notifications";
 import { updateConfiguration } from "./gameConfig";
+import { initializeCoins } from "./coinTracker";
+
+export const updateCurrentUser = (data) => (dispatch, getState) => {
+  dispatch({ type: UPDATE_CURRENT_USER, payload: data });
+};
 
 export const registerPlayer =
   (userData, formRef, setForm) => async (dispatch, getState) => {
@@ -79,7 +89,6 @@ export const sendVerifyEmail =
     }
   };
 
-// TODO: We may get the timestamps instead of the countdown now.
 export const loginPlayer =
   (userData, setForm) => async (dispatch, getState) => {
     try {
@@ -89,22 +98,28 @@ export const loginPlayer =
         const data = res.data,
           user = res.data.user,
           restrictedAccess =
-            !data.countdown.includes(":") ||
+            data.timestamps === "The game has not started yet" ||
             (user.is_backup &&
               (!user.password_updated || !user.profile_updated));
 
         dispatch({ type: SET_TOKEN, payload: data.token });
 
-        // For if the countdown is a message when the haven't started.
-        if (!data.countdown.includes(":"))
+        if (data.timestamps === "The game has not started yet") {
           dispatch(
             addNotification({
               error: true,
-              content: data.countdown,
+              content: data.timestamps,
               close: false,
               duration: 0,
             })
           );
+        } else {
+          dispatch(
+            updateConfiguration({
+              timestamps: data.timestamps,
+            })
+          );
+        }
 
         // This is temporary for the backup users because they're data wasn't correct.
         if (
@@ -173,11 +188,10 @@ export const loginPlayer =
   };
 export const logoutPlayer = () => (dispatch, getState) => {
   dispatch({ type: LOGOUT });
+  dispatch({ type: CLEAR_CURRENT_CONFIG });
   alert("User session timed out.");
 };
-// export const isPlayer = () => (dispatch, getState) => {
-//   return getState().user.credentials?.roles.includes("player");
-// };
+
 export const isNotPlayer =
   (useNotification, message) => (dispatch, getState) => {
     if (!getState().user.credentials?.roles.includes("player")) {
@@ -248,7 +262,7 @@ export const updateProfile =
     try {
       const res = await Api.post("/player/profile", userData);
 
-      if (!res.errors) {
+      if (res.success) {
         formRef.current.reset();
         dispatch(
           addNotification({
@@ -258,6 +272,23 @@ export const updateProfile =
             duration: 4000,
           })
         );
+
+        if (res.data.verify_email) {
+          dispatch(logoutPlayer());
+          dispatch(
+            addNotification({
+              error: false,
+              content:
+                "Since you updated your email address, you now have to verify your new email address.\
+                 So, please check your inbox to verify your email. In case you don't find it there, please\
+                 check your spam folder.",
+              close: false,
+              duration: 0,
+            })
+          );
+        } else {
+          dispatch(updateCurrentUser(userData));
+        }
       } else {
         const key = Object.keys(res.errors)[0];
 
@@ -270,22 +301,6 @@ export const updateProfile =
           })
         );
       }
-
-      if (res.success && res.data.verify_email) {
-        dispatch(logoutPlayer());
-        dispatch(
-          addNotification({
-            error: false,
-            content:
-              "Since you updated your email address, you now have to verify your new email address.\
-               So, please check your inbox to verify your email. In case you don't find it there, please\
-               check your spam folder.",
-            close: false,
-            duration: 0,
-          })
-        );
-      }
-
       return res;
     } catch (error) {
       errorHandler("updateProfile", error);
@@ -314,4 +329,12 @@ export const getReferrals = (setReferrals) => (dispatch, getState) => {
       }
     })
     .catch((error) => errorHandler("getReferrals", error));
+};
+
+// Web Sockets
+export const referralUsedListener = () => (dispatch, getState) => {
+  window.Echo.private("App.Models.User.ID").notification((e) => {
+    console.log("referralUsedListener", e);
+    dispatch(initializeCoins(e.coins));
+  });
 };

@@ -3,6 +3,8 @@ import { GameConfigReduxState } from "@reducers/gameConfig";
 import { Link } from "react-router-dom";
 import { connect } from "react-redux";
 
+import Image from "../Image";
+
 import s from "./styles.module.css";
 
 interface Props {
@@ -41,7 +43,11 @@ const MapNavigation: React.FC<Props> = ({
         onClick: (e) => e.preventDefault(),
       })}
     >
-      <img src={img.src} alt={img.alt} />
+      <img
+        src={img.src}
+        alt={img.alt}
+        onLoad={(e) => (e.target as HTMLImageElement).classList.add(s.loaded)}
+      />
       <h4>{txt}</h4>
     </Link>
   );
