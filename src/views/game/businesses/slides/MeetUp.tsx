@@ -96,7 +96,7 @@ const MeetUp: React.FC<Props> = ({ playerCheck, data, user, name }) => {
         </div>
         <AreYouSureModal
           label={"Are you sure?"}
-          text={`Once you submit your choice, you will not be able to change it later. Your current choice is: ${meetChoice}. Is this correct?`}
+          text={`Once you submit your choice, you will not be able to change it later. Your current meeting choice for ${name} is: ${meetChoice}. Is this correct?`}
           func={handleFirebaseSubmit}
           disabledProps={playerCheck || disabledButton || meetChoice === ""}
           buttonClass={s.meetSubmit}

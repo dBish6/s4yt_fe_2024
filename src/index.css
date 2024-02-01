@@ -241,6 +241,8 @@ button.updateBtn:active {
   background-color: var(--sBeige);
   animation: slideUpModal 0.9s ease-in-out forwards;
   z-index: 10;
+  width: 90%;
+  max-width: 800px;
 }
 .modal .exitBtn {
   position: absolute;

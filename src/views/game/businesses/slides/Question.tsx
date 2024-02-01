@@ -148,7 +148,8 @@ const Questions: React.FC<Props> = ({
           links, and/or other media within that document. Share the link to your
           completed document as well as your Player ID in the inputs below. For
           any help, please use the support button at the bottom of the page to
-          contact us.
+          contact us. <br />
+          <strong>There is 1 reward of 100$ for this challenge.</strong>
         </label>
         <div role="presentation" className={s.formSubmission}>
           <div>
