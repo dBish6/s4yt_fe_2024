@@ -5,7 +5,7 @@ import s from "./styles.module.css";
 interface Props {
   disabledButton: boolean;
   setDisabled: React.Dispatch<React.SetStateAction<boolean>>;
-  cooldownTime: string;
+  cooldownTime?: string;
 }
 
 const CooldownIndicator: React.FC<Props> = ({
@@ -14,7 +14,7 @@ const CooldownIndicator: React.FC<Props> = ({
   disabledButton,
 }) => {
   const [timeRemaining, setTimeRemaining] = useState<number | null>(0);
-  const submittedTime = new Date(cooldownTime).getTime();
+  const submittedTime = new Date(cooldownTime!).getTime();
   const submittedOffset = submittedTime + 30 * 60 * 1000;
 
   useEffect(() => {
