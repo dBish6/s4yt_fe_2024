@@ -1,4 +1,6 @@
-import { useState } from "react";
+import { UserReduxState } from "@reducers/user";
+
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { Dispatch } from "redux";
 import { connect } from "react-redux";
@@ -6,6 +8,7 @@ import { connect } from "react-redux";
 import updateField from "@utils/forms/updateField";
 import checkValidity from "@utils/forms/checkValidity";
 import checkValidPlayerId from "@utils/forms/checkValidPlayerId";
+import delay from "@utils/delay";
 
 import { loginPlayer } from "@actions/user";
 
@@ -17,6 +20,7 @@ import Input from "@components/forms/controls/Input";
 import s from "./styles.module.css";
 
 interface Props {
+  userToken: string | undefined;
   loginPlayer: (
     userData: LoginFormData,
     setForm: React.Dispatch<
@@ -32,14 +36,25 @@ interface LoginFormData {
   password: string;
 }
 
-const Login: React.FC<Props> = ({ loginPlayer }) => {
-  const [form, setForm] = useState({
+const Login: React.FC<Props> = ({ userToken, loginPlayer }) => {
+    const [form, setForm] = useState({
       processing: false,
     }),
     [currentData, setCurrentData] = useState<LoginFormData>({
       player_id: "",
       password: "",
     });
+
+  useEffect(() => {
+    if (localStorage.getItem("persist:root") && !userToken && !localStorage.getItem("loginLoaded")) 
+    {
+      localStorage.removeItem("persist:root");
+      delay(1000, () => {
+        window.location.reload();
+        localStorage.setItem("loginLoaded", "true");
+      });
+    }
+  }, []);
 
   const submit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -123,6 +138,9 @@ const Login: React.FC<Props> = ({ loginPlayer }) => {
   );
 };
 
+const mapStateToProps = ({ user }: { user: UserReduxState }) => ({
+  userToken: user.token,
+});
 const mapDispatchToProps = (dispatch: Dispatch<any>) => ({
   loginPlayer: (
     userData: LoginFormData,
@@ -134,4 +152,4 @@ const mapDispatchToProps = (dispatch: Dispatch<any>) => ({
   ) => dispatch(loginPlayer(userData, setForm) as unknown) as Promise<any>,
 });
 
-export default connect(null, mapDispatchToProps)(Login);
+export default connect(mapStateToProps, mapDispatchToProps)(Login);
