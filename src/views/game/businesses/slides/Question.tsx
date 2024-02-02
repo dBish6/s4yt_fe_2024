@@ -195,11 +195,6 @@ const Questions: React.FC<Props> = ({
             disabledProps={playerCheck || disabledButton || form.processing}
             buttonClass={s.questionSubmit}
           />
-          {/* <button
-            type="submit"
-            className={s.questionSubmit}
-            disabled={playerCheck || form.processing}
-          /> */}
         </div>
       </form>
     </div>

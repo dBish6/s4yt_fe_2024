@@ -189,6 +189,7 @@ export const loginPlayer =
 export const logoutPlayer = () => (dispatch, getState) => {
   dispatch({ type: LOGOUT });
   dispatch({ type: CLEAR_CURRENT_CONFIG });
+  window.Echo && window.Echo.disconnect()
   alert("User session timed out.");
 };
 
@@ -332,9 +333,22 @@ export const getReferrals = (setReferrals) => (dispatch, getState) => {
 };
 
 // Web Sockets
-export const referralUsedListener = () => (dispatch, getState) => {
-  window.Echo.private("App.Models.User.ID").notification((e) => {
-    console.log("referralUsedListener", e);
-    dispatch(initializeCoins(e.coins));
+export const referralUsedListener = (user_id) => (dispatch, getState) => {
+  window.Echo.private(
+    `App.Models.User.${user_id}`
+  ).notification((e) => {
+    if (e.coins && user_id === e.referrer_id) {
+      dispatch(initializeCoins({ remainingCoins: e.coins }));
+    } else {
+      dispatch(
+        addNotification({
+          error: true,
+          content:
+            "Unexpected server error occurred when adding your newly earn dubl-u-nes locally from your referrer. If you don't not see a change in your dubl-u-nes, please logout and log in again.",
+          close: false,
+          duration: 0,
+        })
+      );
+    }
   });
 };

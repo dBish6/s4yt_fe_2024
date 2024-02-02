@@ -1,12 +1,12 @@
+import { useEffect, useState } from "react";
 import { connect } from "react-redux";
 import { db } from "@root/firebase";
 import { ref, update, onValue } from "firebase/database";
 
 import s from "./styles.module.css";
 import { UserReduxState } from "@root/redux/reducers/user";
-import UserCredentials from "@root/typings/UserCredentials";
-import { useEffect, useState } from "react";
-import AreYouSureModal from "@root/components/modals/areYouSure/AreYouSureModal";
+import UserCredentials from "@typings/UserCredentials";
+import AreYouSureModal from "@components/modals/areYouSure/AreYouSureModal";
 
 interface Props {
   playerCheck: any;

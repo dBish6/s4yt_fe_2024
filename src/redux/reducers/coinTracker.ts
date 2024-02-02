@@ -4,6 +4,8 @@ import {
   INITIALIZE_COINS,
   SET_RAFFLE_ITEMS,
   SET_RAFFLE_COOLDOWN,
+  CLEAR_RAFFLE_ITEMS,
+  RAFFLE_ACTIVE_STATE,
 } from "@actions/index";
 
 export interface Product {
@@ -19,6 +21,7 @@ export interface Product {
   };
   entries?: number;
   coins?: number;
+  silver?: boolean;
 }
 
 export interface CoinTrackerState {
@@ -57,8 +60,7 @@ const coinTracker = (
             item.id === action.payload.item.id
               ? {
                   ...item,
-                  coins:
-                    item.coins && item.coins - action.payload.numEntries,
+                  coins: item.coins && item.coins - action.payload.numEntries,
                 }
               : item
           ),
@@ -76,14 +78,30 @@ const coinTracker = (
         items: action.payload.map((product: any) => ({
           ...product,
           entries: 0,
-          coins: product.coins ? product.coins : 0
+          coins: product.coins ? product.coins : 0,
         })),
       };
-      case SET_RAFFLE_COOLDOWN:
-        return {
-          ...state,
-          lastSubmit: action.payload
-        }
+    case SET_RAFFLE_COOLDOWN:
+      return {
+        ...state,
+        lastSubmit: action.payload,
+      };
+    case RAFFLE_ACTIVE_STATE:
+      return {
+        ...state,
+        items: state.items.map((item) => {
+          const match = action.payload.find(
+            (message: { id: number; silver: boolean }) =>
+              message.id === item.id
+          );
+          return match ? { ...item, silver: match.silver } : item;
+        }),
+      };
+    case CLEAR_RAFFLE_ITEMS:
+      return {
+        ...state,
+        items: [],
+      };
     default:
       return state;
   }
