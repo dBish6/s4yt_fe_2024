@@ -1,4 +1,5 @@
 import { UserReduxState } from "@reducers/user";
+import { GameConfigReduxState } from "@reducers/gameConfig";
 
 import { NavLink } from "react-router-dom";
 import { connect } from "react-redux";
@@ -15,6 +16,7 @@ interface Props {
   title?: string;
   style?: React.CSSProperties;
   userToken?: string;
+  restrictedAccess?: boolean;
   logoutPlayer: () => void;
 }
 
@@ -23,6 +25,7 @@ const Header: React.FC<Props> & React.HTMLAttributes<HTMLDivElement> = ({
   title,
   style,
   userToken,
+  restrictedAccess,
   logoutPlayer,
   ...options
 }) => {
@@ -88,7 +91,14 @@ const Header: React.FC<Props> & React.HTMLAttributes<HTMLDivElement> = ({
                     {title === "Sponsors" ? title : hasSpace(title)}
                   </h1>
                   <nav>
-                    <NavLink to="/" className={s.mainMap} />
+                    <NavLink
+                      to="/"
+                      className={s.mainMap}
+                      onClick={(e) => {
+                        if (restrictedAccess) e.preventDefault();
+                      }}
+                      aria-disabled={restrictedAccess}
+                    />
                     <NavLink to="/businesses" className={s.busMap} />
                     <button
                       aria-label="Logout"
@@ -121,8 +131,15 @@ const Header: React.FC<Props> & React.HTMLAttributes<HTMLDivElement> = ({
   );
 };
 
-const mapStateToProps = ({ user }: { user: UserReduxState }) => ({
+const mapStateToProps = ({
+  user,
+  gameConfig,
+}: {
+  user: UserReduxState;
+  gameConfig: GameConfigReduxState;
+}) => ({
   userToken: user.token,
+  restrictedAccess: gameConfig.restrictedAccess,
 });
 const mapDispatchToProps = (dispatch: Dispatch<any>) => ({
   logoutPlayer: () => dispatch(logoutPlayer()),
