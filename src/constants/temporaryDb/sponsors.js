@@ -1,7 +1,11 @@
+import knowledgeFlow from "@static/sponsorLogos/knowledgeflow.png";
+import flock from "@static/sponsorLogos/flock.png";
+import googleLeads from "@static/sponsorLogos/googleads.png";
+
 export default [
   {
     img: {
-      src: require("@static/sponsorLogos/knowledgeflow.png"),
+      src: knowledgeFlow,
       alt: "Knowledgeflow Logo",
     },
     name: "Knowledgeflow Foundation",
@@ -9,7 +13,7 @@ export default [
   },
   {
     img: {
-      src: require("@static/sponsorLogos/flock.png"),
+      src: flock,
       alt: "Flock Logo",
     },
     name: "Flock",
@@ -17,7 +21,7 @@ export default [
   },
   {
     img: {
-      src: require("@static/sponsorLogos/googleads.png"),
+      src: googleLeads,
       alt: "Google Ads Logo",
     },
     name: "Google Ads",
