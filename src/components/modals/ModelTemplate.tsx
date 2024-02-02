@@ -25,8 +25,7 @@ const ModalTemplate: React.FC<Props> & React.HTMLAttributes<HTMLDivElement> = ({
     }
   }, [show]);
 
-  return (
-    show &&
+  return (show &&
     createPortal(
       <>
         {/* Backdrop */}
@@ -57,8 +56,7 @@ const ModalTemplate: React.FC<Props> & React.HTMLAttributes<HTMLDivElement> = ({
         </div>
       </>,
       document.body
-    )
-  );
+    )) as React.ReactElement | null;
 };
 
 export default ModalTemplate;
