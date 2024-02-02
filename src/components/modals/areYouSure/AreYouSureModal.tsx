@@ -8,7 +8,7 @@ interface Props {
   text: string;
   disabledProps: boolean;
   buttonClass: string;
-  func: (e: React.MouseEvent<HTMLButtonElement>) => any;
+  func: any;
 }
 
 const AreYouSureModal: React.FC<Props> = ({ label, text, func, buttonClass, disabledProps }) => {
