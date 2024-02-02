@@ -10,8 +10,6 @@ export default async function initializeFirebase(userId: string, userEmail: stri
     } else {
       set(userRef, {
         email: userEmail,
-        submittedRaffle: false,
-        completedQuiz: false,
       });
     }
   } catch (error) {
