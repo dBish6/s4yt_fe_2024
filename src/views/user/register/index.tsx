@@ -14,11 +14,24 @@ const Register: React.FC = () => {
         : null;
 
   return (
-    <Layout style={{ maxWidth: "800px" }}>
+    <Layout style={{ position: "relative", maxWidth: "800px" }}>
       <Header title="Register" />
       <Content addCoins="coins1" style={{ paddingTop: "3rem" }}>
         <UserForm referral={referral} />
       </Content>
+      <a
+        href="https://building-u.com/privacy/"
+        target="_blank"
+        rel="noopener noreferrer"
+        className="privacy fade move"
+        style={{
+          position: "absolute",
+          right: 30,
+          bottom: "-24px",
+        }}
+      >
+        Private Policy
+      </a>
     </Layout>
   );
 };

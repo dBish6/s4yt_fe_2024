@@ -1,4 +1,5 @@
 .container {
+  position: relative;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -15,9 +16,14 @@
 .container > div {
   display: flex;
 }
-@media screen and (max-width: 698px) {
+@media screen and (max-width: 711px) {
   .container {
     justify-content: center;
+  }
+
+  :global(.privacy) {
+    left: 50% !important;
+    transform: translateX(-50%);
   }
 }
 @media screen and (max-width: 362px) {
