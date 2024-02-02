@@ -124,7 +124,9 @@ const Gate: React.FC<Props> = ({
   //   console.log("store.getState()", store.getState());
   // }, [store.getState()]);
 
-  return user.newLogin ? <OverlayLoader text="Loading user data" /> : children;
+  return (
+    user.newLogin ? <OverlayLoader text="Loading user data" /> : children
+  ) as React.ReactElement | null;
 };
 
 const mapStateToProps = ({
