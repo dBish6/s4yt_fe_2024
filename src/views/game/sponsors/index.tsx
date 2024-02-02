@@ -103,7 +103,7 @@ const Sponsors: React.FC<PlayerProps> = ({
                   >
                     <Image
                       key={sponsor.name}
-                      src={sponsor.img.src as string}
+                      src={sponsor.img.src}
                       alt={sponsor.img.alt}
                     />
                   </a>
