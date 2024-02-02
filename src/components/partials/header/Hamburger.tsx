@@ -4,10 +4,11 @@ import SupportModal from "@components/modals/supportModal/SupportModal";
 import s from "./styles.module.css";
 
 interface Props {
+  restrictedAccess?: boolean;
   logoutPlayer: () => void;
 }
 
-const Hamburger: React.FC<Props> = ({ logoutPlayer }) => {
+const Hamburger: React.FC<Props> = ({ restrictedAccess, logoutPlayer }) => {
   const [menu, toggleMenu] = useState(false);
 
   useEffect(() => {
@@ -47,7 +48,14 @@ const Hamburger: React.FC<Props> = ({ logoutPlayer }) => {
             </div>
             <nav>
               <div>
-                <NavLink to="/" className={s.mainMap} />
+                <NavLink
+                  to="/"
+                  className={s.mainMap}
+                  onClick={(e) => {
+                    if (restrictedAccess) e.preventDefault();
+                  }}
+                  aria-disabled={restrictedAccess}
+                />
                 <SupportModal />
                 <button
                   aria-label="Chat"
