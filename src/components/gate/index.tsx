@@ -106,7 +106,7 @@ const Gate: React.FC<Props> = ({
   useEffect(() => {
     if (user.newLogin) {
       storeUserData(user.newLogin);
-      initializeFirebase(user.newLogin.user.email); // Temporary use of Firebase because some thing couldn't done in the back-end.
+      initializeFirebase(user.newLogin.user.id, user.newLogin.user.email); // Temporary use of Firebase because some thing couldn't done in the back-end.
 
       delay(2000, () => clearNewLoginFlag());
     }

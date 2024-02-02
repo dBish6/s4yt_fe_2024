@@ -24,7 +24,7 @@ const MeetUp: React.FC<Props> = ({ playerCheck, data, user, name }) => {
   const [disabledButton, setDisabledButton] = useState<boolean>(false);
 
   const encodedEmail = user?.email.replace(/\./g, ",");
-  const userRef = ref(db, "users/" + encodedEmail + "/meetings/");
+  const userRef = ref(db, "users/" + user?.id + "/meetings/");
 
   useEffect(() => {
     const checkIfFieldExists = async () => {
