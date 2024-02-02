@@ -81,7 +81,7 @@ const Login: React.FC<Props> = ({ userToken, loginPlayer }) => {
   };
 
   return (
-    <Layout style={{ maxWidth: "600px" }}>
+    <Layout style={{ position: "relative", maxWidth: "600px" }}>
       <Header title="Login" />
       <Content addCoins="coins1">
         <form
@@ -134,6 +134,19 @@ const Login: React.FC<Props> = ({ userToken, loginPlayer }) => {
         </form>
         <Link className="fade" to="/register" />
       </Content>
+      <a
+        href="https://building-u.com/privacy/"
+        target="_blank"
+        rel="noopener noreferrer"
+        className="privacy fade move"
+        style={{
+          position: "absolute",
+          right: 30,
+          bottom: "-24px",
+        }}
+      >
+        Private Policy
+      </a>
     </Layout>
   );
 };

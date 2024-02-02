@@ -53,6 +53,20 @@ const Status: React.FC<Props> = ({ style }) => {
         </time>
         left
       </p>
+
+      <a
+        href="https://building-u.com/privacy/"
+        target="_blank"
+        rel="noopener noreferrer"
+        className="privacy fade move"
+        style={{
+          position: "absolute",
+          left: 0,
+          bottom: "-21px",
+        }}
+      >
+        Private Policy
+      </a>
     </footer>
   );
 };
