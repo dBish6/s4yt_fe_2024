@@ -112,7 +112,10 @@ const Header: React.FC<Props> & React.HTMLAttributes<HTMLDivElement> = ({
                 </h1>
               )}
               {userToken ? (
-                <Hamburger logoutPlayer={logoutPlayer} />
+                <Hamburger
+                  restrictedAccess={restrictedAccess}
+                  logoutPlayer={logoutPlayer}
+                />
               ) : (
                 <a
                   aria-label="building-U Website"
