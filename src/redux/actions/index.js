@@ -14,15 +14,22 @@ export const REMOVE_NOTIFICATION = "notification.REMOVE_NOTIFICATION";
 export const SET_TOKEN = "user.SET_TOKEN";
 export const SET_NEW_LOGIN_FLAG = "user.SET_NEW_LOGIN_FLAG";
 export const SET_CURRENT_USER = "user.SET_CURRENT_USER";
+export const UPDATE_CURRENT_USER = "user.UPDATE_CURRENT_USER";
 export const LOGOUT = "user.LOGOUT";
 
-// configuration
+// gameConfig
 export const UPDATE_CONFIGURATION = "gameConfig.UPDATE_CONFIGURATION";
+export const UPDATE_NEW_PERIOD = "gameConfig.UPDATE_NEW_PERIOD";
+export const CLEAR_CURRENT_CONFIG = "gameConfig.CLEAR_CURRENT_CONFIG";
 
 // coinTracker
 export const SPEND_COINS = "coinTracker.SPEND_COINS";
 export const RETRIEVE_COINS = "coinTracker.RETRIEVE_COINS";
 export const INITIALIZE_COINS = "coinTracker.INITIALIZE_COINS";
+export const SET_RAFFLE_ITEMS = "coinTracker.SET_RAFFLE_ITEMS";
+export const SET_RAFFLE_COOLDOWN = "coinTracker.SET_RAFFLE_COOLDOWN";
+export const CLEAR_RAFFLE_ITEMS = "coinTracker.CLEAR_RAFFLE_ITEMS";
+export const RAFFLE_ACTIVE_STATE = "coinTracker.RAFFLE_ACTIVE_STATE";
 
 // businesses/event partners
-export const SET_BUSINESSES = "setBusinesses.SET_BUSINESSES"
+export const SET_BUSINESSES = "setBusinesses.SET_BUSINESSES";

@@ -1,12 +1,22 @@
-import { SET_TOKEN, SET_NEW_LOGIN_FLAG, LOGOUT } from "@actions/index";
+import { Api } from "@services/index";
+import errorHandler, { showError } from "@services/errorHandler";
 
 import history from "@utils/History";
 
-import { Api } from "@services/index";
-import errorHandler from "@services/errorHandler";
-
+import {
+  UPDATE_CURRENT_USER,
+  SET_TOKEN,
+  SET_NEW_LOGIN_FLAG,
+  LOGOUT,
+  CLEAR_CURRENT_CONFIG,
+} from "@actions/index";
 import { addNotification } from "./notifications";
 import { updateConfiguration } from "./gameConfig";
+import { initializeCoins } from "./coinTracker";
+
+export const updateCurrentUser = (data) => (dispatch, getState) => {
+  dispatch({ type: UPDATE_CURRENT_USER, payload: data });
+};
 
 export const registerPlayer =
   (userData, formRef, setForm) => async (dispatch, getState) => {
@@ -26,16 +36,7 @@ export const registerPlayer =
           })
         );
       } else {
-        const key = Object.keys(res.errors)[0];
-
-        dispatch(
-          addNotification({
-            error: true,
-            content: res.errors[key],
-            close: false,
-            duration: 0,
-          })
-        );
+        showError(res, dispatch);
       }
       return res;
     } catch (error) {
@@ -62,14 +63,7 @@ export const sendVerifyEmail =
         );
         setForm((prev) => ({ ...prev, success: true }));
       } else {
-        dispatch(
-          addNotification({
-            error: true,
-            content: res.message,
-            close: false,
-            duration: 0,
-          })
-        );
+        showError(res, dispatch);
       }
       return res;
     } catch (error) {
@@ -79,7 +73,6 @@ export const sendVerifyEmail =
     }
   };
 
-// TODO: We may get the timestamps instead of the countdown now.
 export const loginPlayer =
   (userData, setForm) => async (dispatch, getState) => {
     try {
@@ -89,22 +82,28 @@ export const loginPlayer =
         const data = res.data,
           user = res.data.user,
           restrictedAccess =
-            !data.countdown.includes(":") ||
+            data.timestamps === "The game has not started yet" ||
             (user.is_backup &&
               (!user.password_updated || !user.profile_updated));
 
         dispatch({ type: SET_TOKEN, payload: data.token });
 
-        // For if the countdown is a message when the haven't started.
-        if (!data.countdown.includes(":"))
+        if (data.timestamps === "The game has not started yet") {
           dispatch(
             addNotification({
               error: true,
-              content: data.countdown,
+              content: data.timestamps,
               close: false,
               duration: 0,
             })
           );
+        } else {
+          dispatch(
+            updateConfiguration({
+              timestamps: data.timestamps,
+            })
+          );
+        }
 
         // This is temporary for the backup users because they're data wasn't correct.
         if (
@@ -155,14 +154,7 @@ export const loginPlayer =
         if (res.message.includes("validated"))
           history.push("/register/verify-email");
 
-        dispatch(
-          addNotification({
-            error: true,
-            content: res.message,
-            close: false,
-            duration: 0,
-          })
-        );
+        showError(res, dispatch);
       }
       return res;
     } catch (error) {
@@ -173,11 +165,11 @@ export const loginPlayer =
   };
 export const logoutPlayer = () => (dispatch, getState) => {
   dispatch({ type: LOGOUT });
+  dispatch({ type: CLEAR_CURRENT_CONFIG });
+  window.Echo && window.Echo.disconnect()
   alert("User session timed out.");
 };
-// export const isPlayer = () => (dispatch, getState) => {
-//   return getState().user.credentials?.roles.includes("player");
-// };
+
 export const isNotPlayer =
   (useNotification, message) => (dispatch, getState) => {
     if (!getState().user.credentials?.roles.includes("player")) {
@@ -217,14 +209,7 @@ export const sendResetPasswordEmail =
         );
         setForm((prev) => ({ ...prev, success: true }));
       } else {
-        dispatch(
-          addNotification({
-            error: true,
-            content: res.message,
-            close: false,
-            duration: 0,
-          })
-        );
+        showError(res, dispatch);
       }
       return res;
     } catch (error) {
@@ -248,7 +233,7 @@ export const updateProfile =
     try {
       const res = await Api.post("/player/profile", userData);
 
-      if (!res.errors) {
+      if (res.success) {
         formRef.current.reset();
         dispatch(
           addNotification({
@@ -258,34 +243,26 @@ export const updateProfile =
             duration: 4000,
           })
         );
+
+        if (res.data.verify_email) {
+          dispatch(logoutPlayer());
+          dispatch(
+            addNotification({
+              error: false,
+              content:
+                "Since you updated your email address, you now have to verify your new email address.\
+                 So, please check your inbox to verify your email. In case you don't find it there, please\
+                 check your spam folder.",
+              close: false,
+              duration: 0,
+            })
+          );
+        } else {
+          dispatch(updateCurrentUser(userData));
+        }
       } else {
-        const key = Object.keys(res.errors)[0];
-
-        dispatch(
-          addNotification({
-            error: true,
-            content: res.errors[key],
-            close: false,
-            duration: 0,
-          })
-        );
+        showError(res, dispatch);
       }
-
-      if (res.success && res.data.verify_email) {
-        dispatch(logoutPlayer());
-        dispatch(
-          addNotification({
-            error: false,
-            content:
-              "Since you updated your email address, you now have to verify your new email address.\
-               So, please check your inbox to verify your email. In case you don't find it there, please\
-               check your spam folder.",
-            close: false,
-            duration: 0,
-          })
-        );
-      }
-
       return res;
     } catch (error) {
       errorHandler("updateProfile", error);
@@ -314,4 +291,25 @@ export const getReferrals = (setReferrals) => (dispatch, getState) => {
       }
     })
     .catch((error) => errorHandler("getReferrals", error));
+};
+
+// Web Sockets
+export const referralUsedListener = (user_id) => (dispatch, getState) => {
+  window.Echo.private(
+    `App.Models.User.${user_id}`
+  ).notification((e) => {
+    if (e.coins && user_id === e.referrer_id) {
+      dispatch(initializeCoins({ remainingCoins: e.coins }));
+    } else {
+      dispatch(
+        addNotification({
+          error: true,
+          content:
+            "Unexpected server error occurred when adding your newly earn dubl-u-nes locally from your referrer. If you don't not see a change in your dubl-u-nes, please logout and log in again.",
+          close: false,
+          duration: 0,
+        })
+      );
+    }
+  });
 };
