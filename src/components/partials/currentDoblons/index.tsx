@@ -34,12 +34,14 @@ const CurrentDoblons = ({
       {...options}
     >
       <img src={coins4} alt="Doblons" />
-      <p>
-        You got <br />
-        <span>{isNotPlayer() ? 0 : coins}</span>
-        <br />
-        Dubl-u-nes
-      </p>
+      {!isNotPlayer() && (
+        <p>
+          You got <br />
+          <span>{isNotPlayer() ? 0 : coins}</span>
+          <br />
+          Dubl-u-nes
+        </p>
+      )}
     </div>
   );
 };
