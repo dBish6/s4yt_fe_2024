@@ -34,7 +34,7 @@ interface Props {
 
 interface QuestionFormData {
   sponsorName: string;
-  studentID: string;
+  studentID?: string;
   submissionLink: string;
 }
 
@@ -54,7 +54,7 @@ const Questions: React.FC<Props> = ({
     }),
     [currentData, setCurrentData] = useState<QuestionFormData>({
       sponsorName: data?.title,
-      studentID: "",
+      studentID: user?.id,
       submissionLink: "",
     });
 
@@ -164,8 +164,9 @@ const Questions: React.FC<Props> = ({
                 onChange={(e) =>
                   updateField<QuestionFormData>(e, setCurrentData)
                 }
-                disabled={form.processing || disabledButton}
+                disabled={true}
                 autoComplete="off"
+                value={currentData.studentID}
               />
             </div>
           </div>
