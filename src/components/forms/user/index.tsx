@@ -108,22 +108,6 @@ const UserForm: React.FC<Props> = ({
       city_id: user.credentials?.city_id ?? null,
     });
 
-  // useEffect(() => {
-  //   console.log("currentData", currentData);
-  // }, [currentData]);
-
-  // useEffect(() => {
-  //   console.log("formOptions", formOptions);
-  // }, [formOptions]);
-
-  // useEffect(() => {
-  //   console.log("form", form);
-  // }, [form]);
-
-  // useEffect(() => {
-  //   console.log("user", user);
-  // }, [user]);
-
   useEffect(() => {
     if (!formOptions.grades.length) getGrades();
 

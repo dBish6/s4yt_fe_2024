@@ -2,7 +2,9 @@ import { Api } from "@services/index";
 import errorHandler from "@services/errorHandler";
 
 import {
+  CLEAR_RAFFLE_ITEMS,
   INITIALIZE_COINS,
+  RAFFLE_ACTIVE_STATE,
   RETRIEVE_COINS,
   SET_RAFFLE_COOLDOWN,
   SET_RAFFLE_ITEMS,
@@ -27,6 +29,10 @@ export const spendCoins = (item, numEntries) => (dispatch) => {
     type: SPEND_COINS,
     payload: { ...(item && { item }), numEntries },
   });
+};
+
+export const clearRaffleItems = () => {
+  return { type: CLEAR_RAFFLE_ITEMS };
 };
 
 export const raffleCooldown = (timeOnSubmit) => (dispatch) => {
@@ -127,8 +133,7 @@ export const sendSponsorQuizCoins =
 
 // Web Sockets
 export const sliverAndGoldCoinsListener = () => (dispatch, getState) => {
-  window.Echo.channel("raffle-update").listen("RealTimeMessage", (e) => {
-    console.log("sliverAndGoldCoinsListener", e);
-    // e.raffle.foreach
+  window.Echo.channel("raffle-update").listen("RaffleUpdate", (e) => {
+    dispatch({ type: RAFFLE_ACTIVE_STATE, payload: e.message });
   });
 };

@@ -14,7 +14,7 @@ import socketProvider from "@services/socketProvider";
 
 import { isNotPlayer } from "@actions/user";
 import { SET_CURRENT_USER, SET_NEW_LOGIN_FLAG } from "@actions/index";
-import { initializeCoins } from "@actions/coinTracker";
+import { initializeCoins, clearRaffleItems } from "@actions/coinTracker";
 import { referralUsedListener } from "@actions/user";
 
 import initializeFirebase from "@root/services/initializeFirebase";
@@ -31,7 +31,8 @@ interface Props extends React.PropsWithChildren<{}> {
   isNotPlayer: (useNotification?: boolean, message?: string) => boolean;
   setUserCredentials: (user: UserCredentials) => void;
   initializeCoins: (data: Omit<CoinTrackerState, "items">) => void;
-  referralUsedListener: () => void;
+  clearRaffleItems: () => void;
+  referralUsedListener: (user: string) => void;
   clearNewLoginFlag: () => void;
 }
 
@@ -58,18 +59,11 @@ const Gate: React.FC<Props> = ({
   isNotPlayer,
   setUserCredentials,
   initializeCoins,
+  clearRaffleItems,
   referralUsedListener,
   clearNewLoginFlag,
 }) => {
   const location = useLocation();
-
-  useEffect(() => {
-    const connectionCheckInterval = socketProvider(); // So we can listen to real-time events.
-    return () => {
-      connectionCheckInterval && clearInterval(connectionCheckInterval);
-      window.Echo && window.Echo.disconnect();
-    };
-  }, []);
 
   let redirect = "";
   useEffect(() => {
@@ -106,19 +100,26 @@ const Gate: React.FC<Props> = ({
     const { coins, ...userData } = newLogin.user;
     setUserCredentials(userData);
     initializeCoins({ remainingCoins: coins });
+    clearRaffleItems();
   };
 
   useEffect(() => {
     if (user.newLogin) {
       storeUserData(user.newLogin);
-
-      initializeFirebase(user.newLogin.user.email); // Temporary use of Firebase because some thing couldn't done in the back-end.
-
-      referralUsedListener(); // Listen for if the referrer uses the referral to add coins to the user.
+      initializeFirebase(user.newLogin.user.id, user.newLogin.user.email); // Temporary use of Firebase because some things couldn't get done in the back-end.
 
       delay(2000, () => clearNewLoginFlag());
     }
   }, [user.newLogin]);
+
+  useEffect(() => {
+    if (user.credentials && user.credentials.id && user.token) {
+      const connectionCheckInterval = socketProvider(user.token); // So we can listen to real-time events.
+      referralUsedListener(user.credentials.id); // Listen for if the referrer uses the referral to add coins to the user.
+
+      return () => connectionCheckInterval && clearInterval(connectionCheckInterval);
+    }
+  }, [user.credentials]);
 
   // useEffect(() => {
   //   console.log("store.getState()", store.getState());
@@ -144,8 +145,10 @@ const mapDispatchToProps = (dispatch: Dispatch<any>) => ({
     dispatch({ type: SET_CURRENT_USER, payload: user }),
   initializeCoins: (data: Omit<CoinTrackerState, "items">) =>
     dispatch(initializeCoins(data)),
-  referralUsedListener: () => dispatch(referralUsedListener()),
+  referralUsedListener: (user_id: string) =>
+    dispatch(referralUsedListener(user_id)),
 
+  clearRaffleItems: () => dispatch(clearRaffleItems()),
   clearNewLoginFlag: () =>
     dispatch({ type: SET_NEW_LOGIN_FLAG, payload: null }),
 });

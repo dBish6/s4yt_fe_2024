@@ -27,7 +27,9 @@ export const SPEND_COINS = "coinTracker.SPEND_COINS";
 export const RETRIEVE_COINS = "coinTracker.RETRIEVE_COINS";
 export const INITIALIZE_COINS = "coinTracker.INITIALIZE_COINS";
 export const SET_RAFFLE_ITEMS = "coinTracker.SET_RAFFLE_ITEMS";
-export const SET_RAFFLE_COOLDOWN = "coinTracker.SET_RAFFLE_COOLDOWN"
+export const SET_RAFFLE_COOLDOWN = "coinTracker.SET_RAFFLE_COOLDOWN";
+export const CLEAR_RAFFLE_ITEMS = "coinTracker.CLEAR_RAFFLE_ITEMS";
+export const RAFFLE_ACTIVE_STATE = "coinTracker.RAFFLE_ACTIVE_STATE";
 
 // businesses/event partners
 export const SET_BUSINESSES = "setBusinesses.SET_BUSINESSES";

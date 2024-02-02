@@ -8,7 +8,7 @@ declare global {
   }
 }
 
-const socketProvider = () => {
+const socketProvider = (userToken?: string) => {
   if (!window.Pusher || !window.Echo) {
     try {
       window.Pusher = Pusher;
@@ -19,6 +19,13 @@ const socketProvider = () => {
         cluster: process.env.REACT_APP_PUSHER_CLUSTER,
         forceTLS: true,
         enabledTransports: ["ws", "wss"],
+        authEndpoint: `${process.env.REACT_APP_WEB_BASE_URL}/broadcasting/auth`,
+        auth: {
+          headers: {
+            Authorization: `Bearer ${userToken}`,
+            Accept: "application/json",
+          },
+        },
       });
 
       const connectionCheckInterval = setInterval(() => {
