@@ -97,8 +97,6 @@ const More: React.FC<Props> = ({
     }
   };
 
-  // FIXME: The quiz results doesn't work right, if they press the button without completing the full quiz, it shows the results.
-  // And I don't know why you did everything in the map when you could of got it from handleSubmit.
   return (
     <div className={`${s.more} ${!quizComplete.results ? s.hideContent : ""}`}>
       {quizComplete.complete && !quizComplete.results && (
@@ -120,7 +118,6 @@ const More: React.FC<Props> = ({
         <ol>
           {quizQuestions.map((question, i) => {
             const index = i;
-            // similar to the onRadioChange, this compares
             const selectedTrue = formRef.current?.elements[
               `true${i}` as any
             ] as HTMLInputElement;
