@@ -34,7 +34,7 @@ const Status: React.FC<Props> = ({ style }) => {
         <SupportModal />
         <a
           aria-label="building-U Website"
-          href="https://building-u.com/"
+          href="http://building-u.com/wp-content/uploads/Privacy-Notice.pdf"
           target="_blank"
           rel="noopener noreferrer"
           className={s.checkout}
