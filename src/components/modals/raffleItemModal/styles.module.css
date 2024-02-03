@@ -27,15 +27,12 @@
   align-items: center;
 }
 
-.modalContainer h2,
-.modalContainer h3 {
+.modalContainer h2 {
+  font-size: 42px;
   color: var(--pbrown);
   margin-bottom: 50px;
 }
 
-.modalContainer h2 {
-  font-size: 42px;
-}
 .modalContainer .modalLeft {
   height: 100%;
   display: flex;
@@ -57,6 +54,12 @@
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+}
+.modalContainer .modalRight > p {
+  font-family: "Corbal", Arial;
+  font-size: 18px;
+  color: var(--pbrown);
+  margin-bottom: 50px;
 }
 .modalContainer .productExtras {
   display: flex;
