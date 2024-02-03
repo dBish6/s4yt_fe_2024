@@ -135,7 +135,7 @@ const Login: React.FC<Props> = ({ userToken, loginPlayer }) => {
         <Link className="fade" to="/register" />
       </Content>
       <a
-        href="https://building-u.com/privacy/"
+        href="http://building-u.com/wp-content/uploads/Privacy-Notice.pdf"
         target="_blank"
         rel="noopener noreferrer"
         className="privacy fade move"
