@@ -74,6 +74,12 @@ h4 {
 a {
   color: inherit;
 }
+a.privacy {
+  font-family: "Corbel", Arial;
+  font-weight: 700;
+  text-align: left;
+  color: var(--black);
+}
 
 :disabled {
   cursor: not-allowed;
