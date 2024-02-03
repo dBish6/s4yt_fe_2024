@@ -20,7 +20,7 @@ const Register: React.FC = () => {
         <UserForm referral={referral} />
       </Content>
       <a
-        href="https://building-u.com/privacy/"
+        href="http://building-u.com/wp-content/uploads/Privacy-Notice.pdf"
         target="_blank"
         rel="noopener noreferrer"
         className="privacy fade move"
