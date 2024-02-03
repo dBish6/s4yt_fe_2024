@@ -63,22 +63,20 @@
 
 .businessTitle {
   text-align: left;
-  /* margin-left: 4rem; */
   color: var(--pbrown);
   width: 70%;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: flex-start;
-  /* margin-top: 40px; */
 }
 .businessTitle h2 {
   font-size: 3rem;
   font-family: "BebasNeue", Arial;
 }
 .businessTitle p {
-  font-size: 1.2rem;
-  font-family: "BebasNeue", Arial;
+  font-size: 18px;
+  font-family: "Corbal", Arial;
   margin-bottom: 40px;
 }
 .detailsHeader img {
