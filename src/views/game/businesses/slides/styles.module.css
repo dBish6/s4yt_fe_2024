@@ -15,6 +15,15 @@
   margin-bottom: 20px;
 }
 
+.optionsView form p {
+  font-family: "Corbal", Arial;
+  font-size: 17px;
+  color: var(--pbrown);
+}
+.optionsView form p span {
+  font-weight: 700;
+}
+
 .optionsView form .formSubmission {
   display: flex;
   flex-direction: column;
