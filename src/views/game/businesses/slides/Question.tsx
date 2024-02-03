@@ -151,7 +151,7 @@ const Questions: React.FC<Props> = ({
           below. For any help, please use the support button at the bottom of
           the page to contact us. <br />
           <br />
-          <span>There is 1 reward of 100$ for this challenge.</span>
+          <span>There is 1 reward of $100 for this challenge.</span>
         </p>
         <div role="presentation" className={s.formSubmission}>
           <div>
