@@ -31,7 +31,7 @@
 .modalContainer h2 {
   font-size: 42px;
   color: var(--pbrown);
-  margin-bottom: 32px;
+  margin-bottom: 50px;
 }
 
 .modalContainer .modalLeft {
@@ -58,7 +58,7 @@
   font-family: "Corbal", Arial;
   font-size: 18px;
   color: var(--pbrown);
-  margin-bottom: 1rem;
+  margin-bottom: 50px;
 }
 .modalContainer .productExtras {
   display: flex;
