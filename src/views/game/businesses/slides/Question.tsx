@@ -112,6 +112,7 @@ const Questions: React.FC<Props> = ({
               await update(userRef, {
                 [data.title]: {
                   challengeSubmitted: true,
+                  challengeLink: currentData.submissionLink
                 },
               });
             } catch (error) {
@@ -149,7 +150,7 @@ const Questions: React.FC<Props> = ({
           completed document as well as your Player ID in the inputs below. For
           any help, please use the support button at the bottom of the page to
           contact us. <br />
-          <strong>There is 1 reward of 100$ for this challenge.</strong>
+          <strong>There is 1 reward of $100 for this challenge.</strong>
         </label>
         <div role="presentation" className={s.formSubmission}>
           <div>
