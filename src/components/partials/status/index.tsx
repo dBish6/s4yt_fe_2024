@@ -55,7 +55,7 @@ const Status: React.FC<Props> = ({ style }) => {
       </p>
 
       <a
-        href="https://building-u.com/privacy/"
+        href="http://building-u.com/wp-content/uploads/Privacy-Notice.pdf"
         target="_blank"
         rel="noopener noreferrer"
         className="privacy fade move"
