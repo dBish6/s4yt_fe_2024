@@ -34,7 +34,7 @@ const RaffleItemModal: React.FC<Props> = ({ products }) => {
           </div>
           <div className={s.modalRight}>
             <h2>{products.name}</h2>
-            <h3>{products.description}</h3>
+            <p>{products.description}</p>
             <div className={s.productExtras}>
               <p>
                 we have: <span>{products.stock}</span> items available

@@ -1,7 +1,5 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { Dispatch } from "redux";
-import { connect } from "react-redux";
 
 import s from "./styles.module.css";
 
@@ -75,6 +73,4 @@ const Congrats: React.FC<Props> = ({
   );
 };
 
-const mapDispatchToProps = (dispatch: Dispatch<any>) => ({});
-
-export default connect(null, mapDispatchToProps)(Congrats);
+export default Congrats;
