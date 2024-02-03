@@ -90,4 +90,8 @@
     left: 50%;
     transform: translate(-50%, -50%) rotate(7deg);
   }
+
+  :global(.privacy) {
+    bottom: -64px !important;
+  }
 }

@@ -1,7 +1,5 @@
 import { CoinTrackerState } from "@reducers/coinTracker";
 import { Product } from "@reducers/coinTracker";
-import { db } from "@root/firebase";
-import { ref, update, onValue } from "firebase/database";
 
 import { useEffect, useState } from "react";
 import { connect } from "react-redux";
@@ -10,6 +8,7 @@ import {
   spendCoins,
   retrieveCoins,
   initializeCoins,
+  setRaffleItems,
 } from "@actions/coinTracker";
 import { isNotPlayer } from "@actions/user";
 
@@ -28,6 +27,8 @@ import silverCoin from "@static/coin-smallsilver.png";
 import { UserReduxState } from "@root/redux/reducers/user";
 import UserCredentials from "@root/typings/UserCredentials";
 import AreYouSureModal from "@root/components/modals/areYouSure/AreYouSureModal";
+import CooldownIndicator from "@root/components/forms/cooldownIndicator";
+import { sliverAndGoldCoinsListener } from "@actions/coinTracker";
 
 interface Props {
   spendCoins: (item: Product, numEntries: number) => void;
@@ -37,8 +38,15 @@ interface Props {
   storeEntries: Product[];
   isNotPlayer: (useNotification?: boolean, message?: string) => boolean;
   getRaffleItems: () => Promise<any>;
+  setRaffleItems: (update: RaffleUpdate) => Promise<any>;
+  sliverAndGoldCoinsListener: () => void;
   raffleItems: Product[];
   user?: UserCredentials;
+  lastSubmitted?: string;
+}
+interface RaffleUpdate {
+  raffle_item_id: number;
+  coins: number;
 }
 
 const Raffle: React.FC<Props> = ({
@@ -48,45 +56,28 @@ const Raffle: React.FC<Props> = ({
   storeEntries,
   isNotPlayer,
   getRaffleItems,
-  user,
+  setRaffleItems,
+  lastSubmitted,
+  sliverAndGoldCoinsListener,
 }) => {
   // Track product entries all have a default value of 0 at their respective index
   const [totalCoins, setTotalCoins] = useState<number>(
     storeCoins ? storeCoins : 0
   );
   const [disabledButton, setDisabledButton] = useState<boolean>(false);
-  // For firebase
-  const encodedEmail = user?.email.replace(/\./g, ",");
-  const userRef = ref(db, "users/" + encodedEmail);
-
-  useEffect(() => {
-    const checkIfFieldExists = async () => {
-      try {
-        const unsubscribe = onValue(userRef, (snapshot) => {
-          const submittedCheck = snapshot.val();
-          if (submittedCheck && submittedCheck.submittedRaffle) {
-            setDisabledButton(true);
-          } else {
-            setDisabledButton(false);
-          }
-        });
-        return () => {
-          unsubscribe();
-        };
-      } catch (error) {
-        console.error("Error checking data:", error);
-      }
-    };
-    checkIfFieldExists();
-  }, [userRef]);
 
   // For testing persistenece between pages
   useEffect(() => {
     if (storeEntries.length === 0 || !storeEntries) {
       getRaffleItems();
     }
-  }, [storeEntries, getRaffleItems]);
+  }, [storeEntries, window.Echo]);
 
+  useEffect(() => {
+    if (window.Echo) {
+      sliverAndGoldCoinsListener();
+    }
+  }, [window.Echo]);
   // Pagination hook
   const maxItems = 8;
 
@@ -117,47 +108,21 @@ const Raffle: React.FC<Props> = ({
       isNotPlayer(true, "Only players can assign Dubl-U-Nes to raffle items");
     }
   }, []);
-  // temporary, hopefully won't need it
-  const handleFirebaseSubmit = async () => {
-    try {
-      const raffleItemsUpdates: {
-        [key: number]: {
-          id: number;
-          name: string;
-          entries: number;
-          rafflePartner: string;
-        };
-      } = {};
 
-      storeEntries.forEach((entry) => {
-        if (entry.entries && entry.entries > 0) {
-          const entryId = entry.id;
-          const entryData = {
-            id: entry.id,
-            name: entry.name,
-            entries: entry.entries !== undefined ? entry.entries : 0,
-            rafflePartner: entry.raffle_partner.organization_name,
-          };
-          raffleItemsUpdates[entryId] = entryData;
-        }
+  const handleSetRaffleItems = async () => {
+    let raffleItemsUpdates: any = [];
+    storeEntries.forEach((entry) => {
+      raffleItemsUpdates.push({
+        raffle_item_id: entry.id,
+        coins: entry.coins,
       });
-
-      await update(userRef, {
-        raffleItems: raffleItemsUpdates,
-      });
-
-      await update(userRef, {
-        submittedRaffle: true,
-      });
-    } catch (error) {
-      console.error("Error updating data:", error);
-    }
+    });
+    setRaffleItems(raffleItemsUpdates);
+    setDisabledButton(true);
   };
 
   return (
-    <Layout
-    // addFeather="right2"
-    >
+    <Layout>
       <Header title="Raffle Page" />
       <Content
         addFeather="right2"
@@ -203,7 +168,7 @@ const Raffle: React.FC<Props> = ({
                     className={s.entryNotification}
                     src={
                       storeEntries!.find((entry) => entry.id === item.id)
-                        ?.entries! > 0
+                        ?.silver === false
                         ? goldCoin
                         : silverCoin
                     }
@@ -213,9 +178,11 @@ const Raffle: React.FC<Props> = ({
                 <h4 className={s.name}>{item.name}</h4>
                 <div className={s.controls}>
                   <button
-                    disabled={disabledButton || 
+                    disabled={
+                      disabledButton ||
                       storeEntries?.find((entry) => entry.id === item.id)
-                        ?.entries === 0 || isNotPlayer()
+                        ?.coins === 0 ||
+                      isNotPlayer()
                     }
                     onClick={() => handleProductEntries(item.id, -1)}
                     aria-label="Subtract"
@@ -223,12 +190,15 @@ const Raffle: React.FC<Props> = ({
                     -
                   </button>
                   <h4>
-                    {storeEntries?.length !== 0 &&
-                      storeEntries?.find((entry) => entry.id === item.id)
-                        ?.entries}
+                    {storeEntries?.length !== 0
+                      ? storeEntries?.find((entry) => entry.id === item.id)
+                          ?.coins
+                      : 0}
                   </h4>
                   <button
-                    disabled={disabledButton || totalCoins === 0 || isNotPlayer()}
+                    disabled={
+                      disabledButton || totalCoins === 0 || isNotPlayer()
+                    }
                     onClick={() => handleProductEntries(item.id, +1)}
                     aria-label="Add"
                   >
@@ -238,8 +208,6 @@ const Raffle: React.FC<Props> = ({
               </div>
             ))}
           </div>
-          {/* For one time / cooldown submission */}
-          {/* <button onClick={handleFirebaseSubmit}>Submit</button> */}
           {currentItems.length > maxItems && (
             <div className={s.paginationButtons}>
               {currentPage > 1 && (
@@ -263,10 +231,15 @@ const Raffle: React.FC<Props> = ({
               )}
             </div>
           )}
+          <CooldownIndicator
+            setDisabled={setDisabledButton}
+            disabledButton={disabledButton}
+            cooldownTime={lastSubmitted}
+          />
           <AreYouSureModal
             label={"Are you sure?"}
-            text={`Once you submit your raffle entries, you will not be able to change them. Please make sure you've used up all your coins on the correct items. Do you want to submit your current entries?`}
-            func={handleFirebaseSubmit}
+            text={`Once you submit your raffle entries, you will not be able to change them for 30 minutes. Do you want to submit your current entries?`}
+            func={handleSetRaffleItems}
             disabledProps={isNotPlayer() || disabledButton}
             buttonClass={s.raffleSubmit}
           />
@@ -287,6 +260,7 @@ const mapStateToProps = ({
   storeCoins: coinTracker.remainingCoins,
   storeEntries: coinTracker.items,
   user: user.credentials,
+  lastSubmitted: coinTracker.lastSubmit,
 });
 const mapDispatchToProps = (dispatch: Function) => ({
   spendCoins: (item: Product, numEntries: number) =>
@@ -298,6 +272,8 @@ const mapDispatchToProps = (dispatch: Function) => ({
   isNotPlayer: (useNotification?: boolean, message?: string) =>
     dispatch(isNotPlayer(useNotification, message)),
   getRaffleItems: () => dispatch(getRaffleItems()),
+  setRaffleItems: (update: RaffleUpdate) => dispatch(setRaffleItems(update)),
+  sliverAndGoldCoinsListener: () => dispatch(sliverAndGoldCoinsListener()),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(Raffle);

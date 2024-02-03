@@ -34,7 +34,7 @@ interface Props {
 
 interface QuestionFormData {
   sponsorName: string;
-  studentID: string;
+  studentID?: string;
   submissionLink: string;
 }
 
@@ -46,15 +46,15 @@ const Questions: React.FC<Props> = ({
 }) => {
   const [disabledButton, setDisabledButton] = useState<boolean>(false);
 
-  const encodedEmail = user?.email.replace(/\./g, ",");
-  const userRef = ref(db, "users/" + encodedEmail + "/challenges/");
+  const userRef = ref(db, "users/" + user?.id + "/challenges/");
   const formRef = useRef<HTMLFormElement>(null),
+
     [form, setForm] = useState({
       processing: false,
     }),
     [currentData, setCurrentData] = useState<QuestionFormData>({
       sponsorName: data?.title,
-      studentID: "",
+      studentID: user?.id,
       submissionLink: "",
     });
 
@@ -100,7 +100,7 @@ const Questions: React.FC<Props> = ({
       setForm((prev) => ({ ...prev, processing: true }));
       try {
         const submission = currentData as unknown;
-        await emailjs
+        emailjs
           .send(
             `${process.env.REACT_APP_EMAILJS_SERVICE_ID}`,
             `${process.env.REACT_APP_EMAILJS_TEMPLATE_ID}`,
@@ -112,6 +112,7 @@ const Questions: React.FC<Props> = ({
               await update(userRef, {
                 [data.title]: {
                   challengeSubmitted: true,
+                  challengeLink: currentData.submissionLink
                 },
               });
             } catch (error) {
@@ -136,7 +137,7 @@ const Questions: React.FC<Props> = ({
       <form
         aria-describedby="questionPara"
         id="questionForm"
-        onSubmit={handleSubmit}
+        onSubmit={(e) => e.preventDefault()}
         ref={formRef}
         autoComplete="off"
         noValidate
@@ -158,16 +159,17 @@ const Questions: React.FC<Props> = ({
             <label htmlFor="studentID">Player Id:</label>
             <div role="presentation" className={s.inputContainer}>
               <Input
-                id="player_id"
-                name="player_id"
+                id="studentID"
+                name="studentID"
                 type="text"
                 errorMsg="Not a valid player ID."
                 placeholder="Same as Login ID"
                 onChange={(e) =>
                   updateField<QuestionFormData>(e, setCurrentData)
                 }
-                disabled={form.processing}
+                disabled={true}
                 autoComplete="off"
+                value={currentData.studentID}
               />
             </div>
           </div>
@@ -175,15 +177,15 @@ const Questions: React.FC<Props> = ({
             <label htmlFor="submissionLink">Google Doc Link:</label>
             <div role="presentation" className={s.inputContainer}>
               <Input
-                id="docLink"
-                name="docLink"
+                id="submissionLink"
+                name="submissionLink"
                 type="text"
                 errorMsg="Not a valid Google Doc link."
                 placeholder="https://docs.google.com/document"
                 onChange={(e) =>
                   updateField<QuestionFormData>(e, setCurrentData)
                 }
-                disabled={form.processing}
+                disabled={form.processing || disabledButton}
                 autoComplete="off"
               />
             </div>
@@ -197,11 +199,6 @@ const Questions: React.FC<Props> = ({
             disabledProps={playerCheck || disabledButton || form.processing}
             buttonClass={s.questionSubmit}
           />
-          {/* <button
-            type="submit"
-            className={s.questionSubmit}
-            disabled={playerCheck || form.processing}
-          /> */}
         </div>
       </form>
     </div>

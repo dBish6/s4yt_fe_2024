@@ -1,4 +1,5 @@
 export default interface UserCredentials {
+  id: string;
   city_id: number | null;
   country_id: number;
   education_id: number;

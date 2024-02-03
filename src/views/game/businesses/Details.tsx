@@ -48,7 +48,6 @@ const Details: React.FC<PlayerProps> = ({ isNotPlayer }) => {
       <Content
         addCoins="coins2"
         addFeather="right1"
-        // to be changed
         style={{
           display: "flex",
           justifyContent: "center",
@@ -78,7 +77,6 @@ const Details: React.FC<PlayerProps> = ({ isNotPlayer }) => {
                   checked={selectedOption === "Video"}
                 />
                 <label htmlFor="videoRadio" className={s.videoLabel}></label>
-
                 <input
                   type="radio"
                   id="questionRadio"
@@ -91,7 +89,6 @@ const Details: React.FC<PlayerProps> = ({ isNotPlayer }) => {
                   htmlFor="questionRadio"
                   className={s.questionLabel}
                 ></label>
-
                 <input
                   type="radio"
                   id="meetupRadio"

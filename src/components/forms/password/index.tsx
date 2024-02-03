@@ -101,7 +101,7 @@ const PasswordForm: React.FC<Props> = ({
           error: true,
           content:
             res.errors && Object.keys(res.errors).length
-              ? Object.keys(res.errors)[0]
+              ? res.errors[Object.keys(res.errors)[0]][0]
               : res.message,
           close: false,
           duration: 0,

@@ -16,7 +16,6 @@ import Content from "@components/partials/content";
 import Status from "@components/partials/status";
 import Image from "@components/Image";
 import More from "./More";
-// import Congrats from "./Congrats";
 
 import s from "./styles.module.css";
 
@@ -36,15 +35,6 @@ const Sponsors: React.FC<PlayerProps> = ({
 
   const [isSmallerThen500, setIsSmallerThen500] = useState(false),
     notPlayerRole = isNotPlayer();
-
-  // const sponsors = [];
-  // for (let i = 0; i < 6; i++) {
-  //   sponsors.push(
-  //     <span key={i}>
-  //       <p>Logo</p>
-  //     </span>
-  //   );
-  // }
 
   useEffect(() => {
     const handleResize = () => {
@@ -72,25 +62,6 @@ const Sponsors: React.FC<PlayerProps> = ({
         {clicked.more ? (
           <More setClicked={setClicked} scoreRef={scoreRef} />
         ) : (
-          // :
-          // clicked.quizDone ? (
-          //   <Congrats finalScore={scoreRef.current} setClicked={setClicked} />
-          // )
-          // <>
-          //   <div className={s.sponsors}>{sponsors}</div>
-          //   <div className={s.options}>
-          //     <a
-          //       aria-label="Previous Page"
-          //       className={`${s.backBtn} fade move`}
-          //       onClick={() => history.push(-1)}
-          //     />
-          //     <button
-          //       className={`${s.moreBtn} fade`}
-          //       onClick={() => setClicked({ ...clicked, more: true })}
-          //       disabled={isNotPlayer()}
-          //     />
-          //   </div>
-          // </>
           <>
             <div className={s.sponsors}>
               {sponsors.map((sponsor) => (

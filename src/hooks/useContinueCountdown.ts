@@ -38,7 +38,6 @@ const useContinueCountdown = (
       (isGameClosedCounter && !reviewStart)
     ) {
       return;
-      //  throw Error("The counter clock is in a error state;\n unexpectedly there was no countdown state to work with.")
     }
     const counter = counterRef.current;
 
@@ -48,12 +47,6 @@ const useContinueCountdown = (
       reviewEndTimestamp = new Date(timestamps.review_end).getTime(),
       gameEndTimestamp = new Date(timestamps.game_end).getTime();
 
-    // console.log("currentTimestamp", currentTimestamp);
-    // console.log("gameStartTimestamp", gameStartTimestamp);
-    // console.log("reviewStartTimestamp", reviewStartTimestamp);
-    // console.log("reviewEndTimestamp", reviewEndTimestamp);
-    // console.log("gameEndTimestamp", gameEndTimestamp);
-
     let countdownSeconds: number | undefined;
 
     /* 
@@ -62,7 +55,7 @@ const useContinueCountdown = (
     */
     if (currentTimestamp < reviewStartTimestamp) {
       // The actual game is ongoing.
-      console.log("Game is ongoing.");
+      // console.log("Game is ongoing.");
       countdownSeconds = getSecondsInBetweenByTime(
         currentTimestamp,
         reviewStartTimestamp
@@ -78,7 +71,7 @@ const useContinueCountdown = (
       });
     } else if (currentTimestamp < reviewEndTimestamp) {
       // Review has started.
-      console.log("Review has started.");
+      // console.log("Review has started.");
       countdownSeconds = getSecondsInBetweenByTime(
         currentTimestamp,
         reviewEndTimestamp
@@ -94,7 +87,7 @@ const useContinueCountdown = (
       });
     } else if (currentTimestamp < gameEndTimestamp) {
       // Review has ended, everyone goes to event results.
-      console.log("Review ended.");
+      // console.log("Review ended.");
       countdownSeconds = getSecondsInBetweenByTime(
         currentTimestamp,
         gameEndTimestamp
@@ -110,7 +103,7 @@ const useContinueCountdown = (
       });
     } else {
       // Game has ended.
-      console.log("Game ended.");
+      // console.log("Game ended.");
       dispatch({
         type: UPDATE_CONFIGURATION,
         payload: {
@@ -124,8 +117,6 @@ const useContinueCountdown = (
     // This is literally for the redirect useEffect in the gate, I didn't want to add the full list to useEffect; gameConfig.gameStart, etc.
     dispatch({ type: UPDATE_NEW_PERIOD });
 
-    // console.log("countdownSeconds", countdownSeconds);
-
     let newCountdown: string | undefined;
     const countdownInterval = setInterval(() => {
       if (countdownSeconds !== undefined && countdownSeconds > 0) {
@@ -138,7 +129,6 @@ const useContinueCountdown = (
         ).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`;
         counter.innerText = newCountdown;
         counter.dateTime = newCountdown;
-        // console.log("newCountdown", newCountdown);
 
         countdownSeconds -= 1;
       } else {
@@ -155,7 +145,6 @@ const useContinueCountdown = (
           });
           delay(2500, () => dispatch({ type: LOGOUT }));
         }
-
         clearInterval(countdownInterval);
       }
     }, 1000);

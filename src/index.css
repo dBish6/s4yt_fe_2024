@@ -74,6 +74,12 @@ h4 {
 a {
   color: inherit;
 }
+a.privacy {
+  font-family: "Corbel", Arial;
+  font-weight: 700;
+  text-align: left;
+  color: var(--black);
+}
 
 :disabled {
   cursor: not-allowed;
@@ -241,6 +247,8 @@ button.updateBtn:active {
   background-color: var(--sBeige);
   animation: slideUpModal 0.9s ease-in-out forwards;
   z-index: 10;
+  width: 90%;
+  max-width: 800px;
 }
 .modal .exitBtn {
   position: absolute;
