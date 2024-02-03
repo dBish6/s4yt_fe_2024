@@ -17,21 +17,17 @@
   padding: 1.5rem;
 }
 
-/* .optionsView textarea {
-  margin: 0.7rem 0;
-  width: 100%;
-  height: 60%;
-  min-height: 150px;
-  resize: none;
-  border: none;
-  padding: 0.5rem;
-  font-size: 1.2rem;
-  border-radius: 6px;
-  box-shadow: 6px 4px 4px rgba(0, 0, 0, 0.2);
-} */
-
 .optionsView form .challengeLabel {
   margin-bottom: 20px;
+}
+
+.optionsView form p {
+  font-family: "Corbal", Arial;
+  font-size: 17px;
+  color: var(--pbrown);
+}
+.optionsView form p span {
+  font-weight: 700;
 }
 
 .optionsView form .formSubmission {

@@ -19,7 +19,7 @@ const ChallengeModal: React.FC<Props> = ({ data }) => {
         aria-label="View Business Challenge"
         aria-expanded={show}
         aria-controls="modal"
-        htmlFor="answer"
+        htmlFor="modal"
         onClick={() => setShow(true)}
         className={s.challengeLabel}
       >

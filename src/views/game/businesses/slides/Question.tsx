@@ -1,3 +1,5 @@
+import { UserReduxState } from "@reducers/user";
+import UserCredentials from "@typings/UserCredentials";
 import NotificationValues from "@typings/NotificationValues";
 
 import { useRef, useState, FormEvent, useEffect } from "react";
@@ -14,12 +16,10 @@ import checkValidDocLink from "@utils/forms/checkValidDocLink";
 import { addNotification } from "@actions/notifications";
 
 import ChallengeModal from "@components/modals/challengeModal/ChallengeModal";
+import AreYouSureModal from "@components/modals/areYouSure/AreYouSureModal";
 import Input from "@components/forms/controls/Input";
 
 import s from "./styles.module.css";
-import AreYouSureModal from "@root/components/modals/areYouSure/AreYouSureModal";
-import { UserReduxState } from "@root/redux/reducers/user";
-import UserCredentials from "@root/typings/UserCredentials";
 
 interface Props {
   playerCheck: any;
@@ -135,23 +135,25 @@ const Questions: React.FC<Props> = ({
   return (
     <div className={s.optionsView}>
       <form
+        aria-describedby="questionPara"
         id="questionForm"
         onSubmit={(e) => e.preventDefault()}
         ref={formRef}
         autoComplete="off"
         noValidate
       >
-        <label className={s.challengeLabel}>
+        <div role="presentation" className={s.challengeLabel}>
           <ChallengeModal data={data} />
-        </label>
-        <label>
-          Instructions: Please create a Google Doc and provide any images,
-          links, and/or other media within that document. Share the link to your
-          completed document as well as your Player ID in the inputs below. For
-          any help, please use the support button at the bottom of the page to
-          contact us. <br />
-          <strong>There is 1 reward of $100 for this challenge.</strong>
-        </label>
+        </div>
+        <p id="questionPara">
+          <span>Instructions:</span> Please create a Google Doc and provide any
+          images, links, and/or other media within that document. Share the link
+          to your completed document as well as your Player ID in the inputs
+          below. For any help, please use the support button at the bottom of
+          the page to contact us. <br />
+          <br />
+          <span>There is 1 reward of $100 for this challenge.</span>
+        </p>
         <div role="presentation" className={s.formSubmission}>
           <div>
             <label htmlFor="studentID">Player Id:</label>
