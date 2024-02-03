@@ -126,9 +126,6 @@ const More: React.FC<Props> = ({
             ] as HTMLInputElement;
             const isTrueSelected = selectedTrue?.checked ?? false;
             const isFalseSelected = selectedFalse?.checked ?? false;
-            // const isIncorrect =
-            //   (isTrueSelected && !question.answer) ||
-            //   (isFalseSelected && question.answer);
             const isCorrect =
               (isTrueSelected && question.answer) ||
               (isFalseSelected && !question.answer);
@@ -181,18 +178,6 @@ const More: React.FC<Props> = ({
                     )}
                   </p>
                 )}
-                {/* {quizComplete && isIncorrect ? (
-                  <p className={s.explanationWrong}>
-                    Not quite, {question.explanation}
-                  </p>
-                ) : (
-                  quizComplete.complete &&
-                  isCorrect && (
-                    <p className={s.explanationRight}>
-                      That's right! {question.explanation}
-                    </p>
-                  )
-                )} */}
               </li>
             );
           })}
