@@ -100,7 +100,7 @@ const Questions: React.FC<Props> = ({
       setForm((prev) => ({ ...prev, processing: true }));
       try {
         const submission = currentData as unknown;
-        await emailjs
+        emailjs
           .send(
             `${process.env.REACT_APP_EMAILJS_SERVICE_ID}`,
             `${process.env.REACT_APP_EMAILJS_TEMPLATE_ID}`,
