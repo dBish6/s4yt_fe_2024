@@ -21,7 +21,7 @@
     justify-content: center;
   }
 
-  :global(.privacy) {
+  .container :global(.privacy) {
     left: 50% !important;
     transform: translateX(-50%);
   }
