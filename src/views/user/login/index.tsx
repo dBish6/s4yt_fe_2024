@@ -138,7 +138,7 @@ const Login: React.FC<Props> = ({ userToken, loginPlayer }) => {
         href="http://building-u.com/wp-content/uploads/Privacy-Notice.pdf"
         target="_blank"
         rel="noopener noreferrer"
-        className="privacy fade move"
+        className={`${s.privacy} privacy fade move`}
         style={{
           position: "absolute",
           right: 30,

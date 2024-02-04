@@ -54,3 +54,9 @@
   bottom: 209px;
   transform: rotate(230deg) scaleY(-1);
 }
+@media screen and (max-width: 898px) {
+  .feather.right1,
+  .feather.right2 {
+    display: none;
+  }
+}
