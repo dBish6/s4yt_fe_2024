@@ -30,24 +30,37 @@
   justify-content: flex-start;
   align-items: center;
   width: calc(100% / 2 - 40px);
-  max-height: 120px;
-  margin: 20px;
+  max-height: 180px;
+  margin: 10px;
+  color: var(--pbrown);
+  min-width: 350px;
 }
 .otherContainer li:last-child {
   margin-right: auto;
 }
 .otherContainer .winnerContainer {
-  margin-left: 20px;
+  margin-left: 15px;
   display: flex;
   flex-direction: column;
   text-align: left;
   overflow: auto;
-  max-height: 120px;
+  max-height: 180px;
   overflow: auto;
 }
+.winnerContainer h3 {
+  font-size: 28px;
+}
+.winnerContainer address {
+  font-family: "Corbal", arial;
+  font-weight: bold;
+  font-size: 16px;
+  opacity: 0.9;
+}
+.winnerContainer div {
+  min-width: 150px;
+}
 .otherContainer img {
-  width: 100px;
-  height: 100px;
+  width: 120px;
 }
 .otherImageContainer {
   position: relative;
@@ -58,7 +71,7 @@
   position: absolute;
   border-radius: 50%;
   bottom: 0;
-  right: -10px;
+  right: 0px;
   object-fit: contain;
   transition: all 0.2s linear;
 }

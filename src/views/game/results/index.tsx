@@ -1,5 +1,7 @@
-import { Dispatch } from "redux";
+import { useState, useEffect } from "react";
 import { connect } from "react-redux";
+import { getRaffleWinners } from "@actions/getRaffleWinners";
+import { RaffleItem } from "@reducers/getRaffleWinners";
 
 import { staticWinners } from "@constants/temporaryDb/winners";
 
@@ -15,9 +17,12 @@ import Other from "./EventOther";
 import s from "./styles.module.css";
 import Banner from "@static/eventResults/img_thankyou.png";
 
-interface Props {}
+interface Props {
+  otherWinners: RaffleItem[];
+  getRaffleWinners: () => Promise<any>;
+}
 
-const Results: React.FC<Props> = () => {
+const Results: React.FC<Props> = ({ otherWinners, getRaffleWinners }) => {
   const totalPartners = staticWinners.length;
   const {
     currentPage,
@@ -27,7 +32,12 @@ const Results: React.FC<Props> = () => {
     prevPage,
     allPageNumbers,
   } = usePagination({ data: staticWinners, maxPerPage: 1 });
-
+  
+  useEffect(() => {
+    if (otherWinners.length === 0) {
+      getRaffleWinners();
+    } 
+  }, [getRaffleWinners, otherWinners]);
   return (
     <Layout>
       <Header title="Event Results" />
@@ -42,7 +52,7 @@ const Results: React.FC<Props> = () => {
           {currentPage < totalPartners ? (
             <Winners data={currentItems[0]} />
           ) : (
-            <Other data={currentItems[0]} />
+            <Other data={otherWinners} />
           )}
 
           <div className={s.eventSelection}>
@@ -82,9 +92,15 @@ const Results: React.FC<Props> = () => {
   );
 };
 
-const mapStateToProps = ({}) => ({});
-const mapDispatchToProps = (dispatch: Dispatch<any>) => ({
-  // getWinners?
+const mapStateToProps = ({
+  getRaffleWinners,
+}: {
+  getRaffleWinners: RaffleItem[];
+}) => ({
+  otherWinners: getRaffleWinners,
+});
+const mapDispatchToProps = (dispatch: Function) => ({
+  getRaffleWinners: () => dispatch(getRaffleWinners()),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(Results);
