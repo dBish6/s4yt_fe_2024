@@ -27,6 +27,7 @@ html {
   -moz-background-size: cover;
   -o-background-size: cover;
   background-size: cover;
+  color-scheme: light;
 
   --pbrown: #895734;
   --pbrown-fade: #e8c18e;
@@ -38,7 +39,6 @@ html {
   --form-red: #ff3939;
   --orange: #e68b4b;
 
-  /* TODO: Use everywhere. */
   --heading-42: 42px;
   --heading-38: 38px;
   --heading-28: 28px;
@@ -166,7 +166,6 @@ input[matching-passwords="false"] + small.formError {
   display: block;
 }
 
-/* TODO: Find all button usages and take out the syles that were overriding the dafualt */
 button {
   border: 0;
   padding: 0;
