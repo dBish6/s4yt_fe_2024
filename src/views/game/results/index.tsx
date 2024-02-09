@@ -23,7 +23,7 @@ interface Props {
 }
 
 const Results: React.FC<Props> = ({ otherWinners, getRaffleWinners }) => {
-  console.log(otherWinners)
+ 
   const totalPartners = staticWinners.length;
   const {
     currentPage,
