@@ -27,6 +27,7 @@ html {
   -moz-background-size: cover;
   -o-background-size: cover;
   background-size: cover;
+  color-scheme: light;
 
   --pbrown: #895734;
   --pbrown-fade: #e8c18e;
