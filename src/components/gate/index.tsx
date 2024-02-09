@@ -89,7 +89,7 @@ const Gate: React.FC<Props> = ({
         ? user.token
           ? "/"
           : "/login"
-        : ""
+        : "";
 
     if (redirect)
       history.push(redirect, { state: { from: location }, replace: true });
