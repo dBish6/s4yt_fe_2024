@@ -23,6 +23,7 @@ interface Props {
 }
 
 const Results: React.FC<Props> = ({ otherWinners, getRaffleWinners }) => {
+  console.log(otherWinners)
   const totalPartners = staticWinners.length;
   const {
     currentPage,
@@ -52,7 +53,7 @@ const Results: React.FC<Props> = ({ otherWinners, getRaffleWinners }) => {
           {currentPage < totalPartners ? (
             <Winners data={currentItems[0]} />
           ) : (
-            <Other data={staticWinners[6]} />
+            <Other data={currentItems} />
           )}
 
           <div className={s.eventSelection}>

@@ -115,7 +115,7 @@ const Header: React.FC<Props> & React.HTMLAttributes<HTMLDivElement> = ({
                       aria-label="Logout"
                       onClick={() => logoutPlayer()}
                       // temporary
-                      disabled
+                      // disabled
                     />
                   </nav>
                 </>

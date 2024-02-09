@@ -2,12 +2,12 @@ import { RaffleItem } from "@reducers/getRaffleWinners";
 import s from "./styles.module.css";
 
 interface Props {
-  data: any;
+  data: RaffleItem[];
 }
 const Other: React.FC<Props> = ({ data }) => {
   return (
     <ul className={s.otherContainer}>
-      {data.items.map((item: any, index: any) => {
+      {/* {data.items.map((item: any, index: any) => {
         return (
           <li key={index}>
             <div className={s.otherImageContainer}>
@@ -32,16 +32,16 @@ const Other: React.FC<Props> = ({ data }) => {
                       {nameCheck
                         ? winner.country_name
                         : winner.country_code}{" "} */}
-                        {winner.country},
-                        {winner.region}
-                    </address>
-                  </div>
-                );
-              })}
-            </div>
-          </li>
-        );
-      })}
+                        {/* {winner.country}, */}
+                        {/* {winner.region} */}
+                    {/* </address> */}
+                  {/* </div> */}
+                {/* ); */}
+              {/* })} */}
+            {/* </div> */}
+          {/* </li> */}
+        {/* ); */}
+      {/* })} */} 
     </ul>
   );
 };
