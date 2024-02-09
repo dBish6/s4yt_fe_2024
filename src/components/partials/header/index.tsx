@@ -91,31 +91,18 @@ const Header: React.FC<Props> & React.HTMLAttributes<HTMLDivElement> = ({
                     {title === "Sponsors" ? title : hasSpace(title)}
                   </h1>
                   <nav>
-                    {/* temporary */}
-                    {/* <NavLink
+                    <NavLink
                       to="/"
                       className={s.mainMap}
                       onClick={(e) => {
                         if (restrictedAccess) e.preventDefault();
                       }}
                       aria-disabled={restrictedAccess}
-                    /> */}
-                    <NavLink
-                      to="/results"
-                      className={s.mainMap}
-                      onClick={(e) => {
-                        if (restrictedAccess) e.preventDefault();
-                      }}
-                      aria-disabled={restrictedAccess}
                     />
-                    {/* temporary */}
-                    {/* <NavLink to="/businesses" className={s.busMap} /> */}
-                    <NavLink to="/results" className={s.busMap} />
+                    <NavLink to="/businesses" className={s.busMap} />
                     <button
                       aria-label="Logout"
                       onClick={() => logoutPlayer()}
-                      // temporary
-                      // disabled
                     />
                   </nav>
                 </>
