@@ -1,39 +1,39 @@
-import { RaffleItem } from "@root/redux/reducers/getRaffleWinners";
+import { RaffleItem } from "@reducers/getRaffleWinners";
 import s from "./styles.module.css";
 
 interface Props {
-  data: RaffleItem[];
+  data: any;
 }
-
 const Other: React.FC<Props> = ({ data }) => {
   return (
     <ul className={s.otherContainer}>
-      {data.map((item, index) => {
-        
+      {data.items.map((item: any, index: any) => {
         return (
           <li key={index}>
             <div className={s.otherImageContainer}>
-              <img src={item.item_src} alt={item.name} />
+              <img src={item.logo} alt={item.name} />
               <img
                 className={s.partnerLogo}
-                src={item.partner_logo}
+                src={item.partnerLogo}
                 alt={"Sponsor Logo"}
               />
             </div>
             <div className={s.winnerContainer}>
-              {item.winners?.map((winner, index) => {
-                let nameCheck = false;
-                if (winner.country_name.length < 15) {
-                  nameCheck = true;
-                }
+              {item.winners.map((winner: any, index: number) => {
+                // let nameCheck = false;
+                // if (winner.country_name.length < 15) {
+                //   nameCheck = true;
+                // }
                 return (
                   <div className={s.singleWinner} key={index}>
                     <h3>{winner.name}</h3>
                     <address>
-                      {winner.region_name && `${winner.region_name}, `}
+                      {/* {winner.region_name && `${winner.region_name}, `}
                       {nameCheck
                         ? winner.country_name
-                        : winner.country_code}{" "}
+                        : winner.country_code}{" "} */}
+                        {winner.country},
+                        {winner.region}
                     </address>
                   </div>
                 );

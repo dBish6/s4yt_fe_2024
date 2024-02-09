@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
 import { connect } from "react-redux";
 import { getRaffleWinners } from "@actions/getRaffleWinners";
 import { RaffleItem } from "@reducers/getRaffleWinners";
@@ -52,7 +52,7 @@ const Results: React.FC<Props> = ({ otherWinners, getRaffleWinners }) => {
           {currentPage < totalPartners ? (
             <Winners data={currentItems[0]} />
           ) : (
-            <Other data={otherWinners} />
+            <Other data={staticWinners[6]} />
           )}
 
           <div className={s.eventSelection}>
@@ -73,7 +73,7 @@ const Results: React.FC<Props> = ({ otherWinners, getRaffleWinners }) => {
                   onClick={() => goToPage(page)}
                 >
                   <img
-                    src={staticWinners[index]?.logo}
+                    src={staticWinners[index]?.logo as any}
                     alt={`Logo of ${staticWinners[index]?.name}`}
                   />
                 </button>

@@ -85,6 +85,16 @@
   font-size: 24px;
   color: var(--pbrown);
 }
+.resultDisplayTop h3 {
+  font-size: 28px;
+  margin-top: 20px;
+}
+.resultDisplayTop li p {
+  font-family: "Corbal", arial;
+  font-weight: bold;
+  font-size: 24px;
+  opacity: 0.9;
+}
 .resultDisplayTop img {
   width: 250px;
   height: 250px;
@@ -138,4 +148,40 @@
   background: url("../../../static/eventResults/btn_next.png") no-repeat center center/contain;
   height: 80px;
   width: 120px;
+}
+@media screen and (max-width: 900px) {
+  .otherContainer {
+    flex-direction: column;
+    align-items: center;
+    max-height: none;
+  }
+  .otherContainer li {
+    margin-bottom: 50px;
+  }
+  .otherContainer li:last-child {
+    margin-right: 0;
+  }
+}
+@media screen and (max-width: 500px) {
+  .resultDisplayTop {
+    flex-direction: column;
+    margin: 50px 0;
+  }
+  .otherContainer {
+    flex-direction: column;
+    max-height: none;
+    width: 100%;
+  }
+  .otherContainer li {
+    max-height: none;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 50px;
+    width: 100%;
+    min-width: 200px;
+  }
+  .otherContainer .otherImageContainer {
+    display: flex;
+    justify-content: center;
+  }
 }
