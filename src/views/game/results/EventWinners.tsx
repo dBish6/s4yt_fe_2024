@@ -34,30 +34,40 @@ const Winners: React.FC<Props> = ({ data }) => {
         <img src={data.logo} alt={data?.name || "others"} />
         <ul>
           <li>
-            {data.winners.main.prize} {data.winners.main.name},{" "}
-            {data.winners.main.address}
+            <p>
+              {`${
+                data.winners.main.prize
+                  ? data.winners.main.prize + " prize awarded to:"
+                  : ""
+              } `}
+            </p>
+
+            <h3>{data.winners.main.name}</h3>
+
+            <p>{data.winners.main.address}</p>
           </li>
           {data.winners.mentions?.map((mention: any, index: any) => {
             return (
               <li key={index}>
-                Honourable mention: {mention.name}, {mention.address}
+                Honourable mention: {mention.name} {mention.address}
               </li>
             );
           })}
         </ul>
       </div>
       <div className={s.resultDisplayBottom}>
-        {currentItems.length > 0 && currentItems.map((item, index) => {
-          return (
-            <div className={s.partnerRaffleItems} key={index}>
-              <img src={item.logo} alt={item.itemName} />
-              <div>
-                <p>{item.winnerName}</p>
-                <p>{item.itemName}</p>
+        {currentItems.length > 0 &&
+          currentItems.map((item, index) => {
+            return (
+              <div className={s.partnerRaffleItems} key={index}>
+                <img src={item.logo} alt={item.itemName} />
+                <div>
+                  <p>{item.winnerName}</p>
+                  <p>{item.itemName}</p>
+                </div>
               </div>
-            </div>
-          );
-        })}
+            );
+          })}
       </div>
     </>
   );

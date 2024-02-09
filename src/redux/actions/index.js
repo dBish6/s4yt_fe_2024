@@ -33,3 +33,6 @@ export const RAFFLE_ACTIVE_STATE = "coinTracker.RAFFLE_ACTIVE_STATE";
 
 // businesses/event partners
 export const SET_BUSINESSES = "setBusinesses.SET_BUSINESSES";
+
+// raffle winners
+export const GET_RAFFLE_WINNERS = "getRaffleWinners.GET_RAFFLE_WINNERS"
