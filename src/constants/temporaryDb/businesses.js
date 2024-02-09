@@ -117,7 +117,7 @@ export const staticBusiness = [
     challenge: {
       title: "Knowledgeflow Foundation", // challenge title
       content: `BACKGROUND :
-        The importance of the privacy of personal data and concerns about collected, tracked, and shared data can be overlooked, diminished, and even offhandedly dismissed especially when the simple act of accepting or refusing ‘cookies' is the only impediment standing between your gaining, or being denied, access to a website. We think that understanding the importance of what you are losing, and  how you can control what is being collected/ shared/ sold could prove very useful especially as you are navigating in and around or away from a website..
+        The importance of the privacy of personal data and concerns about collected, tracked, and shared data can be overlooked, diminished, and even offhandedly dismissed especially when the simple act of accepting or refusing 'cookies' is the only impediment standing between your gaining, or being denied, access to a website. We think that understanding the importance of what you are losing, and  how you can control what is being collected/ shared/ sold could prove very useful especially as you are navigating in and around or away from a website..
 
 
         CHALLENGE :
