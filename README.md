@@ -16,6 +16,7 @@ The state for the timestamps is located in `src/redux/reducers/gameConfig.ts`.
 ## Tech Used
 
 ## Folder Structure
+To maintain good development practices and consistency across files/folders, we recommend using the same guidelines and structure as follows if you're building upon the code. In this project we used a reusable architecture for all folders, so create a new `component` only if it is used in more than one file, the same goes for `utils`, `constants`, and the other folders.
 
 ## Getting Started
 
