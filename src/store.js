@@ -3,11 +3,11 @@ import { persistReducer, persistStore } from "redux-persist";
 import storage from "redux-persist/lib/storage";
 import thunk from "redux-thunk";
 import helpers from "@root/helpers";
-import Reducers from "@reducers";
+import Reducers from "@reducers/index";
 
 const middleware = [thunk.withExtraArgument(helpers)];
 const persistedReducer = persistReducer(
-  { key: "root", storage, blacklist: ["notifications"] },
+  { key: "root", storage, blacklist: ["notifications", "formOptions"] },
   Reducers
 );
 

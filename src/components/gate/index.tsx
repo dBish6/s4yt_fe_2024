@@ -10,14 +10,14 @@ import { connect } from "react-redux";
 
 // import { store } from "@root/store";
 
-import socketProvider from "@services/socketProvider";
+// import socketProvider from "@services/socketProvider";
 
 import { isNotPlayer } from "@actions/user";
 import { SET_CURRENT_USER, SET_NEW_LOGIN_FLAG } from "@actions/index";
 import { initializeCoins, clearRaffleItems } from "@actions/coinTracker";
 import { referralUsedListener } from "@actions/user";
 
-import initializeFirebase from "@root/services/initializeFirebase";
+// import initializeFirebase from "@root/services/initializeFirebase";
 import history from "@utils/History";
 import delay from "@utils/delay";
 
@@ -106,7 +106,7 @@ const Gate: React.FC<Props> = ({
   useEffect(() => {
     if (user.newLogin) {
       storeUserData(user.newLogin);
-      initializeFirebase(user.newLogin.user.id, user.newLogin.user.email); // Temporary use of Firebase because some things couldn't get done in the back-end.
+      // initializeFirebase(user.newLogin.user.id, user.newLogin.user.email); // Temporary use of Firebase because some things couldn't get done in the back-end.
 
       delay(2000, () => clearNewLoginFlag());
     }

@@ -8,13 +8,7 @@ import { Dispatch } from "redux";
 import { connect } from "react-redux";
 
 import { registerPlayer, updateProfile } from "@actions/user";
-import {
-  getGrades,
-  getEducation,
-  getCountries,
-  getRegions,
-  getCities,
-} from "@actions/formOptions";
+import { getCountries, getRegions, getCities } from "@actions/formOptions";
 import { addNotification } from "@actions/notifications";
 import { SET_REGIONS, SET_CITIES } from "@actions/index";
 
@@ -31,13 +25,11 @@ import s from "./styles.module.css";
 
 interface Props {
   formOptions: FormOptionsState;
-  getEducation: () => Promise<void>;
-  getGrades: () => Promise<void>;
   getCountries: () => Promise<void>;
-  getRegions: (countryId: number) => Promise<void>;
-  resetRegions: () => void;
-  getCities: (regionId: number) => Promise<void>;
-  resetCities: () => void;
+  getRegions: (countryName: number) => Promise<void>;
+  resetRegions: (setCurrentData: React.Dispatch<React.SetStateAction<UserFormData>>) => void;
+  getCities: (regionName: number) => Promise<void>;
+  resetCities: (setCurrentData: React.Dispatch<React.SetStateAction<UserFormData>>) => void;
   user: UserReduxState;
   registerPlayer: (
     userData: UserFormData,
@@ -66,30 +58,25 @@ interface UserFormData {
   email: string;
   password: string;
   password_confirmation: string;
-  // instagram: string;
-  education_id: null | number;
+  education: null | number;
   school: string;
-  grade_id: null | number;
-  country_id: null | number;
-  region_id: null | number;
-  city_id: null | number;
+  country: null | number;
+  region: null | number;
+  city: null | number;
 }
 
 const UserForm: React.FC<Props> = ({
   formOptions,
-  getEducation,
-  getGrades,
   getCountries,
   getRegions,
   resetRegions,
   getCities,
   resetCities,
-  // This will not be passed in at profile anymore, it will be in the redux.
   user,
   registerPlayer,
   updateProfile,
   addNotification,
-  referral,
+  referral
 }) => {
   const formRef = useRef<HTMLFormElement>(null),
     [form, setForm] = useState({
@@ -100,35 +87,31 @@ const UserForm: React.FC<Props> = ({
       email: user.credentials?.email ?? "",
       password: "",
       password_confirmation: "",
-      education_id: user.credentials?.education_id ?? null,
+      education: user.credentials?.education ?? null,
       school: user.credentials?.school ?? "",
-      grade_id: user.credentials?.grade_id ?? null,
-      country_id: user.credentials?.country_id ?? null,
-      region_id: user.credentials?.region_id ?? null,
-      city_id: user.credentials?.city_id ?? null,
+      country: user.credentials?.country ?? null,
+      region: user.credentials?.region ?? null,
+      city: user.credentials?.city ?? null
     });
 
   useEffect(() => {
-    if (!formOptions.grades.length) getGrades();
-
-    if (!formOptions.education.length) getEducation();
-
     if (!formOptions.countries.length) getCountries();
   }, []);
 
   useEffect(() => {
-    // Just for a reset if refresh or something.
-    if (typeof formOptions.regions === "string") resetRegions();
-    if (currentData.country_id) {
-      getRegions(currentData.country_id);
-      // Reset too because of change of if country changes.
-      if (currentData.city_id) resetCities();
+    if (currentData.country) {
+      getRegions(currentData.country);
+      if (currentData.region) resetRegions(setCurrentData);
+      if (currentData.city) resetCities(setCurrentData);
     }
-  }, [currentData.country_id]);
+  }, [currentData.country]);
 
   useEffect(() => {
-    if (currentData.region_id) getCities(currentData.region_id);
-  }, [currentData.region_id]);
+    if (currentData.region) {
+      getCities(currentData.region);
+      if (currentData.city) resetCities(setCurrentData);
+    }
+  }, [currentData.region]);
 
   const submit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -150,14 +133,14 @@ const UserForm: React.FC<Props> = ({
         checkValidEmail(field as HTMLInputElement);
 
       if (
-        user.token &&
+        user.tokens.access &&
         ["password", "password_confirmation"].includes(field.name)
       ) {
         continue;
       } else {
-        if (!user.token && field.name === "password")
+        if (!user.tokens.access && field.name === "password")
           passwordValue = field.value;
-        if (!user.token && field.name === "password_confirmation") {
+        if (!user.tokens.access && field.name === "password_confirmation") {
           checkMatchingPasswords(field as HTMLInputElement, passwordValue!);
         } else {
           checkValidity(field);
@@ -167,7 +150,7 @@ const UserForm: React.FC<Props> = ({
       if (!field.validity.valid && valid) valid = false;
 
       if (valid) {
-        if (user.token) {
+        if (user.tokens.access) {
           const userCredentialsValue =
               user.credentials && (user.credentials as any)[field.name],
             fieldValue = parseInt(field.value)
@@ -189,15 +172,15 @@ const UserForm: React.FC<Props> = ({
       }
     }
 
-    if (user.token && !Object.keys(changedData).length) {
+    if (user.tokens.access && !Object.keys(changedData).length) {
       addNotification({
         error: true,
         content: "Nothing to update",
         close: false,
-        duration: 0,
+        duration: 0
       });
     } else if (valid) {
-      if (user.token) {
+      if (user.tokens.access) {
         setForm((prev) => ({ ...prev, processing: true }));
         await updateProfile(relevantData, formRef, setForm);
       } else {
@@ -209,8 +192,8 @@ const UserForm: React.FC<Props> = ({
             ...relevantData,
             ...(referral && {
               referral_code: queries![0].split("=")[1],
-              version_id: queries![1].split("=")[1],
-            }),
+              version_id: queries![1].split("=")[1]
+            })
           },
           formRef,
           setForm
@@ -221,13 +204,13 @@ const UserForm: React.FC<Props> = ({
 
   return (
     <>
-      {!user.token && (
+      {!user.tokens.access && (
         <div className={s.detail} aria-label="* Means the Field is Required">
           Required: <span className={s.required}>*</span>
         </div>
       )}
       <form
-        id={user.token ? "userForm" : "registerForm"}
+        id={user.tokens.access ? "userForm" : "registerForm"}
         onSubmit={(e) => submit(e)}
         className={s.form}
         ref={formRef}
@@ -237,7 +220,7 @@ const UserForm: React.FC<Props> = ({
         <div role="presentation">
           <label htmlFor="name">
             Name
-            {!user.token && (
+            {!user.tokens.access && (
               <span aria-hidden="true" className={s.required}>
                 *
               </span>
@@ -251,7 +234,7 @@ const UserForm: React.FC<Props> = ({
             disabled={form.processing}
             {...(currentData.name && { defaultValue: currentData.name })}
             autoComplete="off"
-            {...(!user.token && { required: true })}
+            {...(!user.tokens.access && { required: true })}
             minLength={2}
           />
         </div>
@@ -259,7 +242,7 @@ const UserForm: React.FC<Props> = ({
         <div role="presentation">
           <label htmlFor="email">
             Email
-            {!user.token && (
+            {!user.tokens.access && (
               <span aria-hidden="true" className={s.required}>
                 *
               </span>
@@ -274,14 +257,14 @@ const UserForm: React.FC<Props> = ({
             disabled={form.processing}
             {...(currentData.email && { defaultValue: currentData.email })}
             autoComplete="off"
-            {...(!user.token && { required: true })}
+            {...(!user.tokens.access && { required: true })}
           />
         </div>
 
         {/* This is for the register only. */}
         <span
           style={{
-            display: user.token ? "none" : "",
+            display: user.tokens.access ? "none" : "",
           }}
         >
           <div role="presentation">
@@ -329,36 +312,11 @@ const UserForm: React.FC<Props> = ({
           </div>
         </span>
 
-        <div
-          role="presentation"
-          style={{
-            display: user.token ? "none" : "",
-          }}
-        >
-          <label htmlFor="instagram" style={{ opacity: "0.65" }}>
-            Instagram
-          </label>
-          <Input
-            id="instagram"
-            name="instagram"
-            type="text"
-            // onChange={(e) => updateField(e)}
-            // disabled={form.processing}
-            // {...(currentData.instagram && {
-            //   defaultValue: currentData.instagram,
-            // })}
-            autoComplete="off"
-            disabled={true}
-            title="Work in Progress"
-            style={{ opacity: "0.65" }}
-          />
-        </div>
-
         <span>
           <div role="presentation">
             <label htmlFor="education">
               Education
-              {!user.token && (
+              {!user.tokens.access && (
                 <span aria-hidden="true" className={s.required}>
                   *
                 </span>
@@ -366,80 +324,42 @@ const UserForm: React.FC<Props> = ({
             </label>
             <Select
               id="education"
-              name="education_id"
+              name="education"
               onChange={(e) => updateField<UserFormData>(e, setCurrentData)}
               disabled={form.processing}
-              {...(currentData.education_id && {
-                defaultValue: currentData.education_id,
+              {...(currentData.education && {
+                defaultValue: currentData.education,
               })}
-              {...(!user.token && { required: true })}
+              {...(!user.tokens.access && { required: true })}
             >
               <option value="">- Select -</option>
-              {formOptions.education &&
-                formOptions.education.map((education, index) => {
-                  return (
-                    <option key={index} value={education.id}>
-                      {education.name}
-                    </option>
-                  );
-                })}
+              <option value="Grade 9">Grade 9</option>
+              <option value="Grade 9">Grade 10</option>
+              <option value="Grade 9">Grade 11</option>
+              <option value="Grade 9">Grade 12</option>
+              <option value="Other">Other</option>
             </Select>
           </div>
-
+          
           <div role="presentation">
-            <label htmlFor="grade">
-              Grade
-              {!user.token && (
-                <span aria-hidden="true" className={s.required}>
-                  *
-                </span>
-              )}
-            </label>
-            <Select
-              id="grade"
-              name="grade_id"
+            <label htmlFor="school">School</label>
+            <Input
+              id="school"
+              name="school"
+              type="text"
               onChange={(e) => updateField<UserFormData>(e, setCurrentData)}
-              disabled={form.processing}
-              {...(currentData.grade_id && {
-                defaultValue: currentData.grade_id,
-              })}
-              {...(!user.token && { required: true })}
-            >
-              <option value="">- Select -</option>
-              {formOptions.grades &&
-                formOptions.grades.map((grade, index) => {
-                  return (
-                    <option key={index} value={grade.id}>
-                      {grade.name}
-                    </option>
-                  );
-                })}
-            </Select>
+              disabled={!currentData.education || form.processing}
+              {...(currentData.school && { defaultValue: currentData.school })}
+              autoComplete="off"
+            />
           </div>
         </span>
-
-        {/* Hidden */}
-        <div
-          role="presentation"
-          style={{ display: currentData.education_id !== 1 ? "none" : "" }}
-        >
-          <label htmlFor="school">school</label>
-          <Input
-            id="school"
-            name="school"
-            type="text"
-            onChange={(e) => updateField<UserFormData>(e, setCurrentData)}
-            disabled={form.processing}
-            {...(currentData.school && { defaultValue: currentData.school })}
-            autoComplete="off"
-          />
-        </div>
 
         <span>
           <div role="presentation">
             <label htmlFor="country">
               Country
-              {!user.token && (
+              {!user.tokens.access && (
                 <span aria-hidden="true" className={s.required}>
                   *
                 </span>
@@ -447,17 +367,17 @@ const UserForm: React.FC<Props> = ({
             </label>
             <Select
               id="country"
-              name="country_id"
+              name="country"
               onChange={(e) => updateField<UserFormData>(e, setCurrentData)}
               disabled={form.processing}
-              {...(currentData.country_id && { value: currentData.country_id })}
-              {...(!user.token && { required: true })}
+              {...(currentData.country && { value: currentData.country })}
+              {...(!user.tokens.access && { required: true })}
             >
               <option value="">- Select -</option>
               {formOptions.countries &&
                 formOptions.countries.map((country, index) => {
                   return (
-                    <option key={index} value={country.id}>
+                    <option key={index} value={country.name}>
                       {country.name}
                     </option>
                   );
@@ -470,33 +390,33 @@ const UserForm: React.FC<Props> = ({
               aria-live="polite"
               aria-busy={formOptions.regions.length === 0}
               id="region"
-              name="region_id"
+              name="region"
               onChange={(e) => updateField<UserFormData>(e, setCurrentData)}
               disabled={
-                !currentData.country_id ||
+                !currentData.country ||
                 formOptions.regions.length === 0 ||
                 typeof formOptions.regions === "string" ||
                 form.processing
               }
-              {...(currentData.region_id && { value: currentData.region_id })}
+              {...(currentData.region && { value: currentData.region })}
             >
               <option value="">- Select -</option>
               {formOptions.regions &&
                 typeof formOptions.regions !== "string" &&
-                formOptions.regions.map((state, index) => {
+                formOptions.regions.map((region, index) => {
                   return (
-                    <option key={index} value={state.id}>
-                      {state.name}
+                    <option key={index} value={region.name}>
+                      {region.name}
                     </option>
                   );
                 })}
             </Select>
-            {formOptions.regions.length === 0 && currentData.country_id && (
+            {formOptions.regions.length === 0 && currentData.country && (
               <Spinner />
             )}
             {typeof formOptions.regions === "string" && (
               <small className={s.notFoundMsg}>
-                No regions were found for the given country
+                {formOptions.regions}
               </small>
             )}
           </div>
@@ -504,9 +424,9 @@ const UserForm: React.FC<Props> = ({
 
         <div
           role="presentation"
-          {...(user.token &&
+          {...(user.tokens.access &&
             typeof formOptions.regions === "string" && {
-              className: s.notFoundMsg,
+              className: s.notFoundMsg
             })}
         >
           <label htmlFor="city">City</label>
@@ -514,40 +434,44 @@ const UserForm: React.FC<Props> = ({
             aria-live="polite"
             aria-busy={formOptions.cities.length === 0}
             id="city"
-            name="city_id"
+            name="city"
             onChange={(e) => updateField<UserFormData>(e, setCurrentData)}
             disabled={
-              !currentData.region_id ||
+              !currentData.region ||
               formOptions.cities.length === 0 ||
               typeof formOptions.regions === "string" ||
+              typeof formOptions.cities === "string" ||
               form.processing
             }
-            {...(currentData.city_id && { value: currentData.city_id })}
+            {...(currentData.city && { value: currentData.city })}
           >
             <option value="">- Select -</option>
             {formOptions.cities &&
+              typeof formOptions.cities !== "string" &&
               formOptions.cities.map((city, index) => {
                 return (
-                  <option key={index} value={city.id}>
+                  <option key={index} value={city.name}>
                     {city.name}
                   </option>
                 );
               })}
           </Select>
           {formOptions.cities.length === 0 &&
-            currentData.region_id &&
-            currentData.region_id !== user.credentials?.region_id && (
+            currentData.region &&
+            currentData.region !== user.credentials?.region && (
               <Spinner />
             )}
-          {typeof formOptions.regions === "string" && (
-            <small className={s.notFoundMsg}>
-              No cities were found for the given region
-            </small>
+          {typeof formOptions.regions === "string" ? (
+            <small className={s.notFoundMsg}>{formOptions.regions}</small>
+          ) : (
+            typeof formOptions.cities === "string" && (
+              <small className={s.notFoundMsg}>{formOptions.cities}</small>
+            )
           )}
         </div>
 
         <div>
-          {user.token ? (
+          {user.tokens.access ? (
             <button
               type="submit"
               className="updateBtn"
@@ -575,29 +499,25 @@ const UserForm: React.FC<Props> = ({
 
 const mapStateToProps = ({
   user,
-  formOptions,
+  formOptions
 }: {
   user: UserReduxState;
   formOptions: FormOptionsState;
 }) => ({
   user,
-  formOptions,
+  formOptions
 });
 const mapDispatchToProps = (dispatch: Dispatch<any>) => ({
-  getEducation: () => dispatch(getEducation() as unknown) as Promise<void>,
-  getGrades: () => dispatch(getGrades() as unknown) as Promise<void>,
   getCountries: () => dispatch(getCountries() as unknown) as Promise<void>,
-  getRegions: (regionId: number) =>
-    dispatch(getRegions(regionId) as unknown) as Promise<void>,
-  getCities: (regionId: number) =>
-    dispatch(getCities(regionId) as unknown) as Promise<void>,
+  getRegions: (countryName: number) =>
+    dispatch(getRegions(countryName) as unknown) as Promise<void>,
+  getCities: (regionName: number) =>
+    dispatch(getCities(regionName) as unknown) as Promise<void>,
   registerPlayer: (
     userData: UserFormData,
     formRef: React.RefObject<HTMLFormElement>,
     setForm: React.Dispatch<
-      React.SetStateAction<{
-        processing: boolean;
-      }>
+      React.SetStateAction<{ processing: boolean }>
     >
   ) =>
     dispatch(
@@ -607,9 +527,7 @@ const mapDispatchToProps = (dispatch: Dispatch<any>) => ({
     userData: UserFormData,
     formRef: React.RefObject<HTMLFormElement>,
     setForm: React.Dispatch<
-      React.SetStateAction<{
-        processing: boolean;
-      }>
+      React.SetStateAction<{ processing: boolean }>
     >
   ) =>
     dispatch(
@@ -618,8 +536,14 @@ const mapDispatchToProps = (dispatch: Dispatch<any>) => ({
   addNotification: (notification: Omit<NotificationValues, "id">) =>
     dispatch(addNotification(notification)),
 
-  resetRegions: () => dispatch({ type: SET_REGIONS, payload: [] }),
-  resetCities: () => dispatch({ type: SET_CITIES, payload: [] }),
+  resetRegions: (setCurrentData: React.Dispatch<React.SetStateAction<UserFormData>>) => {
+    setCurrentData((prev) => ({ ...prev, region: null }));
+    dispatch({ type: SET_REGIONS, payload: [] });
+  },
+  resetCities: (setCurrentData: React.Dispatch<React.SetStateAction<UserFormData>>) => {
+    setCurrentData((prev) => ({ ...prev, city: null }));
+    dispatch({ type: SET_CITIES, payload: [] });
+  },
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(UserForm);

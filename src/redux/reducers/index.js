@@ -14,5 +14,5 @@ export default combineReducers({
   gameConfig,
   coinTracker,
   getBusinesses,
-  getRaffleWinners,
+  getRaffleWinners
 });
