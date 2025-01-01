@@ -4,9 +4,9 @@ import Gate from "@components/gate";
 
 import Register from "@views/user/register";
 import VerifyEmail from "@views/user/register/verifyEmail";
-import VerifySuccess from "@views/user/register/verifyEmail/VerifySuccess";
+import VerifyFinalize from "@views/user/register/verifyEmail/VerifyFinalize";
 
-// import Login from "@views/user/login";
+import Login from "@views/user/login";
 // import ForgotPassword from "@views/user/login/forgot";
 // import ResetPassword from "@views/user/resetPassword";
 
@@ -29,9 +29,9 @@ import VerifySuccess from "@views/user/register/verifyEmail/VerifySuccess";
 export const routes = [
   { path: "/register", view: Register, restricted: 2, title: "Register" },
   { path: "/register/verify-email", view: VerifyEmail, restricted: 0, title: "Verify" },
-  { path: "/register/verify-email/success", view: VerifySuccess, restricted: 0, title: "Verify Success" },
+  { path: "/register/verify-email/verify", view: VerifyFinalize, restricted: 0, title: "Verify Success" },
 
-  // { path: "/login", view: Login, restricted: 2, title: "Login" },
+  { path: "/login", view: Login, restricted: 2, title: "Login" },
   // { path: "/login/forgot", view: ForgotPassword, restricted: 2, title: "Forgot Password" },
   // { path: "/password-reset", view: ResetPassword, restricted: 2, title: "Reset Password" },
 

@@ -5,22 +5,27 @@ import coins2 from "@static/coins_variant2.png";
 import coins3 from "@static/coins_variant3.png";
 import feather from "@static/feather.png";
 
-interface Props {
+interface Props extends React.HTMLAttributes<HTMLDivElement> {
   children?: React.ReactNode;
   addCoins?: "coins1" | "coins2" | "coins3";
   addFeather?: "left" | "right1" | "right2";
   style?: React.CSSProperties;
 }
 
-const Content: React.FC<Props> & React.HTMLAttributes<HTMLDivElement> = ({
+const Content: React.FC<Props> = ({
   children,
   addCoins,
   addFeather,
+  className,
   style,
   ...options
 }) => {
   return (
-    <div className={s.container} style={style} {...options}>
+    <div
+      className={`${s.container}${className ? " " + className : ""}`}
+      style={style}
+      {...options}
+    >
       {addFeather && (
         <img
           src={feather}

@@ -39,7 +39,7 @@ interface Props {
         processing: boolean;
       }>
     >
-  ) => Promise<any>;
+  ) => Promise<void>;
   updateProfile: (
     userData: UserFormData,
     formRef: React.RefObject<HTMLFormElement>,
@@ -522,7 +522,7 @@ const mapDispatchToProps = (dispatch: Dispatch<any>) => ({
   ) =>
     dispatch(
       registerPlayer(userData, formRef, setForm) as unknown
-    ) as Promise<any>,
+    ) as Promise<void>,
   updateProfile: (
     userData: UserFormData,
     formRef: React.RefObject<HTMLFormElement>,

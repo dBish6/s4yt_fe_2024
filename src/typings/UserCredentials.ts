@@ -8,7 +8,7 @@ export default interface UserCredentials {
   education: number;
   email: string;
   // grade_id: number;
-  instagram_handle: string | null;
+  // instagram_handle: string | null;
   name: string;
   quiz_submitted: number;
   referral_link: string;

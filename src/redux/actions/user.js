@@ -32,7 +32,6 @@ export const registerPlayer =
       } else {
         showError(data, dispatch);
       }
-      return res;
     } catch (error) {
       errorHandler("registerPlayer", error);
     } finally {
@@ -42,7 +41,8 @@ export const registerPlayer =
 export const sendVerifyEmail =
   (email, formRef, setForm) => async (dispatch, _) => {
     try {
-      const { data, meta } = await Api.post("/email/verify", { email });
+      // TODO: Endpoint name.
+      const { data, meta } = await Api.post("/email/verify/send", { email });
 
       if (meta.ok) {
         formRef.current.reset();
@@ -59,11 +59,33 @@ export const sendVerifyEmail =
       } else {
         showError(data, dispatch);
       }
-      return res;
     } catch (error) {
       errorHandler("sendVerifyEmail", error);
     } finally {
       setForm((prev) => ({ ...prev, processing: false }));
+    }
+  };
+export const verifyEmail =
+  (token, setResult) => async (dispatch, _) => {
+    try {
+      // TODO: Endpoint name.
+      const res = await Api.post("/email/verify", { token });
+
+      if (res.meta.ok) {
+        dispatch(
+          addNotification({
+            error: false,
+            content: res.data.message,
+            close: false,
+            duration: 0
+          })
+        );
+      } else {
+        showError(res.data, dispatch);
+      }
+      setResult(res);
+    } catch (error) {
+      errorHandler("verifyEmail", error);
     }
   };
 
