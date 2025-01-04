@@ -1,106 +1,39 @@
-import { Api } from "@services/index";
-import errorHandler, { showError } from "@services/errorHandler";
+import errorHandler from "@services/errorHandler";
 
-import {
-  SET_GRADES,
-  SET_EDUCATIONS,
-  SET_COUNTRIES,
-  SET_REGIONS,
-  SET_CITIES,
-} from "@actions/index";
+import { SET_COUNTRIES, SET_REGIONS, SET_CITIES } from "@actions/index";
 
-export const getEducation = () => async (dispatch, getState) => {
+export const getCountries = () => async (dispatch, _) => {
   try {
-    const res = await Api.get("/education");
-
-    if (res.success) {
-      dispatch({
-        type: SET_EDUCATIONS,
-        payload: res.data.education,
-      });
-    } else {
-      showError(res, dispatch);
-    }
-
-    return res;
-  } catch (error) {
-    errorHandler("getEducation", error);
-  }
-};
-
-export const getGrades = () => async (dispatch, getState) => {
-  try {
-    const res = await Api.get("/grades");
-
-    if (res.success) {
-      dispatch({
-        type: SET_GRADES,
-        payload: res.data.grades,
-      });
-    } else {
-      showError(res, dispatch);
-    }
-
-    return res;
-  } catch (error) {
-    errorHandler("getGrades", error);
-  }
-};
-
-export const getCountries = () => async (dispatch, getState) => {
-  try {
-    const res = await Api.get("/countries");
-
-    if (res.success) {
-      dispatch({
-        type: SET_COUNTRIES,
-        payload: res.data.countries,
-      });
-    } else {
-      showError(res, dispatch);
-    }
-
-    return res;
+    const countries = (await import("@constants/COUNTRIES")).default;
+    dispatch({ type: SET_COUNTRIES, payload: countries });
   } catch (error) {
     errorHandler("getCountries", error);
   }
 };
 
-export const getRegions = (countryId) => async (dispatch, getState) => {
+export const getRegions = (countryName) => async (dispatch, _) => {
   try {
-    // This is here for loading the field in the form.
-    dispatch({ type: SET_REGIONS, payload: [] });
-    const res = await Api.post("/regions", { country_id: countryId });
+    dispatch({ type: SET_REGIONS, payload: [] }); // This is here for loading the field in the form.
+    let selected = (await import("@constants/REGIONS")).default.find(
+      (region) => region.countryName === countryName
+    );
+    selected = selected?.regions || "No regions was found from your selected country, you can skip this step.";
 
-    if (res.success) {
-      dispatch({ type: SET_REGIONS, payload: res.data.regions });
-    } else {
-      res.message && res.message === "No regions found"
-        ? dispatch({ type: SET_REGIONS, payload: "Not Found" }) // 404 message.
-        : showError(res, dispatch);
-    }
-
-    return res;
+    dispatch({ type: SET_REGIONS, payload: selected });
   } catch (error) {
     errorHandler("getRegions", error);
   }
 };
 
-export const getCities = (regionId) => async (dispatch, getState) => {
+export const getCities = (regionName) => async (dispatch, _) => {
   try {
     dispatch({ type: SET_CITIES, payload: [] });
-    const res = await Api.post("/cities", { region_id: regionId });
+    let cities = (await import("@constants/CITIES")).default.filter(
+      (city) => city.region_name === regionName
+    );
+    if (!cities.length) cities = "No cities was found from your selected region, you can skip this step.";
 
-    if (res.success) {
-      dispatch({
-        type: SET_CITIES,
-        payload: res.data.cities,
-      });
-    } else {
-      showError(res, dispatch);
-    }
-
-    return res;
+    dispatch({ type: SET_CITIES, payload: cities });
   } catch (error) {
     errorHandler("getCities", error);
   }

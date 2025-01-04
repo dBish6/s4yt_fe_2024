@@ -1,3 +1,4 @@
+/* <======================================/ Send Email Verfiry \======================================> */
 .form {
   position: relative;
   padding: 26px 0 0 34px;
@@ -59,4 +60,29 @@
   .form {
     padding: 26px 0 0 0;
   }
+}
+
+/* <======================================/ Finalize Email Verfiry \======================================> */
+.finalize h2 {
+  font-family: "BebasNeue", Arial;
+  font-size: var(--heading-38);
+  color: var(--pbrown);
+}
+.finalize h2[data-success="false"] {
+  color: var(--form-red);
+}
+.finalize h2[data-success="true"] {
+  color: #00bf3a;
+}
+
+.finalize p {
+  font-family: "Corbel", Arial;
+  font-size: 21px;
+  color: var(--pbrown);
+  margin-bottom: 1.5rem;
+}
+
+.finalize a {
+  font-size: 21px;
+  color: var(--pbrown);
 }

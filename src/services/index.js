@@ -1,36 +1,34 @@
 import { store } from "@root/store";
 import history from "@utils/History";
 
-const headers = (token) => {
-  const headers = {
-    Accept: "application/json",
-    "Content-Type": "application/json",
-  };
-  if (token) headers.Authorization = `Bearer ${token}`;
-
-  return headers;
-};
+const DEFAULT_HEADERS = Object.freeze({
+  Accept: "application/json",
+  "Content-Type": "application/json"
+});
 
 const sendRequest = async (method, url, params, body) => {
   const apiUrl = params
-      ? `${process.env.REACT_APP_API_BASE_URL}${url}?${new URLSearchParams(
-          params
-        ).toString()}`
-      : `${process.env.REACT_APP_API_BASE_URL}${url}`,
-    token = store.getState().user.token;
+      ? `${import.meta.env.VITE_API_BASE_URL}${url}?${new URLSearchParams(params).toString()}`
+      : `${import.meta.env.VITE_API_BASE_URL}${url}`,
+    tokens = store.getState().user.tokens;
 
   const response = await fetch(apiUrl, {
     method,
-    headers: headers(token),
-    ...(body && { body: JSON.stringify(body) }),
+    headers: {
+      ...DEFAULT_HEADERS,
+      Authorization: `Bearer ${tokens.access}`,
+      "x-xsrf-token": tokens.csrf
+    },
+    ...(body && { body: JSON.stringify(body) })
   });
-  if (response && response.status === 401 && token) history.push("/error-401");
+  if (response && response.status === 401 && tokens.access) history.push("/error-401");
+  const data = await response.json();
 
-  return await response.json();
+  return { data, meta: response };
 };
 
 export const Api = {
   get: (url, params) => sendRequest("GET", url, params),
   post: (url, body) => sendRequest("POST", url, null, body),
-  patch: (url, body) => sendRequest("PATCH", url, null, body),
+  patch: (url, body) => sendRequest("PATCH", url, null, body)
 };

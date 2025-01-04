@@ -6,20 +6,16 @@ export default (func, error) => {
   history.push("/error-500");
 };
 
-export const showError = (res, dispatch, customMessage) => {
+export const showError = (data, status, dispatch, customMessage) => {
+  const message = data.message || "Unexpected Error",
+    errorMsg = status >= 500 ? customMessage || message : message;
+
   dispatch(
     addNotification({
       error: true,
-      content:
-        res.errors && Object.keys(res.errors).length
-          ? res.errors[Object.keys(res.errors)[0]][0]
-          : res.message
-          ? res.message
-          : customMessage
-          ? customMessage
-          : "Unexpected Error",
+      content: errorMsg,
       close: false,
-      duration: 0,
+      duration: 0
     })
   );
 };
