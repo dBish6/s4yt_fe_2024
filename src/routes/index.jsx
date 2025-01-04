@@ -7,8 +7,8 @@ import VerifyEmail from "@views/user/register/verifyEmail";
 import VerifyFinalize from "@views/user/register/verifyEmail/VerifyFinalize";
 
 import Login from "@views/user/login";
-// import ForgotPassword from "@views/user/login/forgot";
-// import ResetPassword from "@views/user/resetPassword";
+import ForgotPassword from "@views/user/login/forgot";
+import ResetPassword from "@views/user/resetPassword";
 
 // import Profile from "@views/user/profile";
 
@@ -32,8 +32,8 @@ export const routes = [
   { path: "/register/verify-email/verify", view: VerifyFinalize, restricted: 0, title: "Verify Success" },
 
   { path: "/login", view: Login, restricted: 2, title: "Login" },
-  // { path: "/login/forgot", view: ForgotPassword, restricted: 2, title: "Forgot Password" },
-  // { path: "/password-reset", view: ResetPassword, restricted: 2, title: "Reset Password" },
+  { path: "/login/forgot", view: ForgotPassword, restricted: 2, title: "Forgot Password" },
+  { path: "/password-reset", view: ResetPassword, restricted: 2, title: "Reset Password" },
 
   // { path: "/profile", view: Profile, restricted: 1, title: "Profile" },
 

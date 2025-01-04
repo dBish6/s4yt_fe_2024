@@ -41,8 +41,7 @@ export const registerPlayer =
 export const sendVerifyEmail =
   (email, formRef, setForm) => async (dispatch, _) => {
     try {
-      // TODO: Endpoint name.
-      const { data, meta } = await Api.post("/email/verify/send", { email });
+      const { data, meta } = await Api.post("/sendVerification", { email });
 
       if (meta.ok) {
         formRef.current.reset();
@@ -68,7 +67,6 @@ export const sendVerifyEmail =
 export const verifyEmail =
   (token, setResult) => async (dispatch, _) => {
     try {
-      // TODO: Endpoint name.
       const res = await Api.post("/email/verify", { token });
 
       if (res.meta.ok) {
@@ -91,15 +89,14 @@ export const verifyEmail =
 
 // TODO:
 export const loginPlayer =
-  (userData, setForm) => async (dispatch, getState) => {
+  (userData, setForm) => async (dispatch, _) => {
     try {
-      const res = await Api.post("/auth/login", userData);
+      const { data, meta } = await Api.post("/auth/login", userData);
 
-      if (res.success) {
-        const data = res.data,
-          user = res.data.user,
-          restrictedAccess =
-            data.timestamps === "The game has not started yet" 
+      if (meta.ok) {
+        // const data = res.data;
+          // user = res.data.user,
+          // restrictedAccess = data.timestamps === "The game has not started yet"
             // ||
             // (user.is_backup && (!user.password_updated || !user.profile_updated));
         
@@ -118,10 +115,11 @@ export const loginPlayer =
             })
           );
 
-        // dispatch({ type: SET_TOKEN, payload: data.token });
-        dispatch({ type: SET_TOKENS, payload: tokens });
+        // dispatch({ type: SET_TOKENS, payload: tokens });
+        // dispatch({ type: SET_CURRENT_USER, payload: data.user });
 
         if (data.timestamps === "The game has not started yet") {
+          dispatch(updateConfiguration({ restrictedAccess: true })); // Only allowed to profile.
           dispatch(
             addNotification({
               error: true,
@@ -130,65 +128,43 @@ export const loginPlayer =
               duration: 0
             })
           );
+
+          history.push("/profile");
         } else {
           dispatch(
             updateConfiguration({ timestamps: data.timestamps })
           );
-        }
 
-        // This is temporary for the backup users because they're data wasn't correct.
-        // TODO: Ignore this if.
-        // if (
-        //   user.is_backup &&
-        //   (!user.password_updated || !user.profile_updated)
-        // ) {
-        //   !user.password_updated &&
-        //     dispatch(
-        //       addNotification({
-        //         error: true,
-        //         content: `Your password needs to be updated, please update you password in the "Update Password" section.`,
-        //         close: false,
-        //         duration: 0,
-        //       })
-        //     );
-        //   !user.profile_updated &&
-        //     dispatch(
-        //       addNotification({
-        //         error: true,
-        //         content: `There is some discrepancies within your profile data, please check you profile data and update it in the "Update Profile Info" section.`,
-        //         close: false,
-        //         duration: 0,
-        //       })
-        //     );
-        // } else {
-        // history.push("/");
-        // }
-
-        if (restrictedAccess) {
-          dispatch(updateConfiguration({ restrictedAccess: true })); // Only allowed to profile.
-          history.push("/profile");
-        } else {
           history.push("/");
         }
 
-        dispatch({ type: SET_NEW_LOGIN_FLAG, payload: data });
+        dispatch({ type: SET_TOKENS, payload: tokens });
+        dispatch({ type: SET_CURRENT_USER, payload: data.user });
+
+        // dispatch initializeCoins({ remainingCoins: coins });
+        // dispatch clearRaffleItems();
+
+        // if (restrictedAccess) {
+        //   dispatch(updateConfiguration({ restrictedAccess: true })); // Only allowed to profile.
+        //   history.push("/profile");
+        // } else {
+        //   history.push("/");
+        // }
+
+        // dispatch({ type: SET_NEW_LOGIN_FLAG, payload: data });
 
         dispatch(
           addNotification({
             error: false,
             content: `Welcome ${data.user.name} ✔`,
             close: false,
-            duration: 4000,
+            duration: 4000
           })
         );
       } else {
-        // Does not have validated email message.
-        if (res.message.includes("validated"))
-          history.push("/register/verify-email");
-
         showError(res, dispatch);
       }
-      return res;
+      // return res;
     } catch (error) {
       errorHandler("loginPlayer", error);
     } finally {
@@ -223,9 +199,8 @@ export const isNotPlayer =
     return false;
   };
 
-// TODO:
 export const sendResetPasswordEmail =
-  (email, formRef, setForm) => async (dispatch, getState) => {
+  (email, formRef, setForm) => async (dispatch, _) => {
     try {
       const res = await Api.post("/email/reset", { email });
 
@@ -238,7 +213,7 @@ export const sendResetPasswordEmail =
               "Success! Check your inbox to reset your password. In case you don't find it there,\
                please check your spam folder.",
             close: false,
-            duration: 0,
+            duration: 0
           })
         );
         setForm((prev) => ({ ...prev, success: true }));
@@ -252,14 +227,12 @@ export const sendResetPasswordEmail =
       setForm((prev) => ({ ...prev, processing: false }));
     }
   };
-// TODO:
-export const resetPassword = (userData) => (dispatch, getState) => {
+export const resetPassword = (userData) => () => {
   return Api.patch("/password", userData).catch((error) =>
     errorHandler("resetPassword", error)
   );
 };
-// TODO:
-export const updatePassword = (userData) => (dispatch, getState) => {
+export const updatePassword = (userData) => () => {
   return Api.patch("/player/password", userData).catch((error) =>
     errorHandler("updatePassword", error)
   );
