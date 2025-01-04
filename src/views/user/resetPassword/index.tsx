@@ -8,7 +8,7 @@ import PasswordForm from "@components/forms/password";
 
 const ResetPassword: React.FC = () => {
   const [breakCenter, setBreakCenter] = useState(false),
-    [queryParameters] = useSearchParams();
+    [searchParams] = useSearchParams();
 
   useEffect(() => {
     const handleResize = () => {
@@ -38,7 +38,7 @@ const ResetPassword: React.FC = () => {
         addCoins="coins1"
         style={{ maxWidth: "600px", marginInline: "auto" }}
       >
-        <PasswordForm playerId={queryParameters.get("id")} />
+        <PasswordForm playerId={searchParams.get("token")} />
       </Content>
     </Layout>
   );
