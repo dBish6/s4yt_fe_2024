@@ -5,6 +5,8 @@ import { useLayoutEffect, useState } from "react";
 import { useSearchParams, Link } from "react-router-dom";
 import { connect } from "react-redux";
 
+import uuidRegex from "@root/constants/uuidRegex";
+
 import history from "@utils/History";
 
 import { verifyEmail } from "@actions/user";
@@ -33,7 +35,7 @@ function isUuid(token: string) {
 }
 
 const VerifyFinalize: React.FC<Props> = ({ verifyEmail, addNotification }) => {
-  const [searchParams, setSearchParams] = useSearchParams(),
+  const [searchParams] = useSearchParams(),
     [result, setResult] = useState<ResultState>(null);
 
   useLayoutEffect(() => {

@@ -24,7 +24,7 @@ interface Props {
   loginPlayer: (
     userData: LoginFormData,
     setForm: React.Dispatch<React.SetStateAction<{ processing: boolean }>>
-  ) => Promise<any>;
+  ) => Promise<void>;
 }
 
 interface LoginFormData {
@@ -152,7 +152,7 @@ const mapDispatchToProps = (dispatch: Dispatch<any>) => ({
   loginPlayer: (
     userData: LoginFormData,
     setForm: React.Dispatch<React.SetStateAction<{ processing: boolean }>>
-  ) => dispatch(loginPlayer(userData, setForm) as unknown) as Promise<any>
+  ) => dispatch(loginPlayer(userData, setForm) as unknown) as Promise<void>
 });
 
 export default connect(null, mapDispatchToProps)(Login);
