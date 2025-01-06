@@ -136,16 +136,16 @@ const Header: React.FC<Props> & React.HTMLAttributes<HTMLDivElement> = ({
 
 const mapStateToProps = ({
   user,
-  gameConfig,
+  gameConfig
 }: {
   user: UserReduxState;
   gameConfig: GameConfigReduxState;
 }) => ({
-  userToken: user.token,
+  userToken: user.tokens.access,
   restrictedAccess: gameConfig.restrictedAccess,
 });
 const mapDispatchToProps = (dispatch: Dispatch<any>) => ({
-  logoutPlayer: () => dispatch(logoutPlayer()),
+  logoutPlayer: () => dispatch(logoutPlayer())
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(Header);

@@ -1,4 +1,4 @@
-import { UserReduxState } from "@reducers/user";
+import type { UserReduxState } from "@reducers/user";
 
 import { Link } from "react-router-dom";
 import { connect } from "react-redux";
@@ -24,7 +24,7 @@ const Error: React.FC<Props> = ({
   status,
   text,
   linkType,
-  userToken,
+  userToken
 }) => {
   return (
     <Layout>
@@ -96,7 +96,7 @@ const Error: React.FC<Props> = ({
 };
 
 const mapStateToProps = ({ user }: { user: UserReduxState }) => ({
-  userToken: user.token,
+  userToken: user.tokens.access
 });
 
 export default connect(mapStateToProps, null)(Error);

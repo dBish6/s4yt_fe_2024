@@ -1,6 +1,6 @@
 import { UserReduxState } from "@reducers/user";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Dispatch } from "redux";
 import { connect } from "react-redux";
@@ -8,7 +8,8 @@ import { connect } from "react-redux";
 import updateField from "@utils/forms/updateField";
 import checkValidity from "@utils/forms/checkValidity";
 import checkValidEmail from "@root/utils/forms/checkValidEmail";
-import delay from "@utils/delay";
+
+import useRefreshReduxPersister from "@root/hooks/useRefreshReduxPersister";
 
 import { loginPlayer } from "@actions/user";
 
@@ -32,27 +33,14 @@ interface LoginFormData {
   password: string;
 }
 
-const Login: React.FC<Props> = ({ userToken, loginPlayer }) => {
-    const [form, setForm] = useState({ processing: false }),
+const Login: React.FC<Props> = ({ loginPlayer }) => {
+  const [form, setForm] = useState({ processing: false }),
     [currentData, setCurrentData] = useState<LoginFormData>({
       email: "",
       password: ""
     });
 
-  /**
-   *  This is for deleting the user's persisted redux state when we update the state later on in development or if the user was gone for a long time, 
-   *  like since last year's game, so they can have the new state.
-   */
-  useEffect(() => {
-    if (localStorage.getItem("persist:root") && !userToken && !localStorage.getItem("loginLoaded")) 
-    {
-      localStorage.removeItem("persist:root");
-      delay(1000, () => {
-        window.location.reload();
-        localStorage.setItem("loginLoaded", "true");
-      });
-    }
-  }, []);
+  // useRefreshReduxPersister(); // TODO: Use when starting.
 
   const submit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -145,9 +133,6 @@ const Login: React.FC<Props> = ({ userToken, loginPlayer }) => {
   );
 };
 
-const mapStateToProps = ({ user }: { user: UserReduxState }) => ({
-  userToken: user.tokens.access
-});
 const mapDispatchToProps = (dispatch: Dispatch<any>) => ({
   loginPlayer: (
     userData: LoginFormData,

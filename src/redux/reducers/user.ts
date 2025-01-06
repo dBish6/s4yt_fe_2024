@@ -28,7 +28,7 @@ const user = (state = initialState, action: { type: string; payload: any }) => {
         credentials: { ...state.credentials, ...action.payload }
       };
     case LOGOUT:
-      return {};
+      return initialState;
     default:
       return state;
   }
