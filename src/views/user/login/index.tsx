@@ -1,5 +1,3 @@
-import { UserReduxState } from "@reducers/user";
-
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Dispatch } from "redux";

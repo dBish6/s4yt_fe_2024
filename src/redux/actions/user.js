@@ -3,17 +3,17 @@ import errorHandler, { showError } from "@services/errorHandler";
 
 import history from "@utils/History";
 
-import { UPDATE_CURRENT_USER, SET_TOKENS, SET_NEW_LOGIN_FLAG, LOGOUT, CLEAR_CURRENT_CONFIG } from "@actions/index";
+import { UPDATE_CURRENT_USER, SET_TOKENS, SET_NEW_LOGIN_FLAG, SET_CURRENT_USER, LOGOUT, CLEAR_CURRENT_CONFIG } from "@actions/index";
 import { addNotification } from "./notifications";
 import { updateConfiguration } from "./gameConfig";
 // import { initializeCoins } from "./coinTracker";
 
-export const updateCurrentUser = (data) => (dispatch, _) => {
+export const updateCurrentUser = (data) => (dispatch) => {
   dispatch({ type: UPDATE_CURRENT_USER, payload: data });
 };
 
 export const registerPlayer =
-  (userData, formRef, setForm) => async (dispatch, _) => {
+  (userData, formRef, setForm) => async (dispatch) => {
     try {
       const { data, meta } = await Api.post("/auth/register", userData);
 
@@ -30,7 +30,7 @@ export const registerPlayer =
           })
         );
       } else {
-        showError(data, dispatch);
+        showError(data, meta.status, dispatch);
       }
     } catch (error) {
       errorHandler("registerPlayer", error);
@@ -56,7 +56,7 @@ export const sendVerifyEmail =
         );
         setForm((prev) => ({ ...prev, success: true }));
       } else {
-        showError(data, dispatch);
+        showError(data, meta.status, dispatch);
       }
     } catch (error) {
       errorHandler("sendVerifyEmail", error);
@@ -79,7 +79,7 @@ export const verifyEmail =
           })
         );
       } else {
-        showError(res.data, dispatch);
+        showError(res.data, res.meta.status, dispatch);
       }
       setResult(res);
     } catch (error) {
@@ -93,16 +93,10 @@ export const loginPlayer =
     try {
       const { data, meta } = await Api.post("/auth/login", userData);
 
-      if (meta.ok) {
-        // const data = res.data;
-          // user = res.data.user,
-          // restrictedAccess = data.timestamps === "The game has not started yet"
-            // ||
-            // (user.is_backup && (!user.password_updated || !user.profile_updated));
-        
+      if (meta.ok) {     
         const tokens = {
-          access: req.headers.authorization?.split("Bearer ")[1],
-          csrf: req.headers["x-xsrf-token"],
+          access: meta.headers.get("Authorization")?.split("Bearer ")[1],
+          csrf: meta.headers.get("x-xsrf-token")
         };
         if (!Object.values(tokens).length)
           dispatch(
@@ -114,9 +108,6 @@ export const loginPlayer =
               duration: 0
             })
           );
-
-        // dispatch({ type: SET_TOKENS, payload: tokens });
-        // dispatch({ type: SET_CURRENT_USER, payload: data.user });
 
         if (data.timestamps === "The game has not started yet") {
           dispatch(updateConfiguration({ restrictedAccess: true })); // Only allowed to profile.
@@ -141,18 +132,6 @@ export const loginPlayer =
         dispatch({ type: SET_TOKENS, payload: tokens });
         dispatch({ type: SET_CURRENT_USER, payload: data.user });
 
-        // dispatch initializeCoins({ remainingCoins: coins });
-        // dispatch clearRaffleItems();
-
-        // if (restrictedAccess) {
-        //   dispatch(updateConfiguration({ restrictedAccess: true })); // Only allowed to profile.
-        //   history.push("/profile");
-        // } else {
-        //   history.push("/");
-        // }
-
-        // dispatch({ type: SET_NEW_LOGIN_FLAG, payload: data });
-
         dispatch(
           addNotification({
             error: false,
@@ -162,9 +141,8 @@ export const loginPlayer =
           })
         );
       } else {
-        showError(res, dispatch);
+        showError(data, meta.status, dispatch);
       }
-      // return res;
     } catch (error) {
       errorHandler("loginPlayer", error);
     } finally {
@@ -175,7 +153,7 @@ export const loginPlayer =
 export const logoutPlayer = () => (dispatch, getState) => {
   dispatch({ type: LOGOUT });
   dispatch({ type: CLEAR_CURRENT_CONFIG });
-  // window.Echo && window.Echo.disconnect()
+  // window.Echo && window.Echo.disconnect() // TODO:
   alert("User session timed out.");
 };
 
@@ -202,9 +180,9 @@ export const isNotPlayer =
 export const sendResetPasswordEmail =
   (email, formRef, setForm) => async (dispatch, _) => {
     try {
-      const res = await Api.post("/email/reset", { email });
+      const { data, meta } = await Api.post("/email/reset", { email });
 
-      if (res.success) {
+      if (meta.ok) {
         formRef.current.reset();
         dispatch(
           addNotification({
@@ -218,9 +196,8 @@ export const sendResetPasswordEmail =
         );
         setForm((prev) => ({ ...prev, success: true }));
       } else {
-        showError(res, dispatch);
+        showError(data, meta.status, dispatch);
       }
-      return res;
     } catch (error) {
       errorHandler("sendResetPasswordEmail", error);
     } finally {

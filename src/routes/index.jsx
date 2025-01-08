@@ -1,5 +1,7 @@
 import { Routes, Route, Navigate } from "react-router-dom";
 
+import SocketProvider from "@services/SocketProvider";
+
 import Gate from "@components/gate";
 
 import Register from "@views/user/register";
@@ -20,10 +22,10 @@ import ResetPassword from "@views/user/resetPassword";
 // import Results from "@views/game/results";
 // import GameClosed from "@views/game/gameClosed";
 
-// import Error404 from "@views/errors/Error404";
-// import Error401 from "@views/errors/Error401";
-// import Error409 from "@views/errors/Error409";
-// import Error500 from "@views/errors/Error500";
+import Error404 from "@views/errors/Error404";
+import Error401 from "@views/errors/Error401";
+import Error409 from "@views/errors/Error409";
+import Error500 from "@views/errors/Error500";
 
 // NOTE: This is how I'm doing it, I am going page by page and they will be uncommented when started.
 export const routes = [
@@ -45,27 +47,29 @@ export const routes = [
   // { path: "/results", view: Results, restricted: 1, title: "Event Results", disableOn: ["gameStart"] },
   // { path: "/game-closed", view: GameClosed, restricted: 1, title: "Game Closed" },
 
-  // { path: "/error-409", view: Error409, restricted: 1, title: "ERROR 409" },
-  // { path: "/error-404", view: Error404, restricted: 0, title: "ERROR 404" },
-  // { path: "/error-401", view: Error401, restricted: 0, title: "ERROR 401" },
-  // { path: "/error-500", view: Error500, restricted: 0, title: "ERROR 500" },
+  { path: "/error-409", view: Error409, restricted: 1, title: "ERROR 409" },
+  { path: "/error-404", view: Error404, restricted: 0, title: "ERROR 404" },
+  { path: "/error-401", view: Error401, restricted: 0, title: "ERROR 401" },
+  { path: "/error-500", view: Error500, restricted: 0, title: "ERROR 500" }
 ];
 
 const RoutesProvider = () => {
   return (
     <Routes>
-      {routes.map((route) => (
-        <Route
-          key={route.path}
-          path={route.path}
-          element={
-            <Gate restricted={route.restricted} disableOn={route.disableOn}>
-              <route.view />
-            </Gate>
-          }
-        />
-      ))}
-      <Route path="*" element={<Navigate to="/error-404" />} />
+      <Route element={<SocketProvider />}>
+        {routes.map((route) => (
+          <Route
+            key={route.path}
+            path={route.path}
+            element={
+              <Gate restricted={route.restricted} disableOn={route.disableOn}>
+                <route.view />
+              </Gate>
+            }
+          />
+        ))}
+        <Route path="*" element={<Navigate to="/error-404" />} />
+      </Route>
     </Routes>
   );
 };

@@ -1,5 +1,5 @@
-import { UserReduxState } from "@reducers/user";
-import NotificationValues from "@typings/NotificationValues";
+import type { UserReduxState } from "@reducers/user";
+import type NotificationValues from "@typings/NotificationValues";
 
 import { useRef, useState } from "react";
 import { Dispatch } from "redux";
