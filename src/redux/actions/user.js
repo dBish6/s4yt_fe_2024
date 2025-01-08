@@ -3,17 +3,19 @@ import errorHandler, { showError } from "@services/errorHandler";
 
 import history from "@utils/History";
 
-import { UPDATE_CURRENT_USER, SET_TOKENS, SET_NEW_LOGIN_FLAG, SET_CURRENT_USER, LOGOUT, CLEAR_CURRENT_CONFIG } from "@actions/index";
+import { UPDATE_CURRENT_USER, SET_TOKENS, SET_CURRENT_USER, LOGOUT, CLEAR_CURRENT_CONFIG } from "@actions/index";
 import { addNotification } from "./notifications";
 import { updateConfiguration } from "./gameConfig";
 // import { initializeCoins } from "./coinTracker";
 
-export const updateCurrentUser = (data) => (dispatch) => {
+import { socket } from "@services/SocketProvider";
+
+export const updateCurrentUser = (data) => (dispatch, _) => {
   dispatch({ type: UPDATE_CURRENT_USER, payload: data });
 };
 
 export const registerPlayer =
-  (userData, formRef, setForm) => async (dispatch) => {
+  (userData, formRef, setForm) => async (dispatch, _) => {
     try {
       const { data, meta } = await Api.post("/auth/register", userData);
 
@@ -87,13 +89,12 @@ export const verifyEmail =
     }
   };
 
-// TODO:
 export const loginPlayer =
   (userData, setForm) => async (dispatch, _) => {
     try {
       const { data, meta } = await Api.post("/auth/login", userData);
 
-      if (meta.ok) {     
+      if (meta.ok) {
         const tokens = {
           access: meta.headers.get("Authorization")?.split("Bearer ")[1],
           csrf: meta.headers.get("x-xsrf-token")
@@ -149,11 +150,10 @@ export const loginPlayer =
       setForm((prev) => ({ ...prev, processing: false }));
     }
   };
-// TODO:
-export const logoutPlayer = () => (dispatch, getState) => {
+export const logoutPlayer = () => (dispatch, _) => {
   dispatch({ type: LOGOUT });
   dispatch({ type: CLEAR_CURRENT_CONFIG });
-  // window.Echo && window.Echo.disconnect() // TODO:
+  socket.disconnect();
   alert("User session timed out.");
 };
 

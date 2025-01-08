@@ -72,7 +72,7 @@ const SocketProvider = ({ userToken, addNotification }: SocketProviderProps) => 
       // TODO: Msg
       setConnecting("Loading user data");
       delay(29000, () => {
-        if (!connecting) setConnecting("Taking longer than expected...");
+        if (connecting) setConnecting("Taking longer than expected...");
       });
 
       EstablishConnection()

@@ -60,7 +60,7 @@ const Header: React.FC<Props> & React.HTMLAttributes<HTMLDivElement> = ({
     >
       <div>
         <img
-          src="/assets/s4yt.png"
+          src="/images/s4yt.png"
           alt="s4yt"
           className={`${s.logo} ${!title ? s.noTitle : ""}`}
         />
