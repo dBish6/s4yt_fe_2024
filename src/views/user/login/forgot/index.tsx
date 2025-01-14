@@ -26,7 +26,7 @@ interface Props {
         success: boolean;
       }>
     >
-  ) => Promise<any>;
+  ) => Promise<void>;
 }
 
 const ForgotPassword: React.FC<Props> = ({ sendResetPasswordEmail }) => {
@@ -145,7 +145,7 @@ const mapDispatchToProps = (dispatch: Dispatch<any>) => ({
   ) =>
     dispatch(
       sendResetPasswordEmail(email, formRef, setForm) as unknown
-    ) as Promise<any>,
+    ) as Promise<void>
 });
 
 export default connect(null, mapDispatchToProps)(ForgotPassword);

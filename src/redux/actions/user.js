@@ -3,10 +3,12 @@ import errorHandler, { showError } from "@services/errorHandler";
 
 import history from "@utils/History";
 
-import { UPDATE_CURRENT_USER, SET_TOKENS, SET_NEW_LOGIN_FLAG, LOGOUT, CLEAR_CURRENT_CONFIG } from "@actions/index";
+import { UPDATE_CURRENT_USER, SET_TOKENS, SET_CURRENT_USER, LOGOUT, CLEAR_CURRENT_CONFIG } from "@actions/index";
 import { addNotification } from "./notifications";
 import { updateConfiguration } from "./gameConfig";
 // import { initializeCoins } from "./coinTracker";
+
+import { socket } from "@services/SocketProvider";
 
 export const updateCurrentUser = (data) => (dispatch, _) => {
   dispatch({ type: UPDATE_CURRENT_USER, payload: data });
@@ -30,7 +32,7 @@ export const registerPlayer =
           })
         );
       } else {
-        showError(data, dispatch);
+        showError(data, meta.status, dispatch);
       }
     } catch (error) {
       errorHandler("registerPlayer", error);
@@ -41,8 +43,7 @@ export const registerPlayer =
 export const sendVerifyEmail =
   (email, formRef, setForm) => async (dispatch, _) => {
     try {
-      // TODO: Endpoint name.
-      const { data, meta } = await Api.post("/email/verify/send", { email });
+      const { data, meta } = await Api.post("/sendVerification", { email });
 
       if (meta.ok) {
         formRef.current.reset();
@@ -57,7 +58,7 @@ export const sendVerifyEmail =
         );
         setForm((prev) => ({ ...prev, success: true }));
       } else {
-        showError(data, dispatch);
+        showError(data, meta.status, dispatch);
       }
     } catch (error) {
       errorHandler("sendVerifyEmail", error);
@@ -68,7 +69,6 @@ export const sendVerifyEmail =
 export const verifyEmail =
   (token, setResult) => async (dispatch, _) => {
     try {
-      // TODO: Endpoint name.
       const res = await Api.post("/email/verify", { token });
 
       if (res.meta.ok) {
@@ -81,7 +81,7 @@ export const verifyEmail =
           })
         );
       } else {
-        showError(res.data, dispatch);
+        showError(res.data, res.meta.status, dispatch);
       }
       setResult(res);
     } catch (error) {
@@ -89,23 +89,15 @@ export const verifyEmail =
     }
   };
 
-// TODO:
 export const loginPlayer =
-  (userData, setForm) => async (dispatch, getState) => {
+  (userData, setForm) => async (dispatch, _) => {
     try {
-      const res = await Api.post("/auth/login", userData);
+      const { data, meta } = await Api.post("/auth/login", userData);
 
-      if (res.success) {
-        const data = res.data,
-          user = res.data.user,
-          restrictedAccess =
-            data.timestamps === "The game has not started yet" 
-            // ||
-            // (user.is_backup && (!user.password_updated || !user.profile_updated));
-        
+      if (meta.ok) {
         const tokens = {
-          access: req.headers.authorization?.split("Bearer ")[1],
-          csrf: req.headers["x-xsrf-token"],
+          access: meta.headers.get("Authorization")?.split("Bearer ")[1],
+          csrf: meta.headers.get("x-xsrf-token")
         };
         if (!Object.values(tokens).length)
           dispatch(
@@ -118,10 +110,8 @@ export const loginPlayer =
             })
           );
 
-        // dispatch({ type: SET_TOKEN, payload: data.token });
-        dispatch({ type: SET_TOKENS, payload: tokens });
-
         if (data.timestamps === "The game has not started yet") {
+          dispatch(updateConfiguration({ restrictedAccess: true })); // Only allowed to profile.
           dispatch(
             addNotification({
               error: true,
@@ -130,76 +120,40 @@ export const loginPlayer =
               duration: 0
             })
           );
+
+          history.push("/profile");
         } else {
           dispatch(
             updateConfiguration({ timestamps: data.timestamps })
           );
-        }
 
-        // This is temporary for the backup users because they're data wasn't correct.
-        // TODO: Ignore this if.
-        // if (
-        //   user.is_backup &&
-        //   (!user.password_updated || !user.profile_updated)
-        // ) {
-        //   !user.password_updated &&
-        //     dispatch(
-        //       addNotification({
-        //         error: true,
-        //         content: `Your password needs to be updated, please update you password in the "Update Password" section.`,
-        //         close: false,
-        //         duration: 0,
-        //       })
-        //     );
-        //   !user.profile_updated &&
-        //     dispatch(
-        //       addNotification({
-        //         error: true,
-        //         content: `There is some discrepancies within your profile data, please check you profile data and update it in the "Update Profile Info" section.`,
-        //         close: false,
-        //         duration: 0,
-        //       })
-        //     );
-        // } else {
-        // history.push("/");
-        // }
-
-        if (restrictedAccess) {
-          dispatch(updateConfiguration({ restrictedAccess: true })); // Only allowed to profile.
-          history.push("/profile");
-        } else {
           history.push("/");
         }
 
-        dispatch({ type: SET_NEW_LOGIN_FLAG, payload: data });
+        dispatch({ type: SET_TOKENS, payload: tokens });
+        dispatch({ type: SET_CURRENT_USER, payload: data.user });
 
         dispatch(
           addNotification({
             error: false,
             content: `Welcome ${data.user.name} ✔`,
             close: false,
-            duration: 4000,
+            duration: 4000
           })
         );
       } else {
-        // Does not have validated email message.
-        if (res.message.includes("validated"))
-          history.push("/register/verify-email");
-
-        showError(res, dispatch);
+        showError(data, meta.status, dispatch);
       }
-      return res;
     } catch (error) {
       errorHandler("loginPlayer", error);
     } finally {
       setForm((prev) => ({ ...prev, processing: false }));
     }
   };
-// TODO:
-export const logoutPlayer = () => (dispatch, getState) => {
+export const logoutPlayer = () => (dispatch, _) => {
   dispatch({ type: LOGOUT });
   dispatch({ type: CLEAR_CURRENT_CONFIG });
-  // window.Echo && window.Echo.disconnect()
+  socket.disconnect();
   alert("User session timed out.");
 };
 
@@ -223,13 +177,12 @@ export const isNotPlayer =
     return false;
   };
 
-// TODO:
 export const sendResetPasswordEmail =
-  (email, formRef, setForm) => async (dispatch, getState) => {
+  (email, formRef, setForm) => async (dispatch, _) => {
     try {
-      const res = await Api.post("/email/reset", { email });
+      const { data, meta } = await Api.post("/email/reset", { email });
 
-      if (res.success) {
+      if (meta.ok) {
         formRef.current.reset();
         dispatch(
           addNotification({
@@ -238,28 +191,25 @@ export const sendResetPasswordEmail =
               "Success! Check your inbox to reset your password. In case you don't find it there,\
                please check your spam folder.",
             close: false,
-            duration: 0,
+            duration: 0
           })
         );
         setForm((prev) => ({ ...prev, success: true }));
       } else {
-        showError(res, dispatch);
+        showError(data, meta.status, dispatch);
       }
-      return res;
     } catch (error) {
       errorHandler("sendResetPasswordEmail", error);
     } finally {
       setForm((prev) => ({ ...prev, processing: false }));
     }
   };
-// TODO:
-export const resetPassword = (userData) => (dispatch, getState) => {
+export const resetPassword = (userData) => () => {
   return Api.patch("/password", userData).catch((error) =>
     errorHandler("resetPassword", error)
   );
 };
-// TODO:
-export const updatePassword = (userData) => (dispatch, getState) => {
+export const updatePassword = (userData) => () => {
   return Api.patch("/player/password", userData).catch((error) =>
     errorHandler("updatePassword", error)
   );

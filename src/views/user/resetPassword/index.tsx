@@ -38,7 +38,7 @@ const ResetPassword: React.FC = () => {
         addCoins="coins1"
         style={{ maxWidth: "600px", marginInline: "auto" }}
       >
-        <PasswordForm playerId={searchParams.get("token")} />
+        <PasswordForm verificationToken={searchParams.get("token")} />
       </Content>
     </Layout>
   );

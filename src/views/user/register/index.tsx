@@ -1,4 +1,7 @@
 import { useSearchParams } from "react-router-dom";
+
+import useRefreshReduxPersister from "@root/hooks/useRefreshReduxPersister";
+
 import Layout from "@components/partials/layout";
 import Header from "@components/partials/header";
 import Content from "@components/partials/content";
@@ -12,6 +15,8 @@ const Register: React.FC = () => {
             "referral_code"
           )}&version_id=${queryParameters.get("version_id")}`
         : null;
+  
+  // useRefreshReduxPersister(); // TODO: Use when starting.
 
   return (
     <Layout style={{ position: "relative", maxWidth: "800px" }}>

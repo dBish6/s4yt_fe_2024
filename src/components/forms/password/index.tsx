@@ -1,5 +1,5 @@
-import { UserReduxState } from "@reducers/user";
-import NotificationValues from "@typings/NotificationValues";
+import type { UserReduxState } from "@reducers/user";
+import type NotificationValues from "@typings/NotificationValues";
 
 import { useRef, useState } from "react";
 import { Dispatch } from "redux";
@@ -11,6 +11,8 @@ import checkMatchingPasswords from "@utils/forms/checkMatchingPasswords";
 import delay from "@utils/delay";
 import history from "@utils/History";
 
+import { showError } from "@root/services/errorHandler";
+
 import { resetPassword } from "@actions/user";
 import { updatePassword } from "@actions/user";
 import { addNotification } from "@actions/notifications";
@@ -20,44 +22,49 @@ import Input from "@components/forms/controls/Input";
 import s from "./styles.module.css";
 
 interface Props {
-  playerId?: string | null;
+  verificationToken?: string | null;
   userToken?: string;
   resetPassword: (userData: PasswordFormData) => Promise<any>;
   updatePassword: (userData: PasswordFormData) => Promise<any>;
   addNotification: (data: Omit<NotificationValues, "id">) => void;
+  showError: (res: any) => void;
 }
 
 interface PasswordFormData {
-  player_id?: string;
+  token?: string;
   old_password?: string;
   password: string;
   password_confirmation: string;
 }
 
 const PasswordForm: React.FC<Props> = ({
-  playerId,
+  verificationToken,
   userToken,
   resetPassword,
   updatePassword,
   addNotification,
+  showError
 }) => {
   const formRef = useRef<HTMLFormElement>(null),
     [form, setForm] = useState({
       processing: false,
     }),
     [currentData, setCurrentData] = useState<PasswordFormData>({
-      ...(userToken ? { old_password: "" } : { player_id: playerId as string }),
+      ...(userToken ? { old_password: "" } : { token: verificationToken! }),
       password: "",
-      password_confirmation: "",
+      password_confirmation: ""
     });
 
   const submit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    if (!userToken && !currentData.player_id)
-      return alert(
-        "Somehow you were brought to this page without us finding your player_id, you should only get redirected here."
-      );
+    if (!userToken && !currentData.token)
+      addNotification({
+        error: true,
+        content: "The reset link is invalid. Please ensure you accessed this page through the link provided in your email.",
+        close: false,
+        duration: 0
+      });
 
     const fields = document.querySelectorAll<HTMLInputElement>(
       "#updatePasswordForm input, #resetPasswordForm input"
@@ -93,19 +100,11 @@ const PasswordForm: React.FC<Props> = ({
             ? "Your password was successfully updated ✔"
             : "Your password reset successfully ✔",
           close: false,
-          duration: 4000,
+          duration: 4000
         });
         !userToken && delay(2500, () => history.push("/login"));
       } else {
-        addNotification({
-          error: true,
-          content:
-            res.errors && Object.keys(res.errors).length
-              ? res.errors[Object.keys(res.errors)[0]][0]
-              : res.message,
-          close: false,
-          duration: 0,
-        });
+        showError(res)
       }
       setForm((prev) => ({ ...prev, processing: false }));
     }
@@ -193,7 +192,7 @@ const PasswordForm: React.FC<Props> = ({
 };
 
 const mapStateToProps = ({ user }: { user: UserReduxState }) => ({
-  userToken: user.token,
+  userToken: user.tokens.access
 });
 const mapDispatchToProps = (dispatch: Dispatch<any>) => ({
   resetPassword: (userData: PasswordFormData) =>
@@ -202,6 +201,7 @@ const mapDispatchToProps = (dispatch: Dispatch<any>) => ({
     dispatch(updatePassword(userData) as unknown) as Promise<any>,
   addNotification: (notification: Omit<NotificationValues, "id">) =>
     dispatch(addNotification(notification)),
+  showError: (res: any) => showError(res, dispatch)
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(PasswordForm);

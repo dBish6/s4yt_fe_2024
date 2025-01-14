@@ -3,8 +3,6 @@ import { GameConfigReduxState } from "@reducers/gameConfig";
 import { Link } from "react-router-dom";
 import { connect } from "react-redux";
 
-import Image from "../Image";
-
 import s from "./styles.module.css";
 
 interface Props {
@@ -20,7 +18,7 @@ const MapNavigation: React.FC<Props> = ({
   txt,
   to,
   disableOn,
-  gameConfig,
+  gameConfig
 }) => {
   const disabled =
     !to ||
@@ -40,7 +38,7 @@ const MapNavigation: React.FC<Props> = ({
       className={s.card}
       {...(disabled && {
         "aria-disabled": true,
-        onClick: (e) => e.preventDefault(),
+        onClick: (e) => e.preventDefault()
       })}
     >
       <img
@@ -54,7 +52,7 @@ const MapNavigation: React.FC<Props> = ({
 };
 
 const mapStateToProps = ({
-  gameConfig,
+  gameConfig
 }: {
   gameConfig: GameConfigReduxState;
 }) => ({ gameConfig });
