@@ -12,6 +12,8 @@ import {
 } from "@actions/index";
 import { updateCurrentUser } from "./user";
 
+// TODO: Everything else but getCoinsGainedHistory need changes.
+
 export const initializeCoins = (data) => (dispatch) => {
   dispatch({ type: INITIALIZE_COINS, payload: data });
 };
@@ -39,51 +41,82 @@ export const raffleCooldown = (timeOnSubmit) => (dispatch) => {
 };
 
 export const getRaffleItems = () => async (dispatch, getState) => {
-  try {
-    const res = await Api.get("/raffle");
-    if (res) {
-      dispatch({ type: SET_RAFFLE_ITEMS, payload: res.data.raffle_items });
-    } else {
-      showError(
-        res,
-        dispatch,
-        "Unexpected server error occurred getting the available raffle items"
-      );
-    }
-  } catch (error) {
-    errorHandler("getRaffleItems", error);
-  }
+  // try {
+  //   const res = await Api.get("/raffle");
+  //   if (res) {
+  //     dispatch({ type: SET_RAFFLE_ITEMS, payload: res.data.raffle_items });
+  //   } else {
+  //     showError(
+  //       res,
+  //       dispatch,
+  //       "Unexpected server error occurred getting the available raffle items"
+  //     );
+  //   }
+  // } catch (error) {
+  //   errorHandler("getRaffleItems", error);
+  // }
 };
 export const setRaffleItems = (raffle) => async (dispatch, getState) => {
-  try {
-    const res = await Api.post("/raffle/coins", {
-      raffle: raffle,
-    });
-    if (res.success) {
-      const date = new Date();
-      dispatch({ type: SET_RAFFLE_COOLDOWN, payload: date });
-    } else {
-      showError(
-        res,
-        dispatch,
-        "Unexpected server error allocating coins to raffle items"
-      );
+  // try {
+  //   const res = await Api.post("/raffle/coins", {
+  //     raffle: raffle,
+  //   });
+  //   if (res.success) {
+  //     const date = new Date();
+  //     dispatch({ type: SET_RAFFLE_COOLDOWN, payload: date });
+  //   } else {
+  //     showError(
+  //       res,
+  //       dispatch,
+  //       "Unexpected server error allocating coins to raffle items"
+  //     );
+  //   }
+  // } catch (error) {
+  //   errorHandler("getRaffleItems", error);
+  // }
+};
+
+// TODO: Will be used in next commit.
+export const checkTotalCoins = () => async (dispatch, _) => {
+  let retries = 2;
+
+  const getTotal = async () => {
+    try {
+      const { data } = await Api.get("/game/player/coins/total");
+      dispatch({ type: INITIALIZE_COINS, payload: data.coins });
+    } catch (error) {
+      if (retries !== 0) {
+        retries -= 1;
+        if (import.meta.env.DEV)
+          console.log(`Failed to check coin total: ${retries} retries left...`);
+
+        await getTotal();
+      } else {
+        addNotification({
+          error: true,
+          content: "We were not able to sync any dubl-u-nes (coins) that may have been added while you were away. Please try refreshing the page.",
+          close: false,
+          duration: 0
+        });
+        errorHandler("getTotalCoins", error, false);
+      }
     }
-  } catch (error) {
-    errorHandler("getRaffleItems", error);
   }
+
+  await getTotal();
 };
 
 export const getCoinsGainedHistory =
-  (setCoinsGainedHistory) => async (dispatch, getState) => {
+  (setCoinsGainedHistory) => async (dispatch, _) => {
     try {
-      const res = await Api.get("/player/coins");
+      const { data, meta } = await Api.get("/game/player/coins/history");
 
-      if (res.success) {
-        setCoinsGainedHistory(res.data.coin_details);
+      if (meta?.ok) {
+        setCoinsGainedHistory(data.coin_details);
       } else {
         showError(
-          res,
+          data,
+          meta.status,
           dispatch,
           "Unexpected server error occurred getting your Dubl-u-nes gained history"
         );
@@ -95,29 +128,29 @@ export const getCoinsGainedHistory =
 
 export const sendSponsorQuizCoins =
   (finalScore) => async (dispatch, getState) => {
-    try {
-      const res = await Api.post("/player/coins/sponsor", {
-        coins: finalScore,
-      });
+    // try {
+    //   const res = await Api.post("/player/coins/sponsor", {
+    //     coins: finalScore,
+    //   });
 
-      if (res.success) {
-        dispatch(retrieveCoins(null, finalScore));
-        dispatch(updateCurrentUser({ quiz_submitted: 1 }));
-      } else {
-        showError(
-          res,
-          dispatch,
-          "Unexpected server error occurred updating your Dubl-u-nes from the quiz."
-        );
-      }
-    } catch (error) {
-      errorHandler("sendSponsorQuizCoins", error);
-    }
+    //   if (res.success) {
+    //     dispatch(retrieveCoins(null, finalScore));
+    //     dispatch(updateCurrentUser({ quiz_submitted: 1 }));
+    //   } else {
+    //     showError(
+    //       res,
+    //       dispatch,
+    //       "Unexpected server error occurred updating your Dubl-u-nes from the quiz."
+    //     );
+    //   }
+    // } catch (error) {
+    //   errorHandler("sendSponsorQuizCoins", error);
+    // }
   };
 
 // Web Sockets
 export const sliverAndGoldCoinsListener = () => (dispatch, getState) => {
-  window.Echo.channel("raffle-update").listen("RaffleUpdate", (e) => {
-    dispatch({ type: RAFFLE_ACTIVE_STATE, payload: e.message });
-  });
+  // window.Echo.channel("raffle-update").listen("RaffleUpdate", (e) => {
+  //   dispatch({ type: RAFFLE_ACTIVE_STATE, payload: e.message });
+  // });
 };

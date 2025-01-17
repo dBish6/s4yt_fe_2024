@@ -1,5 +1,5 @@
-import { UserReduxState } from "@reducers/user";
-import UserCredentials from "@typings/UserCredentials";
+import type { UserReduxState } from "@reducers/user";
+import type UserCredentials from "@typings/UserCredentials";
 
 import { connect } from "react-redux";
 
@@ -8,9 +8,8 @@ import Header from "@components/partials/header";
 import Content from "@components/partials/content";
 import UserForm from "@components/forms/user";
 import PasswordForm from "@components/forms/password";
-import Referrals from "./referrals";
-import Coins from "./coins";
-// import Instagram from "./instagram";
+import Referrals from "./Referrals";
+import Coins from "./Coins";
 
 import s from "./styles.module.css";
 
@@ -35,15 +34,13 @@ const Profile: React.FC<Props> = ({ user }) => {
 
               <Referrals user={user} />
 
-              {/* <Instagram /> */}
-
               <section className={s.updatePassword}>
                 <h2>Update Password</h2>
                 <PasswordForm />
               </section>
             </>
           ) : (
-            <span role="dialog" className={s.noUserMsg}>
+            <span role="alert" className={s.noUserMsg}>
               Pretty weird you are able to see this message, but you're not
               logged in.
             </span>
@@ -55,7 +52,7 @@ const Profile: React.FC<Props> = ({ user }) => {
 };
 
 const mapStateToProps = ({ user }: { user: UserReduxState }) => ({
-  user: user.credentials,
+  user: user.credentials
 });
 
 export default connect(mapStateToProps, null)(Profile);

@@ -1,7 +1,7 @@
-import UserCredentials from "@typings/UserCredentials";
+import type UserCredentials from "@typings/UserCredentials";
+import type { Dispatch } from "redux";
 
 import { useState, useEffect } from "react";
-import { Dispatch } from "redux";
 import { connect } from "react-redux";
 
 import { getReferrals } from "@actions/user";
@@ -22,11 +22,20 @@ interface Props {
   ) => Promise<any>;
 }
 
+const MOCK_REFERRALS = [
+  {
+    name: "Jim Boe",
+    email: "tester69@test.com",
+    created_at: "2025-02-15T13:00:00-05:00"
+  }
+];
+
 const Referral: React.FC<Props> = ({ user, getReferrals }) => {
   const [referrals, setReferrals] = useState<ReferralsDTO[] | string>([]);
 
   useEffect(() => {
-    if (!referrals.length) getReferrals(setReferrals);
+    // if (!referrals.length) getReferrals(setReferrals);
+    setReferrals(MOCK_REFERRALS);
   }, []);
 
   return (

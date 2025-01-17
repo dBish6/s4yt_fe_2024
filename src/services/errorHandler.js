@@ -3,14 +3,14 @@ import history from "@utils/History";
 
 const GENERAL_ERROR_MESSAGE = "An unexpected server occurred.";
 
-export default (func, error) => {
+export default (func, error, navigate = true) => {
   console.error(`${func} Request ERROR:\n`, error);
-  history.push("/error-500");
+  if (navigate) history.push("/error-500");
 };
 
 /**
  * 
- * @param {string} customMessage Only for critical errors (500).
+ * @param {string} [customMessage] Only used for critical errors (500).
  */
 export const showError = (data, status, dispatch, customMessage) => {
   const errorMsg =

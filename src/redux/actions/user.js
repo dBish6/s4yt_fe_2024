@@ -19,7 +19,7 @@ export const registerPlayer =
     try {
       const { data, meta } = await Api.post("/auth/register", userData);
 
-      if (meta.ok) {
+      if (meta?.ok) {
         formRef.current.reset();
         dispatch(
           addNotification({
@@ -43,9 +43,9 @@ export const registerPlayer =
 export const sendVerifyEmail =
   (email, formRef, setForm) => async (dispatch, _) => {
     try {
-      const { data, meta } = await Api.post("/sendVerification", { email });
+      const { data, meta } = await Api.post("/auth/email/sendVerification", { email });
 
-      if (meta.ok) {
+      if (meta?.ok) {
         formRef.current.reset();
         dispatch(
           addNotification({
@@ -69,9 +69,9 @@ export const sendVerifyEmail =
 export const verifyEmail =
   (token, setResult) => async (dispatch, _) => {
     try {
-      const res = await Api.post("/email/verify", { token });
+      const res = await Api.post("/auth/email/verify", { token });
 
-      if (res.meta.ok) {
+      if (res?.meta?.ok) {
         dispatch(
           addNotification({
             error: false,
@@ -94,7 +94,7 @@ export const loginPlayer =
     try {
       const { data, meta } = await Api.post("/auth/login", userData);
 
-      if (meta.ok) {
+      if (meta?.ok) {
         const tokens = {
           access: meta.headers.get("Authorization")?.split("Bearer ")[1],
           csrf: meta.headers.get("x-xsrf-token")
@@ -180,9 +180,9 @@ export const isNotPlayer =
 export const sendResetPasswordEmail =
   (email, formRef, setForm) => async (dispatch, _) => {
     try {
-      const { data, meta } = await Api.post("/email/reset", { email });
+      const { data, meta } = await Api.post("/auth/email/reset", { email });
 
-      if (meta.ok) {
+      if (meta?.ok) {
         formRef.current.reset();
         dispatch(
           addNotification({
@@ -205,33 +205,32 @@ export const sendResetPasswordEmail =
     }
   };
 export const resetPassword = (userData) => () => {
-  return Api.patch("/password", userData).catch((error) =>
+  return Api.patch("/auth/password", userData).catch((error) =>
     errorHandler("resetPassword", error)
   );
 };
 export const updatePassword = (userData) => () => {
-  return Api.patch("/player/password", userData).catch((error) =>
+  return Api.patch("/auth/player/password", userData).catch((error) =>
     errorHandler("updatePassword", error)
   );
 };
-// TODO:
 export const updateProfile =
-  (userData, formRef, setForm) => async (dispatch, getState) => {
+  (userData, formRef, setForm) => async (dispatch, _) => {
     try {
-      const res = await Api.post("/player/profile", userData);
+      const { data, meta } = await Api.post("/auth/player/profile", userData);
 
-      if (res.success) {
+      if (meta?.ok) {
         formRef.current.reset();
         dispatch(
           addNotification({
             error: false,
             content: "Your profile was successfully updated ✔",
             close: false,
-            duration: 4000,
+            duration: 4000
           })
         );
 
-        if (res.data.verify_email) {
+        if (data.verify_email) {
           dispatch(logoutPlayer());
           dispatch(
             addNotification({
@@ -241,14 +240,14 @@ export const updateProfile =
                  So, please check your inbox to verify your email. In case you don't find it there, please\
                  check your spam folder.",
               close: false,
-              duration: 0,
+              duration: 0
             })
           );
         } else {
           dispatch(updateCurrentUser(userData));
         }
       } else {
-        showError(res, dispatch);
+        showError(res, meta.status, dispatch);
       }
       return res;
     } catch (error) {
@@ -259,26 +258,25 @@ export const updateProfile =
   };
 
 // TODO:
-export const getReferrals = (setReferrals) => (dispatch, getState) => {
-  return Api.get("/player/referrals")
-    .then((res) => {
-      if (res.success) {
-        !res.data.referrals.length
-          ? setReferrals("No referrals has been used yet")
-          : setReferrals(res.data.referrals);
-      } else {
-        dispatch(
-          addNotification({
-            error: true,
-            content:
-              "Unexpected server error occurred getting your resent referrals.",
-            close: false,
-            duration: 0,
-          })
-        );
-      }
-    })
-    .catch((error) => errorHandler("getReferrals", error));
+export const getReferrals = (setReferrals) => async (dispatch, _) => {
+  try {
+    const { data, meta } = Api.get("/auth/player/referrals");
+
+    if (meta?.ok) {
+      !data.referrals.length
+        ? setReferrals("No referrals has been used yet")
+        : setReferrals(data.referrals);
+    } else {
+      showError(
+        data,
+        meta.status,
+        dispatch,
+        "Unexpected server error occurred getting your resent referrals."
+      );
+    }
+  } catch (error) {
+    errorHandler("getReferrals", error);
+  }
 };
 
 // Web Sockets TODO:
