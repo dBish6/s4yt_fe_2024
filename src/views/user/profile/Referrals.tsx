@@ -1,7 +1,7 @@
 import type UserCredentials from "@typings/UserCredentials";
 import type { Dispatch } from "redux";
 
-import { useState, useEffect } from "react";
+import { useState, useLayoutEffect } from "react";
 import { connect } from "react-redux";
 
 import { getReferrals } from "@actions/user";
@@ -10,32 +10,26 @@ import copyToClipboard from "@utils/copyToClipboard";
 import s from "./styles.module.css";
 
 interface ReferralsDTO {
+  invited_user: {
+    name: string;
+    email: string;
+  };
+  coins: number;
   created_at: string;
-  name: string;
-  email: string;
 }
 
 interface Props {
   user: UserCredentials;
   getReferrals: (
     setReferrals: React.Dispatch<React.SetStateAction<ReferralsDTO[] | string>>
-  ) => Promise<any>;
+  ) => Promise<void>;
 }
-
-const MOCK_REFERRALS = [
-  {
-    name: "Jim Boe",
-    email: "tester69@test.com",
-    created_at: "2025-02-15T13:00:00-05:00"
-  }
-];
 
 const Referral: React.FC<Props> = ({ user, getReferrals }) => {
   const [referrals, setReferrals] = useState<ReferralsDTO[] | string>([]);
 
-  useEffect(() => {
-    // if (!referrals.length) getReferrals(setReferrals);
-    setReferrals(MOCK_REFERRALS);
+  useLayoutEffect(() => {
+    if (!referrals.length) getReferrals(setReferrals);
   }, []);
 
   return (
@@ -82,14 +76,15 @@ const Referral: React.FC<Props> = ({ user, getReferrals }) => {
                       </td>
                       <td>
                         <span>Name</span>
-                        {referral.name}
+                        {referral.invited_user.name}
                       </td>
                       <td>
                         <span>Email</span>
-                        {referral.email}
+                        {referral.invited_user.email}
                       </td>
                       <td>
-                        <span>Points</span>5
+                        <span>Points</span>
+                        {referral.coins}
                       </td>
                     </tr>
                   );
@@ -106,7 +101,7 @@ const Referral: React.FC<Props> = ({ user, getReferrals }) => {
 const mapDispatchToProps = (dispatch: Dispatch<any>) => ({
   getReferrals: (
     setReferrals: React.Dispatch<React.SetStateAction<ReferralsDTO[] | string>>
-  ) => dispatch(getReferrals(setReferrals) as unknown) as Promise<any>,
+  ) => dispatch(getReferrals(setReferrals) as unknown) as Promise<void>,
 });
 
 export default connect(null, mapDispatchToProps)(Referral);

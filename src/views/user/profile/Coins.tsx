@@ -1,7 +1,7 @@
 import type { CoinTrackerState } from "@reducers/coinTracker";
 import type { Dispatch } from "redux";
 
-import { useState, useEffect } from "react";
+import { useState, useLayoutEffect } from "react";
 import { connect } from "react-redux";
 
 import { getCoinsGainedHistory } from "@actions/coinTracker";
@@ -30,7 +30,7 @@ const Coins: React.FC<Props> = ({ remainingCoins, getCoinsGainedHistory }) => {
     CoinsGainedDTO[]
   >([]);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (!coinsGainedHistory.length)
       getCoinsGainedHistory(setCoinsGainedHistory);
   }, []);

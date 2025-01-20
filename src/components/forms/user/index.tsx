@@ -1,10 +1,10 @@
-import { UserReduxState } from "@reducers/user";
-import { FormOptionsState } from "@reducers/formOptions";
-import NotificationValues from "@typings/NotificationValues";
+import type { Dispatch } from "redux";
+import type { UserReduxState } from "@reducers/user";
+import type { FormOptionsState } from "@reducers/formOptions";
+import type NotificationValues from "@typings/NotificationValues";
 
 import { useRef, useState, useEffect } from "react";
-import { Link } from "react-router-dom";
-import { Dispatch } from "redux";
+import { useSearchParams, Link } from "react-router-dom";
 import { connect } from "react-redux";
 
 import { registerPlayer, updateProfile } from "@actions/user";
@@ -50,7 +50,6 @@ interface Props {
     >
   ) => Promise<any>;
   addNotification: (data: Omit<NotificationValues, "id">) => void;
-  referral?: string | null;
 }
 
 interface UserFormData {
@@ -75,8 +74,7 @@ const UserForm: React.FC<Props> = ({
   user,
   registerPlayer,
   updateProfile,
-  addNotification,
-  referral
+  addNotification
 }) => {
   const formRef = useRef<HTMLFormElement>(null),
     [form, setForm] = useState({
@@ -93,6 +91,8 @@ const UserForm: React.FC<Props> = ({
       region: user.credentials?.region ?? null,
       city: user.credentials?.city ?? null
     });
+
+  const [searchParams] = useSearchParams();
 
   useEffect(() => {
     if (!formOptions.countries.length) getCountries();
@@ -185,15 +185,12 @@ const UserForm: React.FC<Props> = ({
         await updateProfile(relevantData, formRef, setForm);
       } else {
         setForm((prev) => ({ ...prev, processing: true }));
-        const queries = referral?.split("&");
+        const referral_code = searchParams.get("referral_code");
 
         await registerPlayer(
           {
             ...relevantData,
-            ...(referral && {
-              referral_code: queries![0].split("=")[1],
-              version_id: queries![1].split("=")[1]
-            })
+            ...(referral_code && { referral_code })
           },
           formRef,
           setForm
