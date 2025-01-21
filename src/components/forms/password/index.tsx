@@ -27,7 +27,7 @@ interface Props {
   resetPassword: (userData: PasswordFormData) => Promise<any>;
   updatePassword: (userData: PasswordFormData) => Promise<any>;
   addNotification: (data: Omit<NotificationValues, "id">) => void;
-  showError: (res: any) => void;
+  showError: (data: any, status: number) => void;
 }
 
 interface PasswordFormData {
@@ -87,12 +87,12 @@ const PasswordForm: React.FC<Props> = ({
     if (valid) {
       setForm((prev) => ({ ...prev, processing: true }));
 
-      let res: any;
+      let res: { data: any; meta: Response };
       userToken
         ? (res = await updatePassword(currentData))
         : (res = await resetPassword(currentData));
 
-      if (!res.errors) {
+      if (res.meta?.ok) {
         formRef.current!.reset();
         addNotification({
           error: false,
@@ -104,7 +104,7 @@ const PasswordForm: React.FC<Props> = ({
         });
         !userToken && delay(2500, () => history.push("/login"));
       } else {
-        showError(res)
+        showError(res.data, res.meta?.status)
       }
       setForm((prev) => ({ ...prev, processing: false }));
     }
@@ -201,7 +201,7 @@ const mapDispatchToProps = (dispatch: Dispatch<any>) => ({
     dispatch(updatePassword(userData) as unknown) as Promise<any>,
   addNotification: (notification: Omit<NotificationValues, "id">) =>
     dispatch(addNotification(notification)),
-  showError: (res: any) => showError(res, dispatch)
+  showError: (data: any, status: number) => showError(data, status, dispatch)
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(PasswordForm);

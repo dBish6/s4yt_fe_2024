@@ -3,7 +3,7 @@ import { type NavigateFunction, type NavigateOptions, type Path, useNavigate } f
 // Allows the use of useNavigate outside react components.
 const history: {
   navigate: NavigateFunction | null;
-  push: (page: string | Partial<Path> | -1, options: NavigateOptions) => void;
+  push: (page: string | Partial<Path> | -1, options?: NavigateOptions) => void;
 } = {
   navigate: null,
   push: (page, options = {}) =>

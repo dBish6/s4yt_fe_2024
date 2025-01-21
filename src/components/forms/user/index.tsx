@@ -48,7 +48,7 @@ interface Props {
         processing: boolean;
       }>
     >
-  ) => Promise<any>;
+  ) => Promise<void>;
   addNotification: (data: Omit<NotificationValues, "id">) => void;
 }
 
@@ -529,7 +529,7 @@ const mapDispatchToProps = (dispatch: Dispatch<any>) => ({
   ) =>
     dispatch(
       updateProfile(userData, formRef, setForm) as unknown
-    ) as Promise<any>,
+    ) as Promise<void>,
   addNotification: (notification: Omit<NotificationValues, "id">) =>
     dispatch(addNotification(notification)),
 

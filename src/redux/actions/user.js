@@ -159,7 +159,7 @@ export const logoutPlayer = () => (dispatch, _) => {
 
 export const isNotPlayer =
   (useNotification, message) => (dispatch, getState) => {
-    if (!getState().user.credentials?.roles.includes("player")) {
+    if (!getState().user.credentials?.roles.includes("Player")) {
       useNotification &&
         dispatch(
           addNotification({
@@ -247,9 +247,8 @@ export const updateProfile =
           dispatch(updateCurrentUser(userData));
         }
       } else {
-        showError(res, meta.status, dispatch);
+        showError(data, meta.status, dispatch);
       }
-      return res;
     } catch (error) {
       errorHandler("updateProfile", error);
     } finally {
