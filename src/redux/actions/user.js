@@ -257,13 +257,12 @@ export const updateProfile =
     }
   };
 
-// TODO:
 export const getReferrals = (setReferrals) => async (dispatch, _) => {
   try {
-    const { data, meta } = Api.get("/auth/player/referrals");
+    const { data, meta } = await Api.get("/auth/player/referrals");
 
     if (meta?.ok) {
-      !data.referrals.length
+      !data.referrals?.length
         ? setReferrals("No referrals has been used yet")
         : setReferrals(data.referrals);
     } else {
