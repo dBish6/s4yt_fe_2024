@@ -1,0 +1,25 @@
+footer.status {
+  /* TODO: You probably don't need this anymore. */
+  /* @media screen and (max-width: 500px) {
+    margin-top: 6rem;
+  } */
+}
+
+.sponsors {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 1.8rem 3rem;
+  margin: 1.5rem 9rem 4rem 9rem;
+  z-index: 1;
+}
+@media screen and (max-width: 638px) {
+  .sponsors {
+    margin: 1rem 6rem 1rem 6rem;
+  }
+}
+@media screen and (max-width: 512px) {
+  .sponsors {
+    margin: 1rem;
+  }
+}

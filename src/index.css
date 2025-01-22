@@ -184,7 +184,7 @@ button.okBtn:before {
   position: absolute;
   width: 200px;
   height: 341px;
-  background: url("./static/feather.png") no-repeat center/contain;
+  background: url("/images/feather.png") no-repeat center/contain;
   pointer-events: none;
 }
 button.okBtn:not(.flip):before {

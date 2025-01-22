@@ -22,7 +22,7 @@ const Error500: React.FC<{ logoutPlayer: () => void }> = ({ logoutPlayer }) => {
 };
 
 const mapDispatchToProps = (dispatch: Dispatch<any>) => ({
-  logoutPlayer: () => dispatch(logoutPlayer()),
+  logoutPlayer: () => dispatch(logoutPlayer())
 });
 
 export default connect(null, mapDispatchToProps)(Error500);

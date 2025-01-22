@@ -2,6 +2,7 @@ import { Routes, Route, Navigate } from "react-router-dom";
 
 import SocketProvider from "@services/SocketProvider";
 
+import routeDisableOn from "./disableOn";
 import Redirects from "./Redirects";
 
 import Register from "@views/user/register";
@@ -15,7 +16,7 @@ import ResetPassword from "@views/user/resetPassword";
 import Profile from "@views/user/profile";
 
 import Home from "@views/game/home";
-// import Sponsors from "@views/game/sponsors";
+import LearnAndEarn from "@views/game/learnAndEarn";
 // import Raffle from "@views/game/raffle";
 // import Businesses from "@views/game/businesses";
 // import Details from "@views/game/businesses/Details";
@@ -40,11 +41,11 @@ export const routes = [
   { path: "/profile", view: Profile, restricted: 1, title: "Profile" },
 
   { path: "/", view: Home, restricted: 1, title: "Treasure Map" },
-  // { path: "/sponsors", view: Sponsors, restricted: 1, title: "Sponsors", disableOn: ["reviewStart", "winnersAnnounced"] },
-  // { path: "/raffle", view: Raffle, restricted: 1, title: "Raffle", disableOn: ["reviewStart", "winnersAnnounced"] },
-  // { path: "/businesses", view: Businesses, restricted: 1, title: "See Businesses", disableOn: ["reviewStart", "winnersAnnounced"] },
-  // { path: "/businesses/:details", view: Details, restricted: 1, title: "Business Details", disableOn: ["reviewStart", "winnersAnnounced"] },
-  // { path: "/results", view: Results, restricted: 1, title: "Event Results", disableOn: ["gameStart"] },
+  { path: "/learn", view: LearnAndEarn, restricted: 1, title: "Learn and Earn", disableOn: routeDisableOn["/learn"] },
+  // { path: "/raffle", view: Raffle, restricted: 1, title: "Raffle", disableOn: routeDisableOn["/raffle"] },
+  // { path: "/businesses", view: Businesses, restricted: 1, title: "See Businesses", disableOn: routeDisableOn["/businesses"]  },
+  // { path: "/businesses/:details", view: Details, restricted: 1, title: "Business Details", disableOn: routeDisableOn["/businesses"] },
+  // { path: "/results", view: Results, restricted: 1, title: "Event Results", disableOn: routeDisableOn["/results"] },
   // { path: "/game-closed", view: GameClosed, restricted: 1, title: "Game Closed" },
 
   { path: "/error-409", view: Error409, restricted: 1, title: "ERROR 409" },
