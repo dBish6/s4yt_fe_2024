@@ -3,27 +3,23 @@ import errorHandler, { showError } from "@services/errorHandler";
 
 import history from "@utils/History";
 
-import {
-  UPDATE_CURRENT_USER,
-  SET_TOKEN,
-  SET_NEW_LOGIN_FLAG,
-  LOGOUT,
-  CLEAR_CURRENT_CONFIG,
-} from "@actions/index";
+import { UPDATE_CURRENT_USER, SET_TOKENS, SET_CURRENT_USER, LOGOUT, CLEAR_CURRENT_CONFIG } from "@actions/index";
 import { addNotification } from "./notifications";
 import { updateConfiguration } from "./gameConfig";
-import { initializeCoins } from "./coinTracker";
+// import { initializeCoins } from "./coinTracker";
 
-export const updateCurrentUser = (data) => (dispatch, getState) => {
+import { socket } from "@services/SocketProvider";
+
+export const updateCurrentUser = (data) => (dispatch, _) => {
   dispatch({ type: UPDATE_CURRENT_USER, payload: data });
 };
 
 export const registerPlayer =
-  (userData, formRef, setForm) => async (dispatch, getState) => {
+  (userData, formRef, setForm) => async (dispatch, _) => {
     try {
-      const res = await Api.post("/register", userData);
+      const { data, meta } = await Api.post("/auth/register", userData);
 
-      if (!res.errors) {
+      if (meta?.ok) {
         formRef.current.reset();
         dispatch(
           addNotification({
@@ -32,13 +28,12 @@ export const registerPlayer =
               "Thank you for registering! To complete the process, please check your inbox to verify\
                your email. In case you don't find it there, please check your spam folder.",
             close: false,
-            duration: 0,
+            duration: 0
           })
         );
       } else {
-        showError(res, dispatch);
+        showError(data, meta.status, dispatch);
       }
-      return res;
     } catch (error) {
       errorHandler("registerPlayer", error);
     } finally {
@@ -46,11 +41,11 @@ export const registerPlayer =
     }
   };
 export const sendVerifyEmail =
-  (email, formRef, setForm) => async (dispatch, getState) => {
+  (email, formRef, setForm) => async (dispatch, _) => {
     try {
-      const res = await Api.post("/email/verify", { email });
+      const { data, meta } = await Api.post("/auth/email/sendVerification", { email });
 
-      if (res.success) {
+      if (meta?.ok) {
         formRef.current.reset();
         dispatch(
           addNotification({
@@ -58,121 +53,113 @@ export const sendVerifyEmail =
             content:
               "Lastly, to complete the registration process, please check your inbox to verify your email. In case you don't find it there, please check your spam folder.",
             close: false,
-            duration: 0,
+            duration: 0
           })
         );
         setForm((prev) => ({ ...prev, success: true }));
       } else {
-        showError(res, dispatch);
+        showError(data, meta.status, dispatch);
       }
-      return res;
     } catch (error) {
       errorHandler("sendVerifyEmail", error);
     } finally {
       setForm((prev) => ({ ...prev, processing: false }));
     }
   };
+export const verifyEmail =
+  (token, setResult) => async (dispatch, _) => {
+    try {
+      const res = await Api.post("/auth/email/verify", { token });
+
+      if (res?.meta?.ok) {
+        dispatch(
+          addNotification({
+            error: false,
+            content: res.data.message,
+            close: false,
+            duration: 0
+          })
+        );
+      } else {
+        showError(res.data, res.meta.status, dispatch);
+      }
+      setResult(res);
+    } catch (error) {
+      errorHandler("verifyEmail", error);
+    }
+  };
 
 export const loginPlayer =
-  (userData, setForm) => async (dispatch, getState) => {
+  (userData, setForm) => async (dispatch, _) => {
     try {
-      const res = await Api.post("/login", userData);
+      const { data, meta } = await Api.post("/auth/login", userData);
 
-      if (res.success) {
-        const data = res.data,
-          user = res.data.user,
-          restrictedAccess =
-            data.timestamps === "The game has not started yet" ||
-            (user.is_backup &&
-              (!user.password_updated || !user.profile_updated));
-
-        dispatch({ type: SET_TOKEN, payload: data.token });
+      if (meta?.ok) {
+        const tokens = {
+          access: meta.headers.get("Authorization")?.split("Bearer ")[1],
+          csrf: meta.headers.get("x-xsrf-token")
+        };
+        if (!Object.values(tokens).length)
+          dispatch(
+            addNotification({
+              error: true,
+              // TODO: Msg.
+              content: "There was a issue obtaining the necessary recourses from the server. Please try again.",
+              close: false,
+              duration: 0
+            })
+          );
 
         if (data.timestamps === "The game has not started yet") {
+          dispatch(updateConfiguration({ restrictedAccess: true })); // Only allowed to profile.
           dispatch(
             addNotification({
               error: true,
               content: data.timestamps,
               close: false,
-              duration: 0,
+              duration: 0
             })
           );
-        } else {
-          dispatch(
-            updateConfiguration({
-              timestamps: data.timestamps,
-            })
-          );
-        }
 
-        // This is temporary for the backup users because they're data wasn't correct.
-        if (
-          user.is_backup &&
-          (!user.password_updated || !user.profile_updated)
-        ) {
-          !user.password_updated &&
-            dispatch(
-              addNotification({
-                error: true,
-                content: `Your password needs to be updated, please update you password in the "Update Password" section.`,
-                close: false,
-                duration: 0,
-              })
-            );
-          !user.profile_updated &&
-            dispatch(
-              addNotification({
-                error: true,
-                content: `There is some discrepancies within your profile data, please check you profile data and update it in the "Update Profile Info" section.`,
-                close: false,
-                duration: 0,
-              })
-            );
-        } else {
-          history.push("/");
-        }
-
-        if (restrictedAccess) {
-          dispatch(updateConfiguration({ restrictedAccess: true })); // Only allowed to profile.
           history.push("/profile");
         } else {
+          dispatch(
+            updateConfiguration({ timestamps: data.timestamps })
+          );
+
           history.push("/");
         }
 
-        dispatch({ type: SET_NEW_LOGIN_FLAG, payload: data });
+        dispatch({ type: SET_TOKENS, payload: tokens });
+        dispatch({ type: SET_CURRENT_USER, payload: data.user });
 
         dispatch(
           addNotification({
             error: false,
             content: `Welcome ${data.user.name} ✔`,
             close: false,
-            duration: 4000,
+            duration: 4000
           })
         );
       } else {
-        // Does not have validated email message.
-        if (res.message.includes("validated"))
-          history.push("/register/verify-email");
-
-        showError(res, dispatch);
+        showError(data, meta.status, dispatch);
       }
-      return res;
     } catch (error) {
       errorHandler("loginPlayer", error);
     } finally {
       setForm((prev) => ({ ...prev, processing: false }));
     }
   };
-export const logoutPlayer = () => (dispatch, getState) => {
+export const logoutPlayer = () => (dispatch, _) => {
   dispatch({ type: LOGOUT });
   dispatch({ type: CLEAR_CURRENT_CONFIG });
-  window.Echo && window.Echo.disconnect()
+  socket.disconnect();
   alert("User session timed out.");
 };
 
 export const isNotPlayer =
   (useNotification, message) => (dispatch, getState) => {
-    if (!getState().user.credentials?.roles.includes("player")) {
+    if (!getState().user.credentials?.roles.includes("Player")) {
       useNotification &&
         dispatch(
           addNotification({
@@ -181,7 +168,7 @@ export const isNotPlayer =
               ? message
               : "Players only have access to this feature",
             close: false,
-            duration: 4000,
+            duration: 4000
           })
         );
       return true;
@@ -191,11 +178,11 @@ export const isNotPlayer =
   };
 
 export const sendResetPasswordEmail =
-  (email, formRef, setForm) => async (dispatch, getState) => {
+  (email, formRef, setForm) => async (dispatch, _) => {
     try {
-      const res = await Api.post("/email/reset", { email });
+      const { data, meta } = await Api.post("/auth/email/reset", { email });
 
-      if (res.success) {
+      if (meta?.ok) {
         formRef.current.reset();
         dispatch(
           addNotification({
@@ -204,47 +191,46 @@ export const sendResetPasswordEmail =
               "Success! Check your inbox to reset your password. In case you don't find it there,\
                please check your spam folder.",
             close: false,
-            duration: 0,
+            duration: 0
           })
         );
         setForm((prev) => ({ ...prev, success: true }));
       } else {
-        showError(res, dispatch);
+        showError(data, meta.status, dispatch);
       }
-      return res;
     } catch (error) {
       errorHandler("sendResetPasswordEmail", error);
     } finally {
       setForm((prev) => ({ ...prev, processing: false }));
     }
   };
-export const resetPassword = (userData) => (dispatch, getState) => {
-  return Api.patch("/password", userData).catch((error) =>
+export const resetPassword = (userData) => () => {
+  return Api.patch("/auth/password", userData).catch((error) =>
     errorHandler("resetPassword", error)
   );
 };
-export const updatePassword = (userData) => (dispatch, getState) => {
-  return Api.patch("/player/password", userData).catch((error) =>
+export const updatePassword = (userData) => () => {
+  return Api.patch("/auth/player/password", userData).catch((error) =>
     errorHandler("updatePassword", error)
   );
 };
 export const updateProfile =
-  (userData, formRef, setForm) => async (dispatch, getState) => {
+  (userData, formRef, setForm) => async (dispatch, _) => {
     try {
-      const res = await Api.post("/player/profile", userData);
+      const { data, meta } = await Api.post("/auth/player/profile", userData);
 
-      if (res.success) {
+      if (meta?.ok) {
         formRef.current.reset();
         dispatch(
           addNotification({
             error: false,
             content: "Your profile was successfully updated ✔",
             close: false,
-            duration: 4000,
+            duration: 4000
           })
         );
 
-        if (res.data.verify_email) {
+        if (data.verify_email) {
           dispatch(logoutPlayer());
           dispatch(
             addNotification({
@@ -254,16 +240,15 @@ export const updateProfile =
                  So, please check your inbox to verify your email. In case you don't find it there, please\
                  check your spam folder.",
               close: false,
-              duration: 0,
+              duration: 0
             })
           );
         } else {
           dispatch(updateCurrentUser(userData));
         }
       } else {
-        showError(res, dispatch);
+        showError(data, meta.status, dispatch);
       }
-      return res;
     } catch (error) {
       errorHandler("updateProfile", error);
     } finally {
@@ -271,45 +256,44 @@ export const updateProfile =
     }
   };
 
-export const getReferrals = (setReferrals) => (dispatch, getState) => {
-  return Api.get("/player/referrals")
-    .then((res) => {
-      if (res.success) {
-        !res.data.referrals.length
-          ? setReferrals("No referrals has been used yet")
-          : setReferrals(res.data.referrals);
-      } else {
-        dispatch(
-          addNotification({
-            error: true,
-            content:
-              "Unexpected server error occurred getting your resent referrals.",
-            close: false,
-            duration: 0,
-          })
-        );
-      }
-    })
-    .catch((error) => errorHandler("getReferrals", error));
-};
+export const getReferrals = (setReferrals) => async (dispatch, _) => {
+  try {
+    const { data, meta } = await Api.get("/auth/player/referrals");
 
-// Web Sockets
-export const referralUsedListener = (user_id) => (dispatch, getState) => {
-  window.Echo.private(
-    `App.Models.User.${user_id}`
-  ).notification((e) => {
-    if (e.coins && user_id === e.referrer_id) {
-      dispatch(initializeCoins({ remainingCoins: e.coins }));
+    if (meta?.ok) {
+      !data.referrals?.length
+        ? setReferrals("No referrals has been used yet")
+        : setReferrals(data.referrals);
     } else {
-      dispatch(
-        addNotification({
-          error: true,
-          content:
-            "Unexpected server error occurred when adding your newly earn dubl-u-nes locally from your referrer. If you don't not see a change in your dubl-u-nes, please logout and log in again.",
-          close: false,
-          duration: 0,
-        })
+      showError(
+        data,
+        meta.status,
+        dispatch,
+        "Unexpected server error occurred getting your resent referrals."
       );
     }
-  });
+  } catch (error) {
+    errorHandler("getReferrals", error);
+  }
+};
+
+// Web Sockets TODO:
+export const referralUsedListener = (user_id) => (dispatch, getState) => {
+  // window.Echo.private(
+  //   `App.Models.User.${user_id}`
+  // ).notification((e) => {
+  //   if (e.coins && user_id === e.referrer_id) {
+  //     dispatch(initializeCoins({ remainingCoins: e.coins }));
+  //   } else {
+  //     dispatch(
+  //       addNotification({
+  //         error: true,
+  //         content:
+  //           "Unexpected server error occurred when adding your newly earn dubl-u-nes locally from your referrer. If you don't not see a change in your dubl-u-nes, please logout and log in again.",
+  //         close: false,
+  //         duration: 0,
+  //       })
+  //     );
+  //   }
+  // });
 };

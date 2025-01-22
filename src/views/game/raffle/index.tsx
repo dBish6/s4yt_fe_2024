@@ -71,13 +71,15 @@ const Raffle: React.FC<Props> = ({
     if (storeEntries.length === 0 || !storeEntries) {
       getRaffleItems();
     }
-  }, [storeEntries, window.Echo]);
+  }, [storeEntries, 
+    // window.Echo
+  ]);
 
-  useEffect(() => {
-    if (window.Echo) {
-      sliverAndGoldCoinsListener();
-    }
-  }, [window.Echo]);
+  // useEffect(() => {
+  //   if (window.Echo) {
+  //     sliverAndGoldCoinsListener();
+  //   }
+  // }, [window.Echo]);
   // Pagination hook
   const maxItems = 8;
 

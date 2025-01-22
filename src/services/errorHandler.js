@@ -1,25 +1,29 @@
 import { addNotification } from "@actions/notifications";
 import history from "@utils/History";
 
-export default (func, error) => {
+const GENERAL_ERROR_MESSAGE = "An unexpected server occurred.";
+
+export default (func, error, navigate = true) => {
   console.error(`${func} Request ERROR:\n`, error);
-  history.push("/error-500");
+  if (navigate) history.push("/error-500");
 };
 
-export const showError = (res, dispatch, customMessage) => {
+/**
+ * 
+ * @param {string} [customMessage] Only used for critical errors (500).
+ */
+export const showError = (data, status, dispatch, customMessage) => {
+  const errorMsg =
+    status >= 500
+      ? customMessage || GENERAL_ERROR_MESSAGE
+      : data.message || GENERAL_ERROR_MESSAGE;
+
   dispatch(
     addNotification({
       error: true,
-      content:
-        res.errors && Object.keys(res.errors).length
-          ? res.errors[Object.keys(res.errors)[0]][0]
-          : res.message
-          ? res.message
-          : customMessage
-          ? customMessage
-          : "Unexpected Error",
+      content: errorMsg,
       close: false,
-      duration: 0,
+      duration: 0
     })
   );
 };

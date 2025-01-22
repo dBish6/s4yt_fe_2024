@@ -5,13 +5,13 @@ import NotificationValues from "@typings/NotificationValues";
 import { useRef, useState, FormEvent, useEffect } from "react";
 import { Dispatch } from "redux";
 import { connect } from "react-redux";
-import emailjs from "@emailjs/browser";
-import { db } from "@root/firebase";
-import { ref, update, onValue } from "firebase/database";
+// import emailjs from "@emailjs/browser";
+// import { db } from "@root/firebase";
+// import { ref, update, onValue } from "firebase/database";
 
 import updateField from "@utils/forms/updateField";
-import checkValidPlayerId from "@utils/forms/checkValidPlayerId";
-import checkValidDocLink from "@utils/forms/checkValidDocLink";
+// import checkValidPlayerId from "@utils/forms/checkValidPlayerId";
+// import checkValidDocLink from "@utils/forms/checkValidDocLink";
 
 import { addNotification } from "@actions/notifications";
 
@@ -46,7 +46,7 @@ const Questions: React.FC<Props> = ({
 }) => {
   const [disabledButton, setDisabledButton] = useState<boolean>(false);
 
-  const userRef = ref(db, "users/" + user?.id + "/challenges/");
+  // const userRef = ref(db, "users/" + user?.id + "/challenges/");
   const formRef = useRef<HTMLFormElement>(null),
 
     [form, setForm] = useState({
@@ -58,80 +58,81 @@ const Questions: React.FC<Props> = ({
       submissionLink: "",
     });
 
-  useEffect(() => {
-    const checkIfFieldExists = async () => {
-      try {
-        const unsubscribe = onValue(userRef, (snapshot) => {
-          const challenges = snapshot.val();
-          if (challenges && challenges[data.title]) {
-            setDisabledButton(true);
-          } else {
-            setDisabledButton(false);
-          }
-        });
-        return () => {
-          unsubscribe();
-        };
-      } catch (error) {
-        console.error("Error checking data:", error);
-      }
-    };
-    checkIfFieldExists();
-  }, [userRef]);
+  // useEffect(() => {
+  //   const checkIfFieldExists = async () => {
+  //     try {
+  //       const unsubscribe = onValue(userRef, (snapshot) => {
+  //         const challenges = snapshot.val();
+  //         if (challenges && challenges[data.title]) {
+  //           setDisabledButton(true);
+  //         } else {
+  //           setDisabledButton(false);
+  //         }
+  //       });
+  //       return () => {
+  //         unsubscribe();
+  //       };
+  //     } catch (error) {
+  //       console.error("Error checking data:", error);
+  //     }
+  //   };
+  //   checkIfFieldExists();
+  // }, [userRef]);
 
-  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
+  // const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
+  //   e.preventDefault();
 
-    const fields = document.querySelectorAll<HTMLInputElement>(
-      "#questionForm input"
-    );
-    let valid = true;
+  //   const fields = document.querySelectorAll<HTMLInputElement>(
+  //     "#questionForm input"
+  //   );
+  //   let valid = true;
 
-    for (let i = 0; i < fields.length; i++) {
-      const field = fields[i];
+  //   for (let i = 0; i < fields.length; i++) {
+  //     const field = fields[i];
 
-      if (field.name === "studentID") checkValidPlayerId(field);
-      if (field.name === "submissionLink") checkValidDocLink(field);
+  //     if (field.name === "studentID") checkValidPlayerId(field);
+  //     if (field.name === "submissionLink") checkValidDocLink(field);
 
-      if (!field.validity.valid && valid) valid = false;
-    }
+  //     if (!field.validity.valid && valid) valid = false;
+  //   }
 
-    if (valid) {
-      setForm((prev) => ({ ...prev, processing: true }));
-      try {
-        const submission = currentData as unknown;
-        emailjs
-          .send(
-            `${process.env.REACT_APP_EMAILJS_SERVICE_ID}`,
-            `${process.env.REACT_APP_EMAILJS_TEMPLATE_ID}`,
-            submission as Record<string, unknown>,
-            `${process.env.REACT_APP_EMAILJS_PUBLIC_KEY}`
-          )
-          .then(async () => {
-            try {
-              await update(userRef, {
-                [data.title]: {
-                  challengeSubmitted: true,
-                  challengeLink: currentData.submissionLink
-                },
-              });
-            } catch (error) {
-              console.error("Error updating data:", error);
-            }
-          });
-      } catch (error) {
-        addNotification({
-          error: true,
-          content:
-            "Submission unexpectedly failed; error while sending automated email. Contact support if issue persists.",
-          close: false,
-          duration: 0,
-        });
-      } finally {
-        setForm((prev) => ({ ...prev, processing: false }));
-      }
-    }
-  };
+  //   if (valid) {
+  //     setForm((prev) => ({ ...prev, processing: true }));
+  //     try {
+  //       const submission = currentData as unknown;
+  //       emailjs
+  //         .send(
+  //           `${process.env.REACT_APP_EMAILJS_SERVICE_ID}`,
+  //           `${process.env.REACT_APP_EMAILJS_TEMPLATE_ID}`,
+  //           submission as Record<string, unknown>,
+  //           `${process.env.REACT_APP_EMAILJS_PUBLIC_KEY}`
+  //         )
+  //         .then(async () => {
+  //           try {
+  //             await update(userRef, {
+  //               [data.title]: {
+  //                 challengeSubmitted: true,
+  //                 challengeLink: currentData.submissionLink
+  //               },
+  //             });
+  //           } catch (error) {
+  //             console.error("Error updating data:", error);
+  //           }
+  //         });
+  //     } catch (error) {
+  //       addNotification({
+  //         error: true,
+  //         content:
+  //           "Submission unexpectedly failed; error while sending automated email. Contact support if issue persists.",
+  //         close: false,
+  //         duration: 0,
+  //       });
+  //     } finally {
+  //       setForm((prev) => ({ ...prev, processing: false }));
+  //     }
+  //   }
+  // };
+
   return (
     <div className={s.optionsView}>
       <form
@@ -195,7 +196,7 @@ const Questions: React.FC<Props> = ({
           <AreYouSureModal
             label={"Are you sure?"}
             text={`Once you submit your choice, you will not be able to change it later.`}
-            func={handleSubmit}
+            // func={handleSubmit}
             disabledProps={playerCheck || disabledButton || form.processing}
             buttonClass={s.questionSubmit}
           />
@@ -210,7 +211,7 @@ const mapStateToProps = ({ user }: { user: UserReduxState }) => ({
 });
 const mapDispatchToProps = (dispatch: Dispatch<any>) => ({
   addNotification: (notification: Omit<NotificationValues, "id">) =>
-    dispatch(addNotification(notification)),
+    dispatch(addNotification(notification))
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(Questions);

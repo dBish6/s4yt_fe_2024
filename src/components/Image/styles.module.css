@@ -1,5 +1,5 @@
 .blurLoad {
-  background: url("../../static/img-blur.jpg") center/cover;
+  background: url("/images/img-blur.jpg") center/cover;
   height: 100%;
   filter: blur(6px);
 }
