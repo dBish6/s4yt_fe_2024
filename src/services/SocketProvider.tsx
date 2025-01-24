@@ -76,11 +76,11 @@ const SocketProvider = ({ userToken, addNotification }: SocketProviderProps) => 
       });
 
       EstablishConnection()
-        .catch((error) => {
+        .catch((error: Error) => {
           console.log("ERROR socket end", error);
           addNotification({
             error: true,
-            content: error,
+            content: error.message,
             close: false,
             duration: 0
           });
@@ -90,7 +90,7 @@ const SocketProvider = ({ userToken, addNotification }: SocketProviderProps) => 
       return () => clearTimeout(timeout);
     }
   }, [userToken]);
-  
+
   return connecting ? <OverlayLoader text={connecting} /> : <Outlet />;
 };
 

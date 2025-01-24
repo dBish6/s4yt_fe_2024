@@ -16,7 +16,7 @@ const Error500: React.FC<{ logoutPlayer: () => void }> = ({ logoutPlayer }) => {
   return (
     <Error
       status={401}
-      text="Unauthorized; User Authorization is missing or required."
+      text="Forbidden; User authorization has expired or not valid."
       linkType="login"
     />
   );

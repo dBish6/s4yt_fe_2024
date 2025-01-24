@@ -40,7 +40,7 @@ const Coins: React.FC<Props> = ({ remainingCoins, getCoinsGainedHistory }) => {
       <h2>My Dubl-u-nes Status</h2>
       <div>
         <div className={s.coins}>
-          <img src={coins} alt="Doblon Coins" />
+          <img src={coins} alt="Dubl-u-nes Stack" />
           <p>
             You got <br />
             <b className={s.remain}>{remainingCoins}</b> <br />
