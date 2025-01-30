@@ -126,7 +126,7 @@ export const getCoinsGainedHistory =
     }
   };
 
-export const sendSponsorQuizCoins =
+export const sendLearnAndEarnCoins =
   (finalScore) => async (dispatch, getState) => {
     // try {
     //   const res = await Api.post("/player/coins/sponsor", {

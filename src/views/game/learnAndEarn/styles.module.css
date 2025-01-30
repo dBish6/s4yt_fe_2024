@@ -1,25 +1,263 @@
-footer.status {
-  /* TODO: You probably don't need this anymore. */
-  /* @media screen and (max-width: 500px) {
-    margin-top: 6rem;
-  } */
+.base {
+  min-width: 669px;
+  min-height: 676px;
+  padding-top: 0.75rem;
+}
+.base > img {
+  @media screen and (max-width: 669px) {
+    display: none;
+  }
 }
 
-.sponsors {
+.learn {
+  margin-top: 0.8rem;
+}
+
+.learn h2 {
+  font-family: "BebasNeue", Arial;
+  font-size: 56px;
+  line-height: 0.8;
+  color: var(--pbrown);
+}
+
+.learn ul {
+  all: unset;
+  list-style: none;
   display: flex;
   justify-content: center;
   flex-wrap: wrap;
-  gap: 1.8rem 3rem;
-  margin: 1.5rem 9rem 4rem 9rem;
-  z-index: 1;
+  gap: 1.5rem 2.75rem;
+  margin-block: 3rem 3.5rem;
 }
-@media screen and (max-width: 638px) {
-  .sponsors {
-    margin: 1rem 6rem 1rem 6rem;
+.learn ul li.chest {
+  width: 235px;
+  height: 162px;
+}
+.learn ul li.chest button {
+  width: 100%;
+  height: 100%;
+}
+
+
+/* <======================================/ Questions \======================================> */
+.questions {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.questions > :global(.backBtn) {
+  flex-shrink: 0;
+  transform: scale(0.92);
+}
+
+.questions p.loading {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: var(--heading-38);
+  color: var(--pbrown);
+  text-align: center;
+}
+
+.questions .openedChest {
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  width: 632px;
+  height: 632px;
+}
+
+.questions .openedChest .content {
+  --_green: #009846;
+
+  transform: translateY(-50px);
+}
+
+.questions .openedChest .content h2 {
+  color: var(--white);
+  line-height: 1;
+  margin-inline: 3rem;
+}
+.questions .openedChest .content h2.questionTxt {
+  display: flex;
+}
+.questions .openedChest .content h2.questionTxt div:first-child {
+  font-family: "BebasNeue", Arial;
+  font-size: 54px;
+}
+.questions .openedChest .content h2.questionTxt div:last-child {
+  font-family: "Corbel", Arial;
+  font-size: 17px;
+  margin-top: 0.5rem;
+  margin-left: 4px;
+  opacity: 0.95;
+}
+.questions .openedChest .content h2.correct {
+  font-family: "BebasNeue", Arial;
+  font-size: 54px;
+  background-color: var(--_green);
+  padding: 5px 1.75rem 2px;
+  margin: 0 auto;
+  border: 3px solid var(--white);
+  border-radius: 3rem;
+  width: fit-content;
+}
+
+.questions .openedChest .content div[role=radiogroup] {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, 160px);
+  justify-content: center;
+  gap: 0.75rem;
+  margin-top: 0.75rem;
+}
+
+.questions .openedChest .content div[role=radiogroup] button[role=radio] {
+  display: flex;
+  flex-direction: column;
+  background: url("/images/learnAndEarn/bubble.png") no-repeat center center/cover;
+  font-family: "Corbel", Arial;
+  color: var(--white);
+  height: 160px;
+  padding: 0.75rem 1rem;
+  border-radius: 50%;
+  overflow: auto;
+}
+.questions .openedChest .content div[role=radiogroup] button[role=radio]:disabled {
+  opacity: 0.85;
+}
+.questions .openedChest .content div[role=radiogroup] button[role=radio] div:first-child {
+  font-size: var(--heading-28);
+  line-height: 75%;
+  text-transform: uppercase;
+  margin-bottom: 4px;
+}
+.questions .openedChest .content div[role=radiogroup] button[role=radio] :global(#scroll) {
+  overflow: auto;
+  transition: 0.2s ease-in-out opacity;
+}
+.questions .openedChest .content div[role=radiogroup] button[role=radio] :global(#scroll) p {
+  overflow: auto;
+  font-size: 13px;
+  transition: 0.2s ease-in-out opacity;
+}
+
+.questions .openedChest .content div[role=radiogroup] .explanation {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: calc(100% - 9.85rem);
+  background-color: var(--_green);
+  padding: 6px 8px 8px;
+  border-radius: 12px;
+}
+.questions .openedChest .content div[role=radiogroup] .explanation p:first-child {
+  font-family: "Corbel", Arial;
+  font-size: 16px;
+  color: var(--white);
+  max-height: 114px;
+  overflow: auto;
+}
+.questions .openedChest .content div[role=radiogroup] .explanation p:nth-child(2) {
+  position: absolute;
+  left: 0.5rem;
+  bottom: 0.5rem;
+  font-family: "Corbel", Arial;
+  font-weight: 700;
+  font-size: 14px;
+  font-style: italic;
+  color: var(--white);
+}
+.questions .openedChest .content div[role=radiogroup] .explanation button {
+  margin-top: 8px;
+  font-family: "BebasNeue", Arial;
+  font-size: 24px;
+  color: var(--white);
+  text-decoration: underline;
+}
+.questions .openedChest .content div[role=radiogroup] .explanation button {
+  margin-top: 8px;
+  font-family: "BebasNeue", Arial;
+  font-size: 24px;
+  color: var(--white);
+  text-decoration: underline;
+}
+
+.questions .openedChest .coinPopup {
+  position: relative;
+}
+.questions .openedChest .coinPopup .coin,
+.questions .coinTotal {
+  position: absolute;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.questions .openedChest .coinPopup .coin {
+  left: 50%;
+  bottom: -124px;
+  transform: translateX(-50%);
+  width: 186px;
+  height: 185px;
+  background: url("/images/learnAndEarn/coin+3.png") no-repeat center center/cover;
+  animation: bonuceIn cubic-bezier(.67,.2,.25,.99) 0.65s forwards;
+}
+.questions .openedChest .coinPopup .coin p,
+.questions .coinTotal p {
+  font-family: "BebasNeue", Arial;
+  color: #f9da7c;
+  text-shadow: 1px 1px 0 black;
+  pointer-events: none;
+}
+.questions .openedChest .coinPopup .coin p {
+  font-size: 134px;
+  transform: translate(7px, 5px);
+}
+.questions .openedChest .coinPopup .coin p::after {
+  content: "+";
+  position: absolute;
+  top: 27px;
+  left: -28px;
+  font-family: "BebasNeue", Arial;
+  font-size: 75px;
+  text-shadow: 1px 1px 0 black;
+  line-height: 45%;
+}
+
+.questions .coinTotal {
+  right: 24px;
+  bottom: 76px;
+  width: 99px;
+  height: 93px;
+  background: url("/images/learnAndEarn/coin3.png") no-repeat center center/cover;
+  animation: fadeIn ease-in-out 1.5s;
+}
+.questions .coinTotal p {
+  font-size: 73px;
+  transform: translateY(2px);
+}
+
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
   }
 }
-@media screen and (max-width: 512px) {
-  .sponsors {
-    margin: 1rem;
+
+@keyframes bonuceIn {
+  0% {
+    bottom: -224px;
+    opacity: 0.35;
+  }
+  20% {
+    bottom: -104px;
+  }
+  100% {
+    bottom: -124px;
+    opacity: 1;
   }
 }

@@ -21,7 +21,9 @@ const sendRequest = async (method, url, params, body) => {
     },
     ...(body && { body: JSON.stringify(body) })
   });
-  if (response && response.status === 401 && tokens.access) history.push("/error-401");
+  if (response?.status === 401) history.push("/error-401");
+  else if (response?.status === 403) history.push("/error-403");
+
   const data = await response.json();
 
   return { data, meta: response };

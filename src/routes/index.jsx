@@ -23,9 +23,10 @@ import LearnAndEarn from "@views/game/learnAndEarn";
 // import Results from "@views/game/results";
 // import GameClosed from "@views/game/gameClosed";
 
-import Error404 from "@views/errors/Error404";
-import Error401 from "@views/errors/Error401";
 import Error409 from "@views/errors/Error409";
+import Error404 from "@views/errors/Error404";
+import Error403 from "@views/errors/Error403";
+import Error401 from "@views/errors/Error401";
 import Error500 from "@views/errors/Error500";
 
 // NOTE: This is how I'm doing it, I am going page by page and they will be uncommented when started.
@@ -50,6 +51,7 @@ export const routes = [
 
   { path: "/error-409", view: Error409, restricted: 1, title: "ERROR 409" },
   { path: "/error-404", view: Error404, restricted: 0, title: "ERROR 404" },
+  { path: "/error-403", view: Error403, restricted: 0, title: "ERROR 403" },
   { path: "/error-401", view: Error401, restricted: 0, title: "ERROR 401" },
   { path: "/error-500", view: Error500, restricted: 0, title: "ERROR 500" }
 ];
