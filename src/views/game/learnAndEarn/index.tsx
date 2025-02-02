@@ -35,8 +35,9 @@ const handleHover = (e: React.SyntheticEvent<HTMLButtonElement, Event>) => {
     elem.src = elem.dataset.imgSrc!;
   };
 
+// TODO: I need to get the chests via request.
 const LearnAndEarn: React.FC<PlayerProps> = ({ chestsSubmitted, isNotPlayer }) => {
-  const [selectedChest, setSelectedChest] = useState<ChestGrouping | null>(null),
+  const [selectedChest, setSelectedChest] = useState<{ id: string; quiz: ChestGrouping } | null>(null),
     [isAnyCompleted, setIsAnyCompleted] = useState(false);
 
   // TODO: See.
@@ -69,15 +70,14 @@ const LearnAndEarn: React.FC<PlayerProps> = ({ chestsSubmitted, isNotPlayer }) =
                 }.png`;
 
                 return (
-                  <li className={s.chest}>
+                  <li key={i} className={s.chest}>
                     <button
                       ref={handleIsAnyCompleted}
-                      key={i}
                       className={`${s.chest} fade`}
                       disabled={chestsSubmitted[chestGroup.chest_id]}
                       onClick={() => {
                         if (isNotPlayer(true, "Only players can win more dubl-u-nes")) return;
-                        setSelectedChest(chestGroup.group);
+                        setSelectedChest({ id: chestGroup.chest_id, quiz: chestGroup.group });
                       }}
                       onMouseEnter={handleHover}
                       onFocus={handleHover}
@@ -107,8 +107,7 @@ const LearnAndEarn: React.FC<PlayerProps> = ({ chestsSubmitted, isNotPlayer }) =
 };
 
 const mapStateToProps = ({ user }: { user: UserReduxState }) => ({
-  // TODO:
-  chestsSubmitted: user.credentials!.chests_submitted || {}
+  chestsSubmitted: user.credentials?.chests_submitted || {}
 });
 const mapDispatchToProps = (dispatch: Function) => ({
   isNotPlayer: (useNotification?: boolean, message?: string) =>

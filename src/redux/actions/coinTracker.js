@@ -11,6 +11,7 @@ import {
   SPEND_COINS,
 } from "@actions/index";
 import { updateCurrentUser } from "./user";
+import { socket } from "@services/SocketProvider";
 
 // TODO: Everything else but getCoinsGainedHistory need changes.
 
@@ -76,7 +77,7 @@ export const setRaffleItems = (raffle) => async (dispatch, getState) => {
   // }
 };
 
-// TODO: Will be used in next commit.
+// TODO: Will be used in next later.
 export const checkTotalCoins = () => async (dispatch, _) => {
   let retries = 2;
 
@@ -106,8 +107,7 @@ export const checkTotalCoins = () => async (dispatch, _) => {
   await getTotal();
 };
 
-export const getCoinsGainedHistory =
-  (setCoinsGainedHistory) => async (dispatch, _) => {
+export const getCoinsGainedHistory = (setCoinsGainedHistory) => async (dispatch, _) => {
     try {
       const { data, meta } = await Api.get("/game/player/coins/history");
 
@@ -126,29 +126,43 @@ export const getCoinsGainedHistory =
     }
   };
 
-export const sendLearnAndEarnCoins =
-  (finalScore) => async (dispatch, getState) => {
-    // try {
-    //   const res = await Api.post("/player/coins/sponsor", {
-    //     coins: finalScore,
-    //   });
+export const sendLearnAndEarnCoins = (chestId, amount) => async (dispatch, _) => {
+  try {
+    const { data, meta } = await Api.post("/game/player/coins/chest", { chestId, amount });
 
-    //   if (res.success) {
-    //     dispatch(retrieveCoins(null, finalScore));
-    //     dispatch(updateCurrentUser({ quiz_submitted: 1 }));
-    //   } else {
-    //     showError(
-    //       res,
-    //       dispatch,
-    //       "Unexpected server error occurred updating your Dubl-u-nes from the quiz."
-    //     );
-    //   }
-    // } catch (error) {
-    //   errorHandler("sendSponsorQuizCoins", error);
-    // }
-  };
+    if (meta.ok) {
+      // TODO: We'll update the coins by the socket.
+      // dispatch(retrieveCoins(null, finalScore));
+      dispatch(updateCurrentUser({ chests_submitted: data.chests_submitted }));
+    } else {
+      showError(
+        data,
+        meta.status,
+        dispatch,
+        "Unexpected server error occurred updating your Dubl-u-nes from the chest quiz. Try again later."
+      );
+    }
+  } catch (error) {
+    errorHandler("sendLearnAndEarnCoins", error);
+  }
+};
 
-// Web Sockets
+// <======================================/ Web Sockets \======================================>
+
+// TODO:
+export const coinChangesListener = () => (dispatch, getState) => {
+  // TODO: Name
+  socket.on("coin_change", () => {
+
+  });
+};
+
+
+/**
+ * For the raffle. Listens for gold and sliver coin changes on raffle items to indicate that 
+ * this item has other users coins in on that item.
+ */
+// TODO:
 export const sliverAndGoldCoinsListener = () => (dispatch, getState) => {
   // window.Echo.channel("raffle-update").listen("RaffleUpdate", (e) => {
   //   dispatch({ type: RAFFLE_ACTIVE_STATE, payload: e.message });

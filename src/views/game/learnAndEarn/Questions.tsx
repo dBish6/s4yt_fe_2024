@@ -9,12 +9,22 @@ import { sendLearnAndEarnCoins } from "@actions/coinTracker";
 import s from "./styles.module.css";
 
 interface Props {
-  selectedChest: ChestGrouping;
-  setSelectedChest: React.Dispatch<React.SetStateAction<null>>
-  sendLearnAndEarnCoins: (finalScore: number) => Promise<{ data: any; meta: Response }>;
+  selectedChest: { id: string; quiz: ChestGrouping };
+  setSelectedChest: React.Dispatch<
+    React.SetStateAction<{
+      id: string;
+      quiz: ChestGrouping;
+    } | null>
+  >;
+  sendLearnAndEarnCoins: (chestId: string, finalScore: number) => Promise<void>;
 }
 
-const More: React.FC<Props> = ({
+// TODO: Might be needed.
+// const linkQuestion =
+  // question.explanation.includes("https://") &&
+  // question.explanation.split(": ");
+
+const Questions: React.FC<Props> = ({
   selectedChest,
   setSelectedChest,
   sendLearnAndEarnCoins
@@ -25,9 +35,9 @@ const More: React.FC<Props> = ({
   }>({ img: null, opened: false });
 
   const [stage, setStage] = useState({ iteration: 0, process: false }),
-    currentSet = selectedChest[stage.iteration - 1];
+    currentSet = selectedChest.quiz[stage.iteration - 1];
 
-  const [earned, setEarned] = useState({ iteration: 3, final: 0 });
+  const [earned, setEarned] = useState({ iteration: 3, final: 0, processing: false });
 
   // useEffect(() => {
   //   console.log("stage", stage);
@@ -46,6 +56,7 @@ const More: React.FC<Props> = ({
 
     if (choice === answer.correct) {
       setEarned((prev) => ({
+        ...prev,
         iteration: 3,
         final: prev.final + prev.iteration
       }));
@@ -116,10 +127,10 @@ const More: React.FC<Props> = ({
 
   useEffect(() => {
     if (stage.iteration === 4) {
-      // TODO: Processing balance/coins loading or just the spinner.
-      sendLearnAndEarnCoins(earned.final).then(() => {
-        setSelectedChest(null);
-      });
+      setEarned((prev) => ({ ...prev, processing: true }));
+      sendLearnAndEarnCoins(selectedChest.id, earned.final)
+        .then(() => setSelectedChest(null))
+        .finally(() => setEarned((prev) => ({ ...prev, processing: true })));
     }
   }, [stage.iteration]);
 
@@ -131,7 +142,7 @@ const More: React.FC<Props> = ({
         onClick={() =>  setSelectedChest(null)}
       />
 
-      {chest.img ? (
+      {!earned.processing && chest.img ? (
         <div
           id="chest"
           className={s.openedChest}
@@ -162,6 +173,7 @@ const More: React.FC<Props> = ({
 
                     return (
                       <button
+                        key={letter}
                         role="radio"
                         aria-label={`Answer ${letter}, ${answer}`}
                         aria-checked="false"
@@ -204,7 +216,9 @@ const More: React.FC<Props> = ({
           )}
         </div>
       ) : (
-        <p className={s.loading}>Just a moment...</p>
+        <p className={s.loading}>
+          {earned.processing ? "Updating your Dubl-u-nes..." : "Just a moment..."}
+        </p>
       )}
 
       {earned.final > 0 && (
@@ -217,8 +231,8 @@ const More: React.FC<Props> = ({
 };
 
 const mapDispatchToProps = (dispatch: Dispatch<any>) => ({
-  // TODO:
-  sendLearnAndEarnCoins: (finalScore: number) => dispatch(sendLearnAndEarnCoins(finalScore))
+  sendLearnAndEarnCoins: (chestId: string, finalScore: number) =>
+    dispatch(sendLearnAndEarnCoins(chestId, finalScore) as unknown) as Promise<any>
 });
 
-export default connect(null, mapDispatchToProps)(More);
+export default connect(null, mapDispatchToProps)(Questions);

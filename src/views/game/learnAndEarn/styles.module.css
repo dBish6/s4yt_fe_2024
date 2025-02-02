@@ -201,7 +201,7 @@
   transform: translateX(-50%);
   width: 186px;
   height: 185px;
-  background: url("/images/learnAndEarn/coin+3.png") no-repeat center center/cover;
+  background: url("/images/learnAndEarn/coin.png") no-repeat center center/cover;
   animation: bonuceIn cubic-bezier(.67,.2,.25,.99) 0.65s forwards;
 }
 .questions .openedChest .coinPopup .coin p,
@@ -231,7 +231,7 @@
   bottom: 76px;
   width: 99px;
   height: 93px;
-  background: url("/images/learnAndEarn/coin3.png") no-repeat center center/cover;
+  background: url("/images/learnAndEarn/coin.png") no-repeat center center/cover;
   animation: fadeIn ease-in-out 1.5s;
 }
 .questions .coinTotal p {
