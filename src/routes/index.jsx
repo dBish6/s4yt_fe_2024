@@ -1,6 +1,6 @@
 import { Routes, Route, Navigate } from "react-router-dom";
 
-import SocketProvider from "@services/SocketProvider";
+import ResourceLoader from "@services/ResourceLoader";
 
 import routeDisableOn from "./disableOn";
 import Redirects from "./Redirects";
@@ -17,7 +17,7 @@ import Profile from "@views/user/profile";
 
 import Home from "@views/game/home";
 import LearnAndEarn from "@views/game/learnAndEarn";
-// import Raffle from "@views/game/raffle";
+import Raffle from "@views/game/raffle";
 // import Businesses from "@views/game/businesses";
 // import Details from "@views/game/businesses/Details";
 // import Results from "@views/game/results";
@@ -43,7 +43,7 @@ export const routes = [
 
   { path: "/", view: Home, restricted: 1, title: "Treasure Map" },
   { path: "/learn", view: LearnAndEarn, restricted: 1, title: "Learn and Earn", disableOn: routeDisableOn["/learn"] },
-  // { path: "/raffle", view: Raffle, restricted: 1, title: "Raffle", disableOn: routeDisableOn["/raffle"] },
+  { path: "/raffle", view: Raffle, restricted: 1, title: "Raffle", disableOn: routeDisableOn["/raffle"] },
   // { path: "/businesses", view: Businesses, restricted: 1, title: "See Businesses", disableOn: routeDisableOn["/businesses"]  },
   // { path: "/businesses/:details", view: Details, restricted: 1, title: "Business Details", disableOn: routeDisableOn["/businesses"] },
   // { path: "/results", view: Results, restricted: 1, title: "Event Results", disableOn: routeDisableOn["/results"] },
@@ -59,7 +59,7 @@ export const routes = [
 const RoutesProvider = () => {
   return (
     <Routes>
-      <Route element={<SocketProvider />}>
+      <Route element={<ResourceLoader />}>
         {routes.map((route) => (
           <Route
             key={route.path}

@@ -9,8 +9,8 @@ export const UPDATE_NOTIFICATION = "notification.UPDATE_NOTIFICATION";
 export const REMOVE_NOTIFICATION = "notification.REMOVE_NOTIFICATION";
 
 // user
-export const SET_TOKENS = "user.SET_TOKENS";
-export const SET_CURRENT_USER = "user.SET_CURRENT_USER";
+export const INITIALIZE_SESSION = "user.INITIALIZE_SESSION";
+export const SET_NEW_LOGIN_FLAG = "user.SET_NEW_LOGIN_FLAG";
 export const UPDATE_CURRENT_USER = "user.UPDATE_CURRENT_USER";
 export const LOGOUT = "user.LOGOUT";
 
