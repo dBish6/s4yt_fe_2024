@@ -1,7 +1,7 @@
-import { CoinTrackerState } from "@reducers/coinTracker";
+import type { CoinTrackerState } from "@reducers/coinTracker";
+import type { Dispatch } from "redux";
 
-import { useState, useEffect } from "react";
-import { Dispatch } from "redux";
+import { useState, useLayoutEffect } from "react";
 import { connect } from "react-redux";
 
 import { getCoinsGainedHistory } from "@actions/coinTracker";
@@ -22,7 +22,7 @@ interface Props {
     setCoinsGainedHistory: React.Dispatch<
       React.SetStateAction<CoinsGainedDTO[]>
     >
-  ) => Promise<any>;
+  ) => Promise<void>;
 }
 
 const Coins: React.FC<Props> = ({ remainingCoins, getCoinsGainedHistory }) => {
@@ -30,7 +30,7 @@ const Coins: React.FC<Props> = ({ remainingCoins, getCoinsGainedHistory }) => {
     CoinsGainedDTO[]
   >([]);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (!coinsGainedHistory.length)
       getCoinsGainedHistory(setCoinsGainedHistory);
   }, []);
@@ -52,6 +52,7 @@ const Coins: React.FC<Props> = ({ remainingCoins, getCoinsGainedHistory }) => {
           aria-busy={!coinsGainedHistory.length}
           className={s.statuses}
         >
+          {/* Loader on none because they should have a entry added on register (they get coins on register). */}
           {!coinsGainedHistory.length ? (
             <Spinner size="2rem" />
           ) : (
@@ -69,11 +70,11 @@ const Coins: React.FC<Props> = ({ remainingCoins, getCoinsGainedHistory }) => {
 };
 
 const mapStateToProps = ({
-  coinTracker,
+  coinTracker
 }: {
   coinTracker: CoinTrackerState;
 }) => ({
-  remainingCoins: coinTracker.remainingCoins,
+  remainingCoins: coinTracker.remainingCoins
 });
 const mapDispatchToProps = (dispatch: Dispatch<any>) => ({
   getCoinsGainedHistory: (
@@ -83,7 +84,7 @@ const mapDispatchToProps = (dispatch: Dispatch<any>) => ({
   ) =>
     dispatch(
       getCoinsGainedHistory(setCoinsGainedHistory) as unknown
-    ) as Promise<any>,
+    ) as Promise<void>
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(Coins);

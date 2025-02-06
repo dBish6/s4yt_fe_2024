@@ -1,5 +1,6 @@
-import { useRef, useState, useEffect } from "react";
-import { Dispatch } from "redux";
+import type { Dispatch } from "redux";
+
+import { useLayoutEffect, useRef, useState } from "react";
 import { connect } from "react-redux";
 
 import updateField from "@utils/forms/updateField";
@@ -25,7 +26,7 @@ interface Props {
         success: boolean;
       }>
     >
-  ) => Promise<any>;
+  ) => Promise<void>;
 }
 
 const VerifyEmail: React.FC<Props> = ({ sendVerifyEmail }) => {
@@ -52,7 +53,7 @@ const VerifyEmail: React.FC<Props> = ({ sendVerifyEmail }) => {
     }
   };
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     const handleResize = () => {
       if (window.innerWidth <= 764) {
         setBreakCenter(true);
@@ -60,11 +61,10 @@ const VerifyEmail: React.FC<Props> = ({ sendVerifyEmail }) => {
         setBreakCenter(false);
       }
     };
+    handleResize();
 
     window.addEventListener("resize", handleResize);
-    return () => {
-      window.removeEventListener("resize", handleResize);
-    };
+    return () => window.removeEventListener("resize", handleResize);
   }, []);
 
   return (
@@ -73,7 +73,7 @@ const VerifyEmail: React.FC<Props> = ({ sendVerifyEmail }) => {
         title="Verify Email"
         style={{
           maxWidth: "700px",
-          ...(!breakCenter && { marginInline: "auto" }),
+          ...(!breakCenter && { marginInline: "auto" })
         }}
       />
       <Content
@@ -141,7 +141,7 @@ const mapDispatchToProps = (dispatch: Dispatch<any>) => ({
   ) =>
     dispatch(
       sendVerifyEmail(email, formRef, setForm) as unknown
-    ) as Promise<any>,
+    ) as Promise<void>,
 });
 
 export default connect(null, mapDispatchToProps)(VerifyEmail);

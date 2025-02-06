@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { connect } from "react-redux";
-import { db } from "@root/firebase";
-import { ref, update, onValue } from "firebase/database";
+// import { db } from "@root/firebase";
+// import { ref, update, onValue } from "firebase/database";
 
 import s from "./styles.module.css";
 import { UserReduxState } from "@root/redux/reducers/user";
@@ -24,41 +24,42 @@ const MeetUp: React.FC<Props> = ({ playerCheck, data, user, name }) => {
   const [disabledButton, setDisabledButton] = useState<boolean>(false);
 
   const encodedEmail = user?.email.replace(/\./g, ",");
-  const userRef = ref(db, "users/" + user?.id + "/meetings/");
+  // const userRef = ref(db, "users/" + user?.id + "/meetings/");
 
-  useEffect(() => {
-    const checkIfFieldExists = async () => {
-      try {
-        const unsubscribe = onValue(userRef, (snapshot) => {
-          const meeting = snapshot.val();
-          if (meeting && meeting[name]) {
-            setDisabledButton(true);
-          } else {
-            setDisabledButton(false);
-          }
-        });
-        return () => {
-          unsubscribe();
-        };
-      } catch (error) {
-        console.error("Error checking data:", error);
-      }
-    };
-    checkIfFieldExists();
-  }, [userRef]);
+  // useEffect(() => {
+  //   const checkIfFieldExists = async () => {
+  //     try {
+  //       const unsubscribe = onValue(userRef, (snapshot) => {
+  //         const meeting = snapshot.val();
+  //         if (meeting && meeting[name]) {
+  //           setDisabledButton(true);
+  //         } else {
+  //           setDisabledButton(false);
+  //         }
+  //       });
+  //       return () => {
+  //         unsubscribe();
+  //       };
+  //     } catch (error) {
+  //       console.error("Error checking data:", error);
+  //     }
+  //   };
+    // checkIfFieldExists();
+  // }, [userRef]);
 
-  const handleFirebaseSubmit = async () => {
-    try {
-      await update(userRef, {
-        [name]: {
-          meetChoice,
-          date: `${data.date}, ${data.time}`,
-        },
-      });
-    } catch (error) {
-      console.error("Error updating data:", error);
-    }
-  };
+  // const handleFirebaseSubmit = async () => {
+  //   try {
+  //     await update(userRef, {
+  //       [name]: {
+  //         meetChoice,
+  //         date: `${data.date}, ${data.time}`,
+  //       },
+  //     });
+  //   } catch (error) {
+  //     console.error("Error updating data:", error);
+  //   }
+  // };
+
   return (
     <div className={s.optionsView}>
       <div className={s.meetUp}>
@@ -97,7 +98,7 @@ const MeetUp: React.FC<Props> = ({ playerCheck, data, user, name }) => {
         <AreYouSureModal
           label={"Are you sure?"}
           text={`Once you submit your choice, you will not be able to change it later. Your current meeting choice for ${name} is: ${meetChoice}. Is this correct?`}
-          func={handleFirebaseSubmit}
+          // func={handleFirebaseSubmit}
           disabledProps={playerCheck || disabledButton || meetChoice === ""}
           buttonClass={s.meetSubmit}
         />

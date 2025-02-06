@@ -87,7 +87,7 @@
 .form span:nth-of-type(3) > div small.notFoundMsg {
   left: 70px;
 }
-.form div:nth-of-type(5) small.notFoundMsg {
+.form > div:nth-of-type(3) small.notFoundMsg {
   left: 97px;
 }
 .form div input[aria-invalid="true"] + small,
@@ -111,12 +111,11 @@
 .form[id="registerForm"] span:nth-of-type(2) div:last-child label {
   margin-right: calc(0.5rem + 0.5ch);
 }
-
-.form[id="registerForm"] > div:nth-of-type(5) select {
+.form[id="registerForm"] > div:nth-of-type(3) select {
   max-width: 264.883px;
 }
 @media screen and (max-width: 644px) {
-  .form[id="registerForm"] > div:nth-of-type(5) select {
+  .form[id="registerForm"] > div:nth-of-type(3) select {
     max-width: 254.883px;
   }
 }
@@ -127,37 +126,47 @@
   margin-right: 1rem;
 }
 
-.form[id="registerForm"] > div:nth-of-type(5) :global(.spinner) {
+.form[id="registerForm"] > div:nth-of-type(3) :global(.spinner) {
   left: 315px;
 }
 
 @media screen and (min-width: 759px) and (max-width: 788px) {
-  .form[id="registerForm"] > div:nth-of-type(5) :global(.spinner) {
+  .form[id="registerForm"] > div:nth-of-type(3) :global(.spinner) {
     left: 305px;
   }
 }
 @media screen and (min-width: 735px) and (max-width: 758px) {
-  .form[id="registerForm"] > div:nth-of-type(5) :global(.spinner) {
+  .form[id="registerForm"] > div:nth-of-type(3) :global(.spinner) {
     left: 295px;
   }
 }
 @media screen and (min-width: 701px) and (max-width: 734px) {
-  .form[id="registerForm"] > div:nth-of-type(5) :global(.spinner) {
+  .form[id="registerForm"] > div:nth-of-type(3) :global(.spinner) {
     left: 285px;
   }
 }
 @media screen and (min-width: 677px) and (max-width: 700px) {
-  .form[id="registerForm"] > div:nth-of-type(5) :global(.spinner) {
+  .form[id="registerForm"] > div:nth-of-type(3) :global(.spinner) {
     left: 275px;
   }
 }
 @media screen and (min-width: 626px) and (max-width: 676px) {
-  .form[id="registerForm"] > div:nth-of-type(5) :global(.spinner) {
+  .form[id="registerForm"] > div:nth-of-type(3) :global(.spinner) {
     left: 260px;
   }
 }
 
-@media screen and (min-width: 626px) and (max-width: 707px) {
+@media screen and (min-width: 626px) {
+  .form[id="registerForm"] span:nth-of-type(3) div small.notFoundMsg {
+    bottom: -32px;
+  }
+}
+@media screen and (max-width: 419px) {
+  .form[id="registerForm"] div:nth-of-type(3) small.notFoundMsg {
+    bottom: -32px;
+  }
+}
+@media screen and (max-width: 437px) {
   .form[id="registerForm"] span:nth-of-type(3) div small.notFoundMsg {
     bottom: -32px;
   }
@@ -172,7 +181,7 @@
     margin-right: unset;
     top: unset;
   }
-  .form[id="registerForm"] > div:nth-of-type(5) select {
+  .form[id="registerForm"] > div:nth-of-type(3) select {
     max-width: 100%;
   }
 
@@ -190,7 +199,7 @@
   .form[id="registerForm"] div :global(.spinner) {
     top: 39px;
   }
-  .form[id="registerForm"] > div:nth-of-type(5) :global(.spinner) {
+  .form[id="registerForm"] > div:nth-of-type(3) :global(.spinner) {
     right: 29px;
     left: auto;
   }
@@ -218,11 +227,11 @@
   margin-right: calc(0.5rem + 1.3ch);
 }
 
-.form[id="userForm"] > div:nth-of-type(5) select {
+.form[id="userForm"] > div:nth-of-type(3) select {
   max-width: 42.1%;
 }
 
-.form[id="userForm"] > div:nth-of-type(5) :global(.spinner) {
+.form[id="userForm"] > div:nth-of-type(3) :global(.spinner) {
   left: 43.48%;
 }
 
@@ -234,7 +243,7 @@
   .form[id="userForm"] div:not(.form[id="userForm"] > div:last-of-type) {
     flex-direction: column;
   }
-  .form[id="userForm"] > div:nth-of-type(5) select {
+  .form[id="userForm"] > div:nth-of-type(3) select {
     max-width: 48.85%;
   }
 
@@ -246,7 +255,7 @@
   .form[id="userForm"] div :global(.spinner) {
     top: 39px;
   }
-  .form[id="userForm"] > div:nth-of-type(5) :global(.spinner) {
+  .form[id="userForm"] > div:nth-of-type(3) :global(.spinner) {
     left: 41.5%;
   }
 }

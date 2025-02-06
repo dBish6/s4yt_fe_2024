@@ -1,14 +1,13 @@
-import { UserReduxState } from "@reducers/user";
-
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Dispatch } from "redux";
 import { connect } from "react-redux";
 
 import updateField from "@utils/forms/updateField";
 import checkValidity from "@utils/forms/checkValidity";
-import checkValidPlayerId from "@utils/forms/checkValidPlayerId";
-import delay from "@utils/delay";
+import checkValidEmail from "@root/utils/forms/checkValidEmail";
+
+import useRefreshReduxPersister from "@root/hooks/useRefreshReduxPersister";
 
 import { loginPlayer } from "@actions/user";
 
@@ -23,38 +22,23 @@ interface Props {
   userToken: string | undefined;
   loginPlayer: (
     userData: LoginFormData,
-    setForm: React.Dispatch<
-      React.SetStateAction<{
-        processing: boolean;
-      }>
-    >
-  ) => Promise<any>;
+    setForm: React.Dispatch<React.SetStateAction<{ processing: boolean }>>
+  ) => Promise<void>;
 }
 
 interface LoginFormData {
-  player_id: string;
+  email: string;
   password: string;
 }
 
-const Login: React.FC<Props> = ({ userToken, loginPlayer }) => {
-    const [form, setForm] = useState({
-      processing: false,
-    }),
+const Login: React.FC<Props> = ({ loginPlayer }) => {
+  const [form, setForm] = useState({ processing: false }),
     [currentData, setCurrentData] = useState<LoginFormData>({
-      player_id: "",
-      password: "",
+      email: "",
+      password: ""
     });
 
-  useEffect(() => {
-    if (localStorage.getItem("persist:root") && !userToken && !localStorage.getItem("loginLoaded")) 
-    {
-      localStorage.removeItem("persist:root");
-      delay(1000, () => {
-        window.location.reload();
-        localStorage.setItem("loginLoaded", "true");
-      });
-    }
-  }, []);
+  // useRefreshReduxPersister(); // TODO: Use when starting.
 
   const submit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -65,11 +49,8 @@ const Login: React.FC<Props> = ({ userToken, loginPlayer }) => {
 
     for (let i = 0; i < fields.length; i++) {
       const field = fields[i];
-      if (field.name === "player_id") {
-        checkValidPlayerId(field);
-      } else {
-        checkValidity(field);
-      }
+      if (field.name === "player_id") checkValidEmail(field);
+      else checkValidity(field);
 
       if (!field.validity.valid && valid) valid = false;
     }
@@ -84,6 +65,10 @@ const Login: React.FC<Props> = ({ userToken, loginPlayer }) => {
     <Layout style={{ position: "relative", maxWidth: "600px" }}>
       <Header title="Login" />
       <Content addCoins="coins1">
+        <Link className={`${s.resend} fade move`} to="/register/verify-email">
+          Resend Verification Email?
+        </Link>
+
         <form
           id="loginForm"
           onSubmit={(e) => submit(e)}
@@ -92,12 +77,12 @@ const Login: React.FC<Props> = ({ userToken, loginPlayer }) => {
           noValidate
         >
           <div role="presentation">
-            <label htmlFor="player_id">Player Id</label>
+            <label htmlFor="email">Email</label>
             <Input
-              id="player_id"
-              name="player_id"
-              type="text"
-              errorMsg="Not a valid player ID."
+              id="email"
+              name="email"
+              type="email"
+              errorMsg="Not a valid email address"
               onChange={(e) => updateField<LoginFormData>(e, setCurrentData)}
               disabled={form.processing}
               autoComplete="off"
@@ -139,11 +124,6 @@ const Login: React.FC<Props> = ({ userToken, loginPlayer }) => {
         target="_blank"
         rel="noopener noreferrer"
         className={`${s.privacy} privacy fade move`}
-        style={{
-          position: "absolute",
-          right: 30,
-          bottom: "-24px",
-        }}
       >
         Private Policy
       </a>
@@ -151,18 +131,11 @@ const Login: React.FC<Props> = ({ userToken, loginPlayer }) => {
   );
 };
 
-const mapStateToProps = ({ user }: { user: UserReduxState }) => ({
-  userToken: user.token,
-});
 const mapDispatchToProps = (dispatch: Dispatch<any>) => ({
   loginPlayer: (
     userData: LoginFormData,
-    setForm: React.Dispatch<
-      React.SetStateAction<{
-        processing: boolean;
-      }>
-    >
-  ) => dispatch(loginPlayer(userData, setForm) as unknown) as Promise<any>,
+    setForm: React.Dispatch<React.SetStateAction<{ processing: boolean }>>
+  ) => dispatch(loginPlayer(userData, setForm) as unknown) as Promise<void>
 });
 
-export default connect(mapStateToProps, mapDispatchToProps)(Login);
+export default connect(null, mapDispatchToProps)(Login);

@@ -1,23 +1,22 @@
 /* TODO: Make getting fonts better. */
 @font-face {
   font-family: "Night Zone";
-  src: url("static/fonts/Night-Zone.otf") format("opentype"),
-    url("static/fonts/Night-Zone.ttf") format("truetype");
+  src: url("static/fonts/NightZone/night-zone.ttf") format("truetype");
 }
 
 @font-face {
   font-family: "BebasNeue";
-  src: url("static/fonts/BebasNeue-Regular.ttf");
+  src: url("static/fonts/BebasNeue/bebasneue-regular.ttf");
 }
 
 @font-face {
   font-family: "Corbel";
-  src: url("static/fonts/corbel.ttf");
+  src: url("static/fonts/Corbel/corbel.ttf");
   font-weight: 400;
 }
 @font-face {
   font-family: "Corbel";
-  src: url("static/fonts/corbel-bold.ttf");
+  src: url("static/fonts/Corbel/corbel-bold.ttf");
   font-weight: 700;
 }
 

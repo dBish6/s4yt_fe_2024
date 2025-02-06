@@ -32,7 +32,7 @@ const Home: React.FC<Props> = ({ addNotification }) => {
       <Content
         addCoins={!viewed ? "coins1" : "coins2"}
         {...(!viewed && {
-          style: { padding: "30px 30px 14px 30px" },
+          style: { padding: "30px 30px 14px 30px" }
         })}
       >
         {!viewed ? (
@@ -62,7 +62,7 @@ const Home: React.FC<Props> = ({ addNotification }) => {
                       error: false,
                       content: "Instructions are now blocked. ✔",
                       close: false,
-                      duration: 4000,
+                      duration: 4000
                     });
                     blockBtn.disabled = true;
                   }}
@@ -99,7 +99,7 @@ const Home: React.FC<Props> = ({ addNotification }) => {
 
 const mapDispatchToProps = (dispatch: Dispatch<any>) => ({
   addNotification: (notification: Omit<NotificationValues, "id">) =>
-    dispatch(addNotification(notification)),
+    dispatch(addNotification(notification))
 });
 
 export default connect(null, mapDispatchToProps)(Home);
