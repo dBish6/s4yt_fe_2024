@@ -1,0 +1,37 @@
+name: Deploy Client
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: Deploy to VPS
+        env:
+          HOST: ${{ secrets.HOSTINGER_IP}} 
+          USER: ${{ secrets.HOSTINGER_USER}} 
+          PORT: ${{ secrets.PORT}}
+          PRIVATE_KEY: ${{secrets.PRIVATE_KEY}}
+        run: |
+          # Add SSH key
+          echo "${PRIVATE_KEY}" > private_key
+          chmod 600 private_key
+          ssh -i private_key -o StrictHostKeyChecking=no $USER@HOST -p $PORT << 'EOF'
+
+          cd /var/www/s4yt/server/s4yt_fe_2024 || exit
+
+          # Clean untracked files (removes .env and package-lock.json)
+          git clean -f client/.env server/package-lock.json
+          git pull origin main
+
+          echo "VITE_API_BASE_URL=${{ secrets.VITE_API_BASE_URL }}" > .env
+          npm install && npm run build 
+          
+          
