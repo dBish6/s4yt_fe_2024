@@ -25,7 +25,7 @@ jobs:
           chmod 600 private_key
           ssh -i private_key -o StrictHostKeyChecking=no $USER@$HOST -p $PORT << 'EOF'
 
-          cd /var/www/s4yt/server/s4yt_fe_2024 || exit
+          cd /var/www/s4yt/s4yt_fe_2024 || exit
 
           # Clean untracked files (removes .env and package-lock.json)
           git clean -f .env 
