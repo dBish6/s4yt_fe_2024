@@ -6,10 +6,12 @@ const DEFAULT_HEADERS = Object.freeze({
   "Content-Type": "application/json"
 });
 
+const target = import.meta.env.DEV ? "http://localhost:4000/api/v2" : "/api";
+
 const sendRequest = async (method, url, params, body) => {
   const apiUrl = params
-      ? `${import.meta.env.DEV ? "http://localhost:4000/api/v2" : "/api"}${url}?${new URLSearchParams(params).toString()}`
-      : `${import.meta.env.DEV ? "http://localhost:4000/api/v2" : "/api"}${url}`,
+      ? `${target}${url}?${new URLSearchParams(params).toString()}`
+      : `${target}${url}`,
     tokens = store.getState().user.tokens;
 
   const response = await fetch(apiUrl, {
