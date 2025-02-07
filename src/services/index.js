@@ -8,8 +8,8 @@ const DEFAULT_HEADERS = Object.freeze({
 
 const sendRequest = async (method, url, params, body) => {
   const apiUrl = params
-      ? `${import.meta.env.VITE_API_BASE_URL}${url}?${new URLSearchParams(params).toString()}`
-      : `${import.meta.env.VITE_API_BASE_URL}${url}`,
+      ? `${import.meta.env.DEV ? "http://localhost:4000/api/v2" : "/api"}${url}?${new URLSearchParams(params).toString()}`
+      : `${import.meta.env.DEV ? "http://localhost:4000/api/v2" : "/api"}${url}`,
     tokens = store.getState().user.tokens;
 
   const response = await fetch(apiUrl, {
