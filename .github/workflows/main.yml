@@ -34,7 +34,8 @@ jobs:
           ssh -i private_key -o StrictHostKeyChecking=no $USER@$HOST -p $PORT << 'EOF'
 
           cd /var/www/s4yt/client/s4yt_fe_2024/ || exit
-
+          nvm install 20
+          nvm use 20
           node -v
 
           # Clean untracked files (removes .env and package-lock.json)
