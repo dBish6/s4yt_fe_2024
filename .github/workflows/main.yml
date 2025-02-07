@@ -21,7 +21,7 @@ jobs:
           PRIVATE_KEY: ${{secrets.PRIVATE_KEY}}
         run: |
           # Add SSH key
-          echo "${PRIVATE_KEY}" > private_key
+          echo "${PRIVATE_KEY}" | sed 's/\r$//' > private_key
           chmod 600 private_key
           ssh -i private_key -o StrictHostKeyChecking=no $USER@$HOST -p $PORT << 'EOF'
 
