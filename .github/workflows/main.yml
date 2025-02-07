@@ -23,12 +23,12 @@ jobs:
           # Add SSH key
           echo "${PRIVATE_KEY}" > private_key
           chmod 600 private_key
-          ssh -i private_key -o StrictHostKeyChecking=no $USER@HOST -p $PORT << 'EOF'
+          ssh -i private_key -o StrictHostKeyChecking=no $USER@$HOST -p $PORT << 'EOF'
 
           cd /var/www/s4yt/server/s4yt_fe_2024 || exit
 
           # Clean untracked files (removes .env and package-lock.json)
-          git clean -f client/.env server/package-lock.json
+          git clean -f .env 
           git pull origin main
 
           echo "VITE_API_BASE_URL=${{ secrets.VITE_API_BASE_URL }}" > .env
