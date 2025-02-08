@@ -10,6 +10,11 @@ export default defineConfig({
         target: "https://localhost:4000",
         changeOrigin: true,
         secure: true,
+        // ws: true
+      },
+      "/socket.io/": {
+        target: "https://localhost:4000",
+        changeOrigin: true,
         ws: true
       }
     }

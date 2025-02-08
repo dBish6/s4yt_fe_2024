@@ -18,7 +18,7 @@ interface SocketProviderProps {
   addNotification: (data: Omit<NotificationValues, "id">) => void;
 }
 
-export const socket = io(import.meta.env.VITE_API_BASE_URL.replace("/api/v2", ""), {
+export const socket = io(import.meta.env.DEV ? "http://localhost:4000" : undefined, {
   autoConnect: false,
   reconnection: false,
   transports: ["websocket", "polling"],
@@ -68,7 +68,7 @@ const SocketProvider = ({ userToken, addNotification }: SocketProviderProps) => 
 
   useLayoutEffect(() => {
     if (userToken) {
-      console.log("SOCKET STARTING CONNECTION", userToken)
+      // console.log("SOCKET STARTING CONNECTION", userToken)
       // TODO: Msg
       setConnecting("Loading user data");
       delay(29000, () => {
@@ -77,7 +77,7 @@ const SocketProvider = ({ userToken, addNotification }: SocketProviderProps) => 
 
       EstablishConnection()
         .catch((error) => {
-          console.log("ERROR socket end", error);
+          // console.log("ERROR socket end", error);
           addNotification({
             error: true,
             content: error,
