@@ -1,7 +1,7 @@
 import { Api } from "@services/index";
 import errorHandler, { showError } from "@services/errorHandler";
 
-import { SET_COUNTRIES, SET_REGIONS, SET_CITIES } from "@actions/index";
+import { SET_COUNTRIES, SET_REGIONS } from "@actions/index";
 
 export const getCountries = () => async (dispatch, _) => {
   try {
