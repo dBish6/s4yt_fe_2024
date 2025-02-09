@@ -31,18 +31,3 @@ export const getRegions = (countryName) => async (dispatch, _) => {
     errorHandler("getRegions", error);
   }
 };
-
-export const getCities = (regionName) => async (dispatch, _) => {
-  try {
-    dispatch({ type: SET_CITIES, payload: [] });
-    const { data, meta } = await Api.post("/location/cities", { name: regionName });
-
-    if (meta?.ok) {
-      dispatch({ type: SET_CITIES, payload: data.cities });
-    } else {
-      showError(data, meta.status, dispatch);
-    }
-  } catch (error) {
-    errorHandler("getCities", error);
-  }
-};
