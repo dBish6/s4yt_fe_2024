@@ -98,7 +98,6 @@ const UserForm: React.FC<Props> = ({
     if (currentData.country) {
       getRegions(currentData.country);
       if (currentData.region) resetRegions(setCurrentData);
-      if (currentData.city) resetCities(setCurrentData);
     }
   }, [currentData.country]);
 
