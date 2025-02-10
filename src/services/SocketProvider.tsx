@@ -3,10 +3,11 @@ import type { UserReduxState } from "@reducers/user";
 import type NotificationValues from "@typings/NotificationValues";
 
 import { connect } from "react-redux"
-import { useState, useLayoutEffect } from "react";
+import { useState, useLayoutEffect, useEffect } from "react";
 import { Outlet } from "react-router-dom";
 import { io } from "socket.io-client";
 
+import { coinChangesListener } from "@actions/coinTracker";
 import { addNotification } from "@actions/notifications";
 
 import delay from "@utils/delay";
@@ -15,6 +16,7 @@ import OverlayLoader from "@components/loaders/overlayLoader";
 
 interface SocketProviderProps {
   userToken: string | undefined;
+  coinChangesListener: () => void;
   addNotification: (data: Omit<NotificationValues, "id">) => void;
 }
 
@@ -63,7 +65,7 @@ const EstablishConnection = () => new Promise<void>((resolve, reject) => {
   attemptConnection(); // Initial
 });
 
-const SocketProvider = ({ userToken, addNotification }: SocketProviderProps) => {
+const SocketProvider = ({ userToken, coinChangesListener, addNotification }: SocketProviderProps) => {
   const [connecting, setConnecting] = useState("");
 
   useLayoutEffect(() => {
@@ -90,6 +92,10 @@ const SocketProvider = ({ userToken, addNotification }: SocketProviderProps) => 
       return () => clearTimeout(timeout);
     }
   }, [userToken]);
+
+  useEffect(() => {
+    coinChangesListener();
+  }, []);
   
   return connecting ? <OverlayLoader text={connecting} /> : <Outlet />;
 };
@@ -99,7 +105,8 @@ const mapStateToProps = ({ user }: { user: UserReduxState }) => ({
 });
 const mapDispatchToProps = (dispatch: Dispatch<any>) => ({
   addNotification: (notification: Omit<NotificationValues, "id">) =>
-    dispatch(addNotification(notification))
+    dispatch(addNotification(notification)),
+  coinChangesListener: () => dispatch(coinChangesListener())
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(SocketProvider);

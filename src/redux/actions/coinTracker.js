@@ -11,6 +11,7 @@ import {
   SPEND_COINS,
 } from "@actions/index";
 import { updateCurrentUser } from "./user";
+import { socket } from "@services/SocketProvider";
 
 // TODO: Everything else but getCoinsGainedHistory need changes.
 
@@ -149,8 +150,8 @@ export const sendSponsorQuizCoins =
   };
 
 // Web Sockets
-export const sliverAndGoldCoinsListener = () => (dispatch, getState) => {
-  // window.Echo.channel("raffle-update").listen("RaffleUpdate", (e) => {
-  //   dispatch({ type: RAFFLE_ACTIVE_STATE, payload: e.message });
-  // });
+export const coinChangesListener = () => () => {
+  socket.on("coin_change", (data) => {
+    if (data.coins) retrieveCoins(null, data.coins);
+  });
 };
