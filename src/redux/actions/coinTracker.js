@@ -11,6 +11,7 @@ import {
   SPEND_COINS,
 } from "@actions/index";
 import { updateCurrentUser } from "./user";
+import { socket } from "@services/SocketProvider";
 
 // TODO: Everything else but getCoinsGainedHistory need changes.
 
