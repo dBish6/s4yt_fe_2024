@@ -6,7 +6,7 @@ import history from "@utils/History";
 import { UPDATE_CURRENT_USER, SET_TOKENS, SET_CURRENT_USER, LOGOUT, CLEAR_CURRENT_CONFIG } from "@actions/index";
 import { addNotification } from "./notifications";
 import { updateConfiguration } from "./gameConfig";
-// import { initializeCoins } from "./coinTracker";
+import { initializeCoins } from "./coinTracker";
 
 import { socket } from "@services/SocketProvider";
 
@@ -132,6 +132,7 @@ export const loginPlayer =
 
         dispatch({ type: SET_TOKENS, payload: tokens });
         dispatch({ type: SET_CURRENT_USER, payload: data.user });
+        initializeCoins({ remainingCoins: data.coins });
 
         dispatch(
           addNotification({
