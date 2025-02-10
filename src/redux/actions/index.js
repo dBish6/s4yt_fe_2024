@@ -1,7 +1,6 @@
 // formOptions
 export const SET_COUNTRIES = "formOptions.SET_COUNTRIES";
 export const SET_REGIONS = "formOptions.SET_REGIONS";
-export const SET_CITIES = "formOptions.SET_CITIES";
 
 // notification
 export const ADD_NOTIFICATION = "notification.ADD_NOTIFICATION";
