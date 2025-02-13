@@ -1,11 +1,12 @@
-import { UserReduxState } from "@reducers/user";
-import NotificationValues from "@root/typings/NotificationValues";
+import type { UserReduxState } from "@reducers/user";
+import type { CoinTrackerState, QuizChestGrouping } from "@reducers/coinTracker";
+import type UserCredentials from "@typings/UserCredentials";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useLayoutEffect } from "react";
 import { connect } from "react-redux";
 
+import { getLearnAndEarnChests } from "@actions/coinTracker";
 import { isNotPlayer } from "@actions/user";
-// import { addNotification } from "@actions/notifications";
 
 import Layout from "@components/partials/layout";
 import Header from "@components/partials/header";
@@ -16,38 +17,38 @@ import Questions from "./Questions";
 
 import s from "./styles.module.css";
 
-import { chests } from "./MOCK_DATA";
-
 interface PlayerProps {
-  chestsSubmitted: { [chest_id: string]: boolean };
+  chests: CoinTrackerState["quizChests"];
+  chestsSubmitted: UserCredentials["chests_submitted"];
+  getLearnAndEarnChests: () => Promise<void>;
   isNotPlayer: (useNotification?: boolean, message?: string) => boolean;
-  addNotification: (notification: Omit<NotificationValues, "id">) => void;
 }
 
-export type ChestGrouping = (typeof chests)[number]["group"];
-
 const handleHover = (e: React.SyntheticEvent<HTMLButtonElement, Event>) => {
-  const img = (e.currentTarget.firstChild!.firstChild as HTMLImageElement);
-  if (img.complete) img.src = "/images/learnAndEarn/chest-half.png";
+    const img = e.currentTarget.firstChild!.firstChild as HTMLImageElement;
+    if (img.complete) img.src = "/images/learnAndEarn/chest-half.png";
   },
   handleBlur = (e: React.SyntheticEvent<HTMLButtonElement, Event>) => {
-    const elem = (e.currentTarget.firstChild!.firstChild as HTMLImageElement);
+    const elem = e.currentTarget.firstChild!.firstChild as HTMLImageElement;
     elem.src = elem.dataset.imgSrc!;
   };
 
-// TODO: I need to get the chests via request.
-const LearnAndEarn: React.FC<PlayerProps> = ({ chestsSubmitted, isNotPlayer }) => {
-  const [selectedChest, setSelectedChest] = useState<{ id: string; quiz: ChestGrouping } | null>(null),
+const LearnAndEarn: React.FC<PlayerProps> = ({
+  chests,
+  chestsSubmitted,
+  getLearnAndEarnChests,
+  isNotPlayer
+}) => {
+  const [selectedChest, setSelectedChest] = useState<{ id: string; quiz: QuizChestGrouping } | null>(null),
     [isAnyCompleted, setIsAnyCompleted] = useState(false);
 
-  // TODO: See.
   const handleIsAnyCompleted = (elem: HTMLButtonElement | null) => {
-    if (elem && elem.disabled) setIsAnyCompleted(true);
+    if (elem && elem.disabled !== undefined) setIsAnyCompleted(true);
   };
 
-  // useEffect(() => {
-  //   console.log("selectedChest", selectedChest);
-  // }, [selectedChest]);
+  useLayoutEffect(() => {
+    if (!chests.length) getLearnAndEarnChests();
+  }, []);
   
   return (
     <Layout>
@@ -55,47 +56,60 @@ const LearnAndEarn: React.FC<PlayerProps> = ({ chestsSubmitted, isNotPlayer }) =
       <Content
         addCoins="coins3"
         addFeather="left"
-        {...(selectedChest && { className: s.base })}
+        className={s.base}
+        data-selected-chest={!!selectedChest}
+        data-is-any-completed={isAnyCompleted}
       >
         {selectedChest ? (
           <Questions selectedChest={selectedChest} setSelectedChest={setSelectedChest as any} />
         ) : (
-          <div className={s.learn}>
+          <div aria-live="polite" className={s.learn} data-is-any-completed={isAnyCompleted}>
             <h2>Open Up One of the Treasure Chests</h2>
 
-            <ul>
-              {chests.map((chestGroup, i) => {
-                const imgSrc = `/images/learnAndEarn/${
-                  chestsSubmitted[chestGroup.chest_id] ? "chest-golden.png" : "chest-closed"
-                }.png`;
+            {chests.length ? (
+              <ul>
+                {chests.map((chestGroup, i) => {
+                  const imgSrc = `/images/learnAndEarn/${
+                    chestsSubmitted[chestGroup.chest_id] ? "chest-golden" : "chest-closed"
+                  }.png`;
 
-                return (
-                  <li key={i} className={s.chest}>
-                    <button
-                      ref={handleIsAnyCompleted}
-                      className={`${s.chest} fade`}
-                      disabled={chestsSubmitted[chestGroup.chest_id]}
-                      onClick={() => {
-                        if (isNotPlayer(true, "Only players can win more dubl-u-nes")) return;
-                        setSelectedChest({ id: chestGroup.chest_id, quiz: chestGroup.group });
-                      }}
-                      onMouseEnter={handleHover}
-                      onFocus={handleHover}
-                      onMouseLeave={handleBlur}
-                      onBlur={handleBlur}
-                      // {...(chestsSubmitted[chestGroup.chest_id] && { "data-submitted": true })}
-                      {...(isNotPlayer() && { style: { cursor: "not-allowed" } })}
-                    >
-                      <Image
-                        data-img-src={imgSrc}
-                        src={imgSrc}
-                        alt={`Treasure Chest${chestsSubmitted[chestGroup.chest_id] ? " " + "Completed" : ""}`}
-                      />
-                    </button>
-                  </li>
-                );
-              })}
-            </ul>
+                  return (
+                    <li key={i} className={s.chest}>
+                      <button
+                        ref={handleIsAnyCompleted}
+                        className={`${s.chest} fade`}
+                        disabled={chestsSubmitted[chestGroup.chest_id]}
+                        onClick={() => {
+                          if (isNotPlayer(true, "Only players can win more dubl-u-nes")) return;
+                          setSelectedChest({ id: chestGroup.chest_id, quiz: chestGroup.group });
+                        }}
+                        onMouseEnter={handleHover}
+                        onFocus={handleHover}
+                        onMouseLeave={handleBlur}
+                        onBlur={handleBlur}
+                        {...(isNotPlayer() && { style: { cursor: "not-allowed" } })}
+                      >
+                        <Image
+                          data-img-src={imgSrc}
+                          src={imgSrc}
+                          alt={`Treasure Chest${chestsSubmitted[chestGroup.chest_id] ? " " + "Completed" : ""}`}
+                        />
+                      </button>
+                      {chestsSubmitted[chestGroup.chest_id] && (
+                        <Image
+                          src="/images/learnAndEarn/coin.png"
+                          alt={`${chestsSubmitted[chestGroup.chest_id]} Earned`}
+                          className={s.earned}
+                          containerProps={{ "data-earned": chestsSubmitted[chestGroup.chest_id] }}
+                        />
+                      )}
+                    </li>
+                  );
+                })}
+              </ul>
+            ) : (
+              <p className={s.loading}>Just a moment...</p>
+            )}
 
             {isAnyCompleted && <a className={s.spend} />}
           </div>
@@ -106,14 +120,14 @@ const LearnAndEarn: React.FC<PlayerProps> = ({ chestsSubmitted, isNotPlayer }) =
   );
 };
 
-const mapStateToProps = ({ user }: { user: UserReduxState }) => ({
+const mapStateToProps = ({ coinTracker, user }: { coinTracker: CoinTrackerState; user: UserReduxState }) => ({
+  chests: coinTracker.quizChests,
   chestsSubmitted: user.credentials?.chests_submitted || {}
 });
 const mapDispatchToProps = (dispatch: Function) => ({
   isNotPlayer: (useNotification?: boolean, message?: string) =>
-    dispatch(isNotPlayer(useNotification, message))
-  // addNotification: (notification: Omit<NotificationValues, "id">) =>
-  //   dispatch(addNotification(notification))
+    dispatch(isNotPlayer(useNotification, message)),
+  getLearnAndEarnChests: () => dispatch(getLearnAndEarnChests() as unknown) as Promise<any>
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(LearnAndEarn);

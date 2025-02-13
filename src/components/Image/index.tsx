@@ -3,6 +3,7 @@ import s from "./styles.module.css";
 
 interface Props extends Omit<React.ComponentProps<"img">, "onLoad"> {
   src: string;
+  containerProps?: React.ComponentProps<"div"> & { [key: string]: any };
 }
 
 const onFinish = (
@@ -17,11 +18,15 @@ const onFinish = (
   blurRef.current!.classList.add(s.loaded);
 };
 
-const Image: React.FC<Props> = ({ src, alt, ...props }) => {
+const Image: React.FC<Props> = ({ src, alt, className, containerProps, ...props }) => {
   const blurRef = useRef<HTMLImageElement>(null);
 
   return (
-    <div className={`blur ${s.blurLoad}`} ref={blurRef}>
+    <div
+      className={`blur ${s.blurLoad}${className ? " " + className : ""}`}
+      ref={blurRef}
+      {...containerProps}
+    >
       <img
         aria-busy="true"
         src={src}

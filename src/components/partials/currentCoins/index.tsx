@@ -51,7 +51,7 @@ const mapStateToProps = ({
 }: {
   coinTracker: CoinTrackerState;
 }) => ({
-  coins: coinTracker.remainingCoins
+  coins: coinTracker.userCoins
 });
 const mapDispatchToProps = (dispatch: Dispatch<any>) => ({
   isNotPlayer: (useNotification?: boolean, message?: string) =>

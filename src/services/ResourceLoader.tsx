@@ -3,11 +3,11 @@ import type { UserReduxState } from "@reducers/user";
 import type NotificationValues from "@typings/NotificationValues";
 
 import { connect } from "react-redux"
-import { useState, useLayoutEffect } from "react";
+import { useState, useLayoutEffect, useEffect } from "react";
 import { Outlet } from "react-router-dom";
 
 import { SET_NEW_LOGIN_FLAG } from "@actions/index";
-import { checkTotalCoins } from "@actions/coinTracker";
+import { checkTotalCoins, coinChangesListener } from "@actions/coinTracker";
 import { addNotification } from "@actions/notifications";
 
 import { timeout, EstablishConnection } from "./socket";
@@ -21,6 +21,7 @@ interface ResourceLoaderProps {
   newLogin: boolean | undefined;
   checkTotalCoins: () => Promise<void>;
   clearNewLoginFlag: () => void;
+  coinChangesListener: () => void;
   addNotification: (data: Omit<NotificationValues, "id">) => void;
 }
 
@@ -28,7 +29,8 @@ const SocketProvider = ({
   newLogin,
   userToken,
   addNotification,
-  clearNewLoginFlag
+  clearNewLoginFlag,
+  coinChangesListener
 }: ResourceLoaderProps) => {
   const [connecting, setConnecting] = useState("");
 
@@ -62,6 +64,10 @@ const SocketProvider = ({
     }
   }, [userToken]);
 
+  useEffect(() => {
+    coinChangesListener();
+  }, []);
+
   return connecting ? <OverlayLoader text={connecting} /> : <Outlet />;
 };
 
@@ -72,6 +78,7 @@ const mapStateToProps = ({ user }: { user: UserReduxState }) => ({
 const mapDispatchToProps = (dispatch: Dispatch<any>) => ({
   checkTotalCoins: () => dispatch(checkTotalCoins() as unknown) as Promise<void>,
   clearNewLoginFlag: () => dispatch({ type: SET_NEW_LOGIN_FLAG, payload: false }),
+  coinChangesListener: () => dispatch(coinChangesListener()),
   addNotification: (notification: Omit<NotificationValues, "id">) =>
     dispatch(addNotification(notification))
 });

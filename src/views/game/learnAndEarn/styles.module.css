@@ -1,16 +1,50 @@
-.base {
+.base[data-selected-chest="false"] {
+  min-height: 571.6px;
+}
+.base[data-selected-chest="false"][data-is-any-completed="true"] {
+  @media screen and (max-width: 854px) {
+    margin-bottom: 83px;
+  }
+}
+.base[data-selected-chest="true"] {
   min-width: 669px;
   min-height: 676px;
   padding-top: 0.75rem;
 }
-.base > img {
+
+.base[data-selected-chest="true"] > img {
   @media screen and (max-width: 669px) {
     display: none;
   }
 }
 
+p.loading {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: var(--heading-38);
+  color: var(--pbrown);
+  text-align: center;
+}
+
+.questions .openedChest .coinPopup .coin p,
+.questions .coinTotal p,
+.learn ul li.chest .earned::after {
+  font-family: "BebasNeue", Arial;
+  color: #f9da7c;
+  text-shadow: 1px 1px 0 black;
+  pointer-events: none;
+}
+
+/* <======================================/ Chests page \======================================> */
 .learn {
   margin-top: 0.8rem;
+}
+.learn[data-is-any-completed="true"] {
+  @media screen and (max-width: 560px) {
+    margin-bottom: 5rem;
+  }
 }
 
 .learn h2 {
@@ -30,14 +64,39 @@
   margin-block: 3rem 3.5rem;
 }
 .learn ul li.chest {
+  position: relative;
   width: 235px;
   height: 162px;
 }
-.learn ul li.chest button {
-  width: 100%;
-  height: 100%;
+.learn ul li.chest .earned {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 80px;
+  height: 80px;
+  pointer-events: none;
+}
+.learn ul li.chest .earned::after {
+  content: attr(data-earned);
+  position: absolute;
+  top: 54%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 59px;
 }
 
+.learn a.spend {
+  display: block;
+  position: absolute;
+  bottom: -74px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  max-width: 250px;
+  height: 160px;
+  background: url("images/learnAndEarn/btn-iwantospend.png") no-repeat center center/contain;
+}
 
 /* <======================================/ Questions \======================================> */
 .questions {
@@ -48,16 +107,6 @@
 .questions > :global(.backBtn) {
   flex-shrink: 0;
   transform: scale(0.92);
-}
-
-.questions p.loading {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  font-size: var(--heading-38);
-  color: var(--pbrown);
-  text-align: center;
 }
 
 .questions .openedChest {
@@ -204,13 +253,6 @@
   background: url("/images/learnAndEarn/coin.png") no-repeat center center/cover;
   animation: bonuceIn cubic-bezier(.67,.2,.25,.99) 0.65s forwards;
 }
-.questions .openedChest .coinPopup .coin p,
-.questions .coinTotal p {
-  font-family: "BebasNeue", Arial;
-  color: #f9da7c;
-  text-shadow: 1px 1px 0 black;
-  pointer-events: none;
-}
 .questions .openedChest .coinPopup .coin p {
   font-size: 134px;
   transform: translate(7px, 5px);
@@ -230,7 +272,7 @@
   right: 24px;
   bottom: 76px;
   width: 99px;
-  height: 93px;
+  height: 98px;
   background: url("/images/learnAndEarn/coin.png") no-repeat center center/cover;
   animation: fadeIn ease-in-out 1.5s;
 }
