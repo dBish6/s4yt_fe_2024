@@ -132,7 +132,7 @@ export const loginPlayer =
 
         dispatch({ type: SET_TOKENS, payload: tokens });
         dispatch({ type: SET_CURRENT_USER, payload: data.user });
-        initializeCoins({ remainingCoins: data.coins });
+        dispatch(initializeCoins({ remainingCoins: data.coins }));
 
         dispatch(
           addNotification({
