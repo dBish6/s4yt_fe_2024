@@ -160,7 +160,7 @@ export const logoutPlayer = () => (dispatch, _) => {
 
 export const isNotPlayer =
   (useNotification, message) => (dispatch, getState) => {
-    if (!getState().user.credentials?.roles.includes("Player")) {
+    if (getState().user.credentials?.role !== "Player") {
       useNotification &&
         dispatch(
           addNotification({
