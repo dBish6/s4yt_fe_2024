@@ -25,7 +25,8 @@ const Content: React.FC<Props> = ({
       style={style}
       {...props}
     >
-      {addFeather && (
+      {/* window.innerWidth is to prevent how mobile overflows. */}
+      {addFeather && window.innerWidth > 900 && (
         <img
           src={feather}
           alt="Feather"
@@ -38,7 +39,7 @@ const Content: React.FC<Props> = ({
           }`}
         />
       )}
-      {addCoins && (
+      {addCoins && window.innerWidth > 900 && (
         <img
           src={
             addCoins === "coins1"

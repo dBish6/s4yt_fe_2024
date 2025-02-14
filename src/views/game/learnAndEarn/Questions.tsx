@@ -1,5 +1,5 @@
 import type { Dispatch } from "redux";
-import type { ChestGrouping } from ".";
+import type { QuizChestGrouping } from "@reducers/coinTracker";
 
 import { useState, useLayoutEffect, useEffect } from "react";
 import { connect } from "react-redux";
@@ -9,26 +9,24 @@ import { sendLearnAndEarnCoins } from "@actions/coinTracker";
 import s from "./styles.module.css";
 
 interface Props {
-  selectedChest: { id: string; quiz: ChestGrouping };
+  selectedChest: { id: string; quiz: QuizChestGrouping };
   setSelectedChest: React.Dispatch<
     React.SetStateAction<{
       id: string;
-      quiz: ChestGrouping;
+      quiz: QuizChestGrouping;
     } | null>
   >;
   sendLearnAndEarnCoins: (chestId: string, finalScore: number) => Promise<void>;
 }
 
-// TODO: Might be needed.
-// const linkQuestion =
-  // question.explanation.includes("https://") &&
-  // question.explanation.split(": ");
 
 const Questions: React.FC<Props> = ({
   selectedChest,
   setSelectedChest,
   sendLearnAndEarnCoins
 }) => {
+  const [mobileBreakpoint, setMobileBreakpoint] = useState(false);
+
   const [chest, setChest] = useState<{
     img: HTMLImageElement | null;
     opened: boolean;
@@ -39,27 +37,14 @@ const Questions: React.FC<Props> = ({
 
   const [earned, setEarned] = useState({ iteration: 3, final: 0, processing: false });
 
-  // useEffect(() => {
-  //   console.log("stage", stage);
-  // }, [stage]);
-
-  // useEffect(() => {
-  //   console.log("earned", earned);
-  // }, [earned]);
-
   const onAnswerSelected = (
     e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
     choice: "a" | "b" | "c",
-    answer: Omit<ChestGrouping[number]["answers"], "choice">
+    answer: Omit<QuizChestGrouping[number]["answers"], "choice">
   ) => {
     const target = e.currentTarget;
 
     if (choice === answer.correct) {
-      setEarned((prev) => ({
-        ...prev,
-        iteration: 3,
-        final: prev.final + prev.iteration
-      }));
       setStage((prev) => ({ ...prev, process: true }));
     } else {
       setEarned((prev) => ({ ...prev, iteration: prev.iteration - 1 }));
@@ -108,6 +93,27 @@ const Questions: React.FC<Props> = ({
   }, [stage.process]);
 
   /**
+   * Resets earned state for the next iteration and on the final iteration (3) it sends the user's 
+   * earnings to the server.
+   */
+  useEffect(() => {
+    if (stage.iteration > 1) {
+      setEarned((prev) => ({
+        ...prev,
+        iteration: 3,
+        final: prev.final + prev.iteration
+      }));
+
+      if (stage.iteration === 4) {
+        setEarned((prev) => ({ ...prev, processing: true }));
+        sendLearnAndEarnCoins(selectedChest.id, earned.final).finally(() =>
+          setSelectedChest(null)
+        );
+      }
+    }
+  }, [stage.iteration]);
+
+  /**
    * Opacity/checked resets and extra padding if bubble text is overflowing.
    */
   useEffect(() => {
@@ -125,14 +131,21 @@ const Questions: React.FC<Props> = ({
     }
   }, [chest.opened, stage.iteration]);
 
-  useEffect(() => {
-    if (stage.iteration === 4) {
-      setEarned((prev) => ({ ...prev, processing: true }));
-      sendLearnAndEarnCoins(selectedChest.id, earned.final)
-        .then(() => setSelectedChest(null))
-        .finally(() => setEarned((prev) => ({ ...prev, processing: true })));
-    }
-  }, [stage.iteration]);
+  useLayoutEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth <= 537) {
+        setMobileBreakpoint(true);
+      } else {
+        setMobileBreakpoint(false);
+      }
+    };
+    handleResize();
+
+    window.addEventListener("resize", handleResize);
+    return () => {
+      window.removeEventListener("resize", handleResize);
+    };
+  }, []);
 
   return (
     <div aria-live="polite" className={s.questions}>
@@ -147,13 +160,15 @@ const Questions: React.FC<Props> = ({
           id="chest"
           className={s.openedChest}
           data-opened={chest.opened}
-          style={{
-            background: chest.opened
-              ? `url("/images/learnAndEarn/chest-opened.png") no-repeat center center/cover`
-              : `url("${chest.img.src}") no-repeat center center/cover`
-          }}
+          {...(!mobileBreakpoint && {
+            style: {
+              background: chest.opened
+                ? `url("/images/learnAndEarn/chest-opened.png") no-repeat center center/cover`
+                : `url("${chest.img.src}") no-repeat center center/cover`
+            }
+          })}
         >
-          {chest.opened && currentSet && (
+          {(chest.opened || mobileBreakpoint) && currentSet && (
             <>
               <div className={s.content}>
                 {stage.process ? (
@@ -168,26 +183,35 @@ const Questions: React.FC<Props> = ({
                 )}
                 
                 <div role="radiogroup">
-                  {Object.entries(currentSet.answers.choice).map(([letter, answer]) => {
-                    const { choice: _, ...selected } = currentSet.answers;
+                  {chest.opened &&
+                    Object.entries(currentSet.answers.choice).map(([letter, answer]) => {
+                      const { choice: _, ...selected } = currentSet.answers;
 
-                    return (
-                      <button
-                        key={letter}
-                        role="radio"
-                        aria-label={`Answer ${letter}, ${answer}`}
-                        aria-checked="false"
-                        disabled={stage.process}
-                        className={s.question}
-                        onClick={(e) => onAnswerSelected(e, letter as any, { ...selected })}
-                      >
-                        <div>{letter}</div>
-                        <div id="scroll">
-                          <p>{answer}</p>
-                        </div>
-                      </button>
-                    );
-                  })}
+                      return (
+                        <button
+                          key={letter}
+                          role="radio"
+                          aria-label={`Answer ${letter}, ${answer}`}
+                          aria-checked="false"
+                          disabled={stage.process}
+                          className={s.question}
+                          onClick={(e) => onAnswerSelected(e, letter as any, { ...selected })}
+                        >
+                          <div>{letter}</div>
+                          <div id="scroll">
+                            <p>{answer}</p>
+                          </div>
+                        </button>
+                      );
+                    })
+                  }
+                  {mobileBreakpoint && (
+                    <img
+                      aria-hidden="true"
+                      className={s.mobileChest}
+                      src={chest.opened ? "/images/learnAndEarn/chest-opened.png" : chest.img.src}
+                    />
+                  )}
 
                   {stage.process && (
                     <div className={s.explanation}>

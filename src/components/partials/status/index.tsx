@@ -26,7 +26,7 @@ const Status: React.FC<Props> = ({ className, style }) => {
         <SupportModal />
         <a
           aria-label="building-U Website"
-          href="http://building-u.com/wp-content/uploads/Privacy-Notice.pdf"
+          href="https://building-u.com/"
           target="_blank"
           rel="noopener noreferrer"
           className={s.checkout}
