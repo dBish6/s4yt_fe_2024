@@ -3,6 +3,7 @@ import type { CoinTrackerState, QuizChestGrouping } from "@reducers/coinTracker"
 import type UserCredentials from "@typings/UserCredentials";
 
 import { useState, useEffect, useLayoutEffect } from "react";
+import { Link } from "react-router-dom";
 import { connect } from "react-redux";
 
 import { getLearnAndEarnChests } from "@actions/coinTracker";
@@ -111,7 +112,7 @@ const LearnAndEarn: React.FC<PlayerProps> = ({
               <p className={s.loading}>Just a moment...</p>
             )}
 
-            {isAnyCompleted && <a className={s.spend} />}
+            {isAnyCompleted && <Link className={`fade ${s.spend}`} to="/raffle" />}
           </div>
         )}
       </Content>
