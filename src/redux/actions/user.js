@@ -218,7 +218,7 @@ export const updatePassword = (userData) => () => {
 export const updateProfile =
   (userData, formRef, setForm) => async (dispatch, _) => {
     try {
-      const { data, meta } = await Api.post("/auth/player/profile", userData);
+      const { data, meta } = await Api.patch("/auth/player/profile", userData);
 
       if (meta?.ok) {
         formRef.current.reset();
