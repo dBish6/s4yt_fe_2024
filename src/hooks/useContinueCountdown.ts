@@ -42,7 +42,8 @@ const useContinueCountdown = (
     const counter = counterRef.current;
 
     const currentTimestamp = new Date().getTime(),
-      // gameStartTimestamp = new Date(timestamps.game_start).getTime(),
+      // preGameTimestamp = new Date(timestamps.pre_game).getTime(),
+      gameStartTimestamp = new Date(timestamps.game_start).getTime(),
       reviewStartTimestamp = new Date(timestamps.review_start).getTime(),
       reviewEndTimestamp = new Date(timestamps.review_end).getTime(),
       gameEndTimestamp = new Date(timestamps.game_end).getTime();
@@ -53,9 +54,26 @@ const useContinueCountdown = (
        This just sets the countdown and timestamps for the game. Some is not here, like the when the game haven't started 
        we don't have to worry about that one here because if the game haven't started restrictedAccess gets set from the login.
     */
-    if (currentTimestamp < reviewStartTimestamp) {
+    if (currentTimestamp < gameStartTimestamp) {
+      // The pre game is ongoing.
+      // console.log("Pre game is ongoing.");
+      countdownSeconds = getSecondsInBetweenByTime(
+        currentTimestamp,
+        gameStartTimestamp
+      );
+      dispatch({
+        type: UPDATE_CONFIGURATION,
+        payload: {
+          preGame: true,
+          gameStart: false,
+          reviewStart: false,
+          winnersAnnounced: false,
+          gameEnd: false
+        }
+      });
+    } else if (currentTimestamp < reviewStartTimestamp) {
       // The actual game is ongoing.
-      // console.log("Game is ongoing.");
+      // console.log("Game start is ongoing.");
       countdownSeconds = getSecondsInBetweenByTime(
         currentTimestamp,
         reviewStartTimestamp
@@ -63,11 +81,12 @@ const useContinueCountdown = (
       dispatch({
         type: UPDATE_CONFIGURATION,
         payload: {
+          preGame: false,
           gameStart: true,
           reviewStart: false,
           winnersAnnounced: false,
-          gameEnd: false,
-        },
+          gameEnd: false
+        }
       });
     } else if (currentTimestamp < reviewEndTimestamp) {
       // Review has started.
@@ -79,11 +98,12 @@ const useContinueCountdown = (
       dispatch({
         type: UPDATE_CONFIGURATION,
         payload: {
+          preGame: false,
           gameStart: false,
           reviewStart: true,
           winnersAnnounced: false,
-          gameEnd: false,
-        },
+          gameEnd: false
+        }
       });
     } else if (currentTimestamp < gameEndTimestamp) {
       // Review has ended, everyone goes to event results.
@@ -95,11 +115,12 @@ const useContinueCountdown = (
       dispatch({
         type: UPDATE_CONFIGURATION,
         payload: {
+          preGame: false,
           gameStart: false,
           reviewStart: false,
           winnersAnnounced: true,
-          gameEnd: false,
-        },
+          gameEnd: false
+        }
       });
     } else {
       // Game has ended.
@@ -107,11 +128,12 @@ const useContinueCountdown = (
       dispatch({
         type: UPDATE_CONFIGURATION,
         payload: {
+          preGame: false,
           gameStart: false,
           reviewStart: false,
           winnersAnnounced: false,
-          gameEnd: true,
-        },
+          gameEnd: true
+        }
       });
     }
     // This is literally for the redirect useEffect in the gate, I didn't want to add the full list to useEffect; gameConfig.gameStart, etc.

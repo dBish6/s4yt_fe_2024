@@ -18,13 +18,13 @@ export default [
     img: { src: "images/see_businesses.png", alt: "Businesses" },
     txt: "See businesses",
     to: "/businesses",
-    disableOn: ["reviewStart", "winnersAnnounced"]
+    disableOn: ["preGame", "reviewStart", "winnersAnnounced"]
   },
   {
     img: { src: "images/sponsors.png", alt: "Sponsors" },
     txt: "Sponsors",
     to: "/sponsors",
-    disableOn: ["reviewStart", "winnersAnnounced"]
+    disableOn: ["gameStart", "reviewStart", "winnersAnnounced"]
   },
   {
     img: { src: "images/raffle_page.png", alt: "Raffle" },
@@ -36,6 +36,6 @@ export default [
     img: { src: "images/event_results.png", alt: "Results" },
     txt: "Event Results",
     to: "/results",
-    disableOn: ["gameStart"]
+    disableOn: ["preGame", "gameStart", "reviewStart"]
   },
 ];
