@@ -31,7 +31,7 @@ import Error500 from "@views/errors/Error500";
 export const routes = [
   { path: "/register", view: Register, restricted: 2, title: "Register" },
   { path: "/register/verify-email", view: VerifyEmail, restricted: 0, title: "Verify" },
-  { path: "/register/verify-email/verify", view: VerifyFinalize, restricted: 0, title: "Verify Success" },
+  { path: "/register/verify-email/verify", view: VerifyFinalize, restricted: 0, title: "Verifying Email" },
 
   { path: "/login", view: Login, restricted: 2, title: "Login" },
   { path: "/login/forgot", view: ForgotPassword, restricted: 2, title: "Forgot Password" },
