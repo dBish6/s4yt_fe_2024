@@ -29,6 +29,20 @@
     transform: scale(0.9);
   }
 }
+
+.businesses .businessContainer .answersCount {
+  position: absolute;
+  top: 8px;
+  right: 5px;
+  min-width: 26px;
+  padding: 4px;
+  border-radius: 50%;
+  background-color: var(--form-red);
+  font-family: "Corbal", Arial;
+  font-weight: 600;
+  color: var(--white);
+  z-index: 1;
+}
 .businesses .businessContainer img {
   position: absolute;
   top: 50%;

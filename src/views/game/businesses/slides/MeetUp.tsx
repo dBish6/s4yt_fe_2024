@@ -13,34 +13,26 @@ import s from "./styles.module.css";
 interface Props {
   user?: UserCredentials;
   submitScheduleMeeting: (
-    business_name: string,
+    meet: boolean,
     formRef: React.RefObject<HTMLFormElement>,
     setForm: React.Dispatch<React.SetStateAction<{ processing: boolean }>>
   ) => Promise<void>;
-  name: string;
   isNotPlayer: boolean;
 }
 
 const MeetUp: React.FC<Props> = ({
-  // user,
+  user,
   submitScheduleMeeting,
-  name,
   isNotPlayer
 }) => {
   const formRef = useRef<HTMLFormElement>(null),
     [form, setForm] = useState({ processing: false }),
     [choice, setChoice] = useState(false);
 
-  const submit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-
-    const yesRadio = (formRef.current!.elements[0] as HTMLInputElement);
-
-    console.log("yesRadio", yesRadio)
-
-    if (yesRadio.checked) {
+  const submit = async () => {
+    if ((user?.attend_meeting && !choice) || !user?.attend_meeting) {
       setForm({ processing: true });
-      submitScheduleMeeting(name, formRef, setForm);
+      submitScheduleMeeting(choice, formRef, setForm);
     }
   };
 
@@ -56,7 +48,6 @@ const MeetUp: React.FC<Props> = ({
         aria-describedby="meetupTxt"
         ref={formRef}
         onSubmit={(e) => e.preventDefault()}
-        // onSubmit={submit}
         autoComplete="off"
         noValidate
       >
@@ -68,10 +59,7 @@ const MeetUp: React.FC<Props> = ({
               name="yesMeet"
               value="Yes"
               checked={choice}
-              disabled={form.processing
-                // TODO: Something like this if re-submissions is not allowed.
-                // || user.scheduled_meetings[name]
-              }
+              disabled={form.processing}
               onClick={() => setChoice(true)}
             />
             <label htmlFor="yesMeet">I'm in! Please add me to the Google Meet</label>
@@ -83,10 +71,7 @@ const MeetUp: React.FC<Props> = ({
               name="noMeet"
               value="No"
               checked={!choice}
-              disabled={form.processing
-                // TODO: Something like this if re-submissions is not allowed.
-                // || user.scheduled_meetings[name]
-              }
+              disabled={form.processing}
               onClick={() => setChoice(false)}
             />
             <label htmlFor="noMeet">
@@ -95,14 +80,11 @@ const MeetUp: React.FC<Props> = ({
           </div>
         </div>
 
-        {/* TODO: I don't know if you have one try anymore. */}
         <AreYouSureModal
           aria-label="Submit"
-          text="Once you submit your choice, you will not be able to change it later."
+          text="This meeting is not specific to this business. Once you submit your choice, you will be invited to a meeting with all available businesses."
           func={submit}
-          disabled={isNotPlayer || !choice
-            // || user.scheduled_meetings[name]
-          }
+          disabled={isNotPlayer || form.processing}
         />
       </form>
     </div>
@@ -114,10 +96,10 @@ const mapStateToProps = ({ user }: { user: UserReduxState }) => ({
 });
 const mapDispatchToProps = (dispatch: any) => ({
   submitScheduleMeeting: (
-    business_name: string,
+    meet: boolean,
     formRef: React.RefObject<HTMLFormElement>,
     setForm: React.Dispatch<React.SetStateAction<{ processing: boolean }>>
-  ) => dispatch(submitScheduleMeeting(business_name, formRef, setForm))
+  ) => dispatch(submitScheduleMeeting(meet, formRef, setForm))
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(MeetUp);

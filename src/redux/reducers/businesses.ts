@@ -8,10 +8,8 @@ export interface Business {
   challenge_question: {
     title: string;
     description: string;
-    // TODO: We might need to put the count here so I have the count initially (so it's not a separate request) and then I listen to that event for updates.
-    // answers_count: number;
-    // submissionCount: number;
-    // TODO: Need the count somehow (probably separate).
+    answers_count: number;
+    answer_submitted: boolean;
   };
   video_url: string;
   video_title: string

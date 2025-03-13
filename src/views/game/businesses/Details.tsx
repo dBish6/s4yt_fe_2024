@@ -26,10 +26,10 @@ interface Props {
 const SELECTED_SLIDE = (business: Business, isNotPlayer: boolean): { [key: string]: React.ReactNode } => ({
   video: <Video video_title={business.video_title} video_url={business.video_url} />,
   challenge: <Challenge name={business.name} challenge_question={business.challenge_question} isNotPlayer={isNotPlayer} />,
-  meetUp: <MeetUp name={business.name} isNotPlayer={isNotPlayer} />
+  meetUp: <MeetUp isNotPlayer={isNotPlayer} />
 });
 
-const Details: React.FC<Props> = ({ isNotPlayer }) => {
+const Details: React.FC<Props> = ({ isNotPlayer }) => { 
   const { state: business } = useLocation(), // Was set in the business Link.
     [selected, setSelected] = useState<string>("video");
 

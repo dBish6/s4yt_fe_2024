@@ -1,7 +1,5 @@
 import type { UserReduxState } from "@reducers/user";
 import type { Business } from "@root/redux/reducers/businesses";
-import type UserCredentials from "@typings/UserCredentials";
-import NotificationValues from "@typings/NotificationValues";
 
 import { useRef, useState } from "react";
 import { connect } from "react-redux";
@@ -9,8 +7,7 @@ import { connect } from "react-redux";
 import updateField from "@utils/forms/updateField";
 import checkValidDocLink from "@utils/forms/checkValidDocLink";
 
-import { submitAnswer } from "@actions/businesses";
-// import { addNotification } from "@actions/notifications";
+import { submitChallengeAnswer } from "@actions/businesses";
 
 import ChallengeDetailsModal from "@components/modals/challenge/details";
 import ChallengeInstructionsModal from "@components/modals/challenge/instructions";
@@ -20,23 +17,19 @@ import Input from "@components/forms/controls/Input";
 import s from "./styles.module.css";
 
 interface Props {
-  user?: UserCredentials;
-  submitAnswer: (
+  submitChallengeAnswer: (
     business_name: string,
     link: string,
     formRef: React.RefObject<HTMLFormElement>,
     setForm: React.Dispatch<React.SetStateAction<{ processing: boolean }>>
   ) => Promise<void>;
-  addNotification: (data: Omit<NotificationValues, "id">) => void;
   name: string;
   challenge_question: Business["challenge_question"];
   isNotPlayer: boolean;
 }
 
 const Challenge: React.FC<Props> = ({
-  // user,
-  submitAnswer,
-  // addNotification,
+  submitChallengeAnswer,
   name,
   challenge_question,
   isNotPlayer
@@ -52,7 +45,7 @@ const Challenge: React.FC<Props> = ({
 
     if (field.validity.valid) {
       setForm({ processing: true });
-      await submitAnswer(name, field.value, formRef, setForm);
+      await submitChallengeAnswer(name, field.value, formRef, setForm);
     }
   };
 
@@ -64,8 +57,15 @@ const Challenge: React.FC<Props> = ({
           className={s.viewChallenge}
         />
 
-        <p id="questionPara">
-          Submit your challenge question below for a chance to win an award.
+        <p id="questionPara" data-submitted={challenge_question.answer_submitted}>
+        {challenge_question.answer_submitted ? (
+            <>
+              <span>You already submitted your answer for this business</span>,
+              but you can submit again if you need to override it.
+            </>
+          ) : (
+            "Submit your challenge answer below for a chance to win an award."
+          )}
         </p>
       </div>
 
@@ -73,7 +73,6 @@ const Challenge: React.FC<Props> = ({
         aria-describedby="questionPara"
         ref={formRef}
         onSubmit={(e) => e.preventDefault()}
-        // onSubmit={submit}
         autoComplete="off"
         noValidate
       >
@@ -86,10 +85,7 @@ const Challenge: React.FC<Props> = ({
             errorMsg="Not a valid Google Doc link"
             placeholder="https://docs.google.com/document"
             onChange={(e) => updateField<{ link: string }>(e)}
-            disabled={form.processing
-              // TODO: Something like this if re-submissions is not allowed.
-              // || user.challenge_answers_submitted[name]
-            }
+            disabled={form.processing}
             autoComplete="off"
             required
           />
@@ -101,15 +97,12 @@ const Challenge: React.FC<Props> = ({
             className={s.instructions}
           />
           
-          {/* TODO: I don't know if you have one try anymore. */}
           <AreYouSureModal
             aria-label="Submit"
-            text="Once you submit your answer, you will not be able to change it later."
+            text="You're about to submit your answer, are you sure?"
             func={submit}
             type="submit"
-            disabled={isNotPlayer || form.processing
-              // || user.challenge_answers_submitted[name]
-            }
+            disabled={isNotPlayer || form.processing}
             className={s.submit}
           />
         </div>
@@ -118,18 +111,13 @@ const Challenge: React.FC<Props> = ({
   );
 };
 
-const mapStateToProps = ({ user }: { user: UserReduxState }) => ({
-  user: user.credentials
-});
 const mapDispatchToProps = (dispatch: any) => ({
-  // addNotification: (notification: Omit<NotificationValues, "id">) =>
-  //   dispatch(addNotification(notification)),
-  submitAnswer: (
+  submitChallengeAnswer: (
     business_name: string,
     link: string,
     formRef: React.RefObject<HTMLFormElement>,
     setForm: React.Dispatch<React.SetStateAction<{ processing: boolean }>>
-  ) => dispatch(submitAnswer(business_name, link, formRef, setForm))
+  ) => dispatch(submitChallengeAnswer(business_name, link, formRef, setForm))
 });
 
-export default connect(mapStateToProps, mapDispatchToProps)(Challenge);
+export default connect(null, mapDispatchToProps)(Challenge);

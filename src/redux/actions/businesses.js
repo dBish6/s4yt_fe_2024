@@ -31,10 +31,10 @@ export const getBusinesses = () => async (dispatch) => {
 };
 
 // TODO: sends link.
-export const submitAnswer = (business_name, link, formRef, setForm) => async (dispatch) => {
+export const submitChallengeAnswer = (business_name, link, formRef, setForm) => async (dispatch) => {
   try {
     // TODO: Url
-    const { data, meta } = await Api.post("/business/answer", { business_name, link });
+    const { meta } = await Api.post("/business/answer", { business_name, link });
 
     if (meta.ok) {
       formRef.current.reset();
@@ -64,28 +64,30 @@ export const submitAnswer = (business_name, link, formRef, setForm) => async (di
   }
 };
 
-// TODO: sends if responded yes to meetup.
-export const submitScheduleMeeting = (business_name, formRef, setForm) => async (dispatch) => {
+// TODO:
+export const submitScheduleMeeting = (meet, formRef, setForm) => async (dispatch) => {
   try {
-    // TODO: (I don't even know if we thought about this one at all).
-    const { data, meta } = await Api.post("/business/schedule-meeting", { business_name });
+    // TODO: Url
+    const { data, meta } = await Api.post("/business/schedule-meeting", { meet });
 
     if (meta.ok) {
       formRef.current.reset();
       dispatch(
         addNotification({
           error: false,
-          content: "We'll see you there ✔",
+          content: meet ? "We'll see you there ✔" : "Okay, maybe another time.",
           close: false,
           duration: 4000
         })
       );
+      // TODO: It sends back attend_meeting?
+      dispatch(updateCurrentUser({ attend_meeting: data.attend_meeting }));
     } else {
       dispatch(
         addNotification({
           error: true,
           content:
-            "A server error occurred and we couldn't schedule you me. Please try again later.",
+            "A server error occurred and we couldn't schedule your meeting. Please try again later.",
           close: false,
           duration: 0
         })
@@ -99,9 +101,12 @@ export const submitScheduleMeeting = (business_name, formRef, setForm) => async 
 };
 
 // TODO:
-export const coinChangesListener = () => (dispatch) => {
-  socket.on("business_challenge_submitted", (data) => {
+export const businessChallengeAnswerSubmittedListener = () => (dispatch) => {
+  const listener = (data) => {
     // TODO: Data structured.
     // if (data.total)
-  });
+  };
+  socket.on("business_challenge_submitted", listener);
+
+  return listener;
 };

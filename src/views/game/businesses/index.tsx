@@ -1,11 +1,12 @@
-import type { Dispatch } from "redux";
 import type { BusinessReduxState, Business } from "@reducers/businesses";
 
 import { useLayoutEffect } from "react";
 import { Link } from "react-router-dom";
 import { connect } from "react-redux";
 
-import { getBusinesses } from "@actions/businesses";
+import { getBusinesses, businessChallengeAnswerSubmittedListener } from "@actions/businesses";
+
+import { socket } from "@services/socket";
 
 import history from "@utils/History";
 
@@ -21,14 +22,26 @@ import Spinner from "@root/components/loaders/spinner";
 interface Props {
   businesses: Business[];
   getBusinesses: () => Promise<void>;
+  businessChallengeAnswerSubmittedListener: () => (data: any) => void;
 }
 
-const Businesses: React.FC<Props> = ({ businesses, getBusinesses }) => {
+const Businesses: React.FC<Props> = ({
+  businesses,
+  getBusinesses,
+  businessChallengeAnswerSubmittedListener,
+}) => {
   useLayoutEffect(() => {
-    if (!businesses.length) {
-      getBusinesses();
-    }
-    return () => console.log("UNMOUNTING!!")
+    let listener: ReturnType<typeof businessChallengeAnswerSubmittedListener> | undefined;
+
+    getBusinesses().then(() => {
+      if (!socket.hasListeners("business_challenge_submitted")) {
+        listener = businessChallengeAnswerSubmittedListener();
+      }
+    });
+
+    return () => {
+      if (listener) socket.removeListener("business_challenge_submitted", listener);
+    };
   }, []);
 
   return (
@@ -47,8 +60,15 @@ const Businesses: React.FC<Props> = ({ businesses, getBusinesses }) => {
                 state={business}
                 className={s.businessContainer}
               >
+                {business.challenge_question.answers_count > 0 && (
+                  <div
+                    aria-label="Answers Submitted"
+                    className={s.answersCount}
+                  >
+                    {business.challenge_question.answers_count}
+                  </div>
+                )}
                 <Image
-                  // className={s.logos}
                   src={business.logo}
                   alt={business.name}
                 />
@@ -80,8 +100,9 @@ const Businesses: React.FC<Props> = ({ businesses, getBusinesses }) => {
 const mapStateToProps = ({ businesses }: { businesses: BusinessReduxState }) => ({
   businesses: businesses.businesses
 });
-const mapDispatchToProps = (dispatch: Dispatch<any>) => ({
-  getBusinesses: () => dispatch(getBusinesses() as unknown) as Promise<void>
+const mapDispatchToProps = (dispatch: any) => ({
+  getBusinesses: () => dispatch(getBusinesses()),
+  businessChallengeAnswerSubmittedListener: () => dispatch(businessChallengeAnswerSubmittedListener())
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(Businesses);

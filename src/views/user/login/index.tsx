@@ -115,7 +115,7 @@ const Login: React.FC<Props> = ({ loginPlayer }) => {
           </div>
 
           <div role="presentation">
-            <button className="okBtn" disabled={form.processing}></button>
+            <button type="submit" className="okBtn" disabled={form.processing} />
           </div>
         </form>
         <Link className="fade" to="/register" />

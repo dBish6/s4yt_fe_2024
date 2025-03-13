@@ -34,6 +34,7 @@ html {
   --black: #2c2c2c;
   --white: #f5f5f5;
   --form-red: #ff3939;
+  --status-green: #009846;
   --orange: #e68b4b;
 
   --heading-42: 42px;
@@ -263,6 +264,7 @@ button.updateBtn:active {
   background-color: #eee;
   color: var(--black);
   transition: 0.2s ease background-color;
+  z-index: 1;
 }
 .modalBackdrop .modal .exitBtn::before {
   content: "\2715";
@@ -287,7 +289,7 @@ button.updateBtn:active {
 }
 @media screen and (max-height: 459px) {
   .modalBackdrop .modal .exitBtn {
-    top: -1px;
+    top: 16px;
     right: -1px;
   }
 }

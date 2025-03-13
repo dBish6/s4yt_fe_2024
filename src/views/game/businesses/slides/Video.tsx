@@ -27,9 +27,9 @@ const Video: React.FC<Props> = ({ video_title, video_url }) => {
         height="100%"
         src={video_url}
         title={video_title}
-        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+        allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share"
         allowFullScreen
-        style={!loaded ? { display: "none" } : { display: "block" }}
+        style={{ display: loaded ? "block" : "none" }}
       />
     </div>
   );
