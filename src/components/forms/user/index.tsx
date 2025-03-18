@@ -59,7 +59,7 @@ interface UserFormData {
   school: string;
   country: null | number;
   region: null | number;
-  city: null | number;
+  city: string;
 }
 
 const UserForm: React.FC<Props> = ({
@@ -85,7 +85,7 @@ const UserForm: React.FC<Props> = ({
       school: user.credentials?.school ?? "",
       country: user.credentials?.country ?? null,
       region: user.credentials?.region ?? null,
-      city: user.credentials?.city ?? null
+      city: user.credentials?.city ?? ""
     });
 
   const [searchParams] = useSearchParams();
@@ -97,7 +97,12 @@ const UserForm: React.FC<Props> = ({
   useEffect(() => {
     if (currentData.country) {
       getRegions(currentData.country);
-      if (currentData.region) resetRegions(setCurrentData);
+      if (
+        user.tokens.access
+          ? currentData.country !== user.credentials?.country && currentData.region
+          : currentData.region
+      )
+        resetRegions(setCurrentData);
     }
   }, [currentData.country]);
 
@@ -414,7 +419,7 @@ const UserForm: React.FC<Props> = ({
             name="city"
             type="text"
             onChange={(e) => updateField<UserFormData>(e, setCurrentData)}
-            disabled={!currentData.region || form.processing}
+            disabled={(!currentData.region && !currentData.city) || form.processing}
             {...(currentData.city && { value: currentData.city })}
             autoComplete="off"
           />
