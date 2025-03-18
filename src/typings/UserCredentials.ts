@@ -1,7 +1,7 @@
 export default interface UserCredentials {
   // id: string;
   // city_id: number | null;
-  city: number | null;
+  city: string | null;
   // country_id: number;
   country: number;
   // education_id: number;
