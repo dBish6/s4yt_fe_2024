@@ -1,7 +1,6 @@
 import type { RaffleItem } from "@reducers/game";
 
 import { useState, useLayoutEffect } from "react";
-import { Link } from "react-router-dom";
 
 import ModalTemplate from "../ModalTemplate";
 import s from "./styles.module.css";
