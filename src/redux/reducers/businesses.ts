@@ -1,4 +1,4 @@
-import { SET_BUSINESSES, UPDATE_BUSINESS_CHALLENGE } from "@actions/index";
+import { SET_BUSINESSES, UPDATE_BUSINESS_CHALLENGE, CLEAR_BUSINESSES } from "@actions/index";
 
 export interface Business {
   name: string;
@@ -46,11 +46,13 @@ const businesses = (
                 challenge_question: {
                   ...business.challenge_question,
                   ...action.payload.update
-                },
+                }
               }
             : business
         ),
       };
+    case CLEAR_BUSINESSES:
+      return initialState;
     default:
       return state;
   }
