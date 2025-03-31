@@ -44,7 +44,7 @@ const RaffleItemModal: React.FC<Props> = ({ children, className, item, ...props 
       <ModalTemplate
         show={show}
         setShow={setShow}
-        label="Raffle Item Details"
+        aria-label="Raffle Item Details"
         width={732.217}
         height={635}
         noExitBtn={!mobileBreakpoint}

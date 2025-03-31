@@ -34,5 +34,5 @@ export const SET_BUSINESSES = "businesses.SET_BUSINESSES";
 export const UPDATE_BUSINESS_CHALLENGE = "businesses.UPDATE_BUSINESS_CHALLENGE";
 export const CLEAR_BUSINESSES = "businesses.CLEAR_BUSINESSES";
 
-// raffle winners
-export const GET_RAFFLE_WINNERS = "getRaffleWinners.GET_RAFFLE_WINNERS"
+// winners
+export const SET_WINNERS = "winners.SET_WINNERS"

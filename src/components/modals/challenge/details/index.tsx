@@ -26,8 +26,8 @@ const ChallengeDetailsModal: React.FC<Props> = ({ challenge_question, className,
       <ModalTemplate
         show={show}
         setShow={setShow}
+        aria-label="Your Business Challenge"
         height={448}
-        label="Your Business Challenge"
       >
         <div className={s.container}>
           <h3>{challenge_question.title}</h3>

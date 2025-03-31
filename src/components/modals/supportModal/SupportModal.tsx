@@ -24,8 +24,8 @@ const SupportModal: React.FC<Props> = ({ user }) => {
       <ModalTemplate
         show={show}
         setShow={setShow}
+        aria-label="Contact Support"
         height={294}
-        label="Contact Support"
       >
         <div className={s.container}>
           <h2>Support</h2>

@@ -24,19 +24,19 @@ interface Props {
   clearNewLoginFlag: () => void;
 }
 
-const ResourceLoader = ({
+const ResourceLoader: React.FC<Props> = ({
   newLogin,
   userToken,
   addNotification,
   clearNewLoginFlag,
-}: Props) => {
+}) => {
   const [connecting, setConnecting] = useState("");
 
   useLayoutEffect(() => {
     if (userToken) {
       const promises = [];
 
-      // TODO: Msg
+      // TODO: Better msg.
       setConnecting("Loading user data");
       delay(29000, () => {
         if (connecting) setConnecting("Taking longer than expected...");

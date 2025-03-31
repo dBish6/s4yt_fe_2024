@@ -21,7 +21,7 @@ import LearnAndEarn from "@views/game/learnAndEarn";
 import Raffle from "@views/game/raffle";
 import Businesses from "@views/game/businesses";
 import Details from "@views/game/businesses/Details";
-// import Results from "@views/game/results";
+import Results from "@views/game/results";
 import GameClosed from "@views/game/gameClosed";
 
 import Error409 from "@views/errors/Error409";
@@ -47,7 +47,7 @@ export const routes = [
   { path: "/raffle", view: Raffle, restricted: 1, title: "Raffle", disableOn: routeDisableOn["/raffle"] },
   { path: "/businesses", view: Businesses, restricted: 1, title: "See Businesses", disableOn: routeDisableOn["/businesses"]  },
   { path: "/businesses/:details", view: Details, restricted: 1, title: "Business Details", disableOn: routeDisableOn["/businesses"] },
-  // { path: "/results", view: Results, restricted: 1, title: "Event Results", disableOn: routeDisableOn["/results"] },
+  { path: "/results", view: Results, restricted: 1, title: "Event Results", disableOn: routeDisableOn["/results"] },
   { path: "/game-closed", view: GameClosed, restricted: 1, title: "Game Closed" },
 
   { path: "/error-409", view: Error409, restricted: 1, title: "ERROR 409" },

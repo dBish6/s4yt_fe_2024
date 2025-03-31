@@ -29,7 +29,7 @@ export const getBusinesses = () => async (dispatch) => {
         data,
         meta.status,
         dispatch,
-        "Unexpected server error occurred retrieving event businesses. If you still see businesses, it's showing you the businesses from the previous request, so things may be out of date."
+        "Unexpected server error occurred retrieving event businesses. If you still see businesses, it's showing you the businesses from the previous request, so things may be out of date"
       );
     }
   } catch (error) {

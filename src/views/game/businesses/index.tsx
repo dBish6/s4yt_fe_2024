@@ -43,7 +43,9 @@ const Businesses: React.FC<Props> = ({
   return (
     <Layout>
       <Header title="See Businesses" />
-      <Content addCoins="coins3" addFeather="left" 
+      <Content
+        addCoins="coins3"
+        addFeather="left"
         style={{ display: "grid", minHeight: "446px" }}
       >
         <div aria-live="polite" className={s.businesses}>

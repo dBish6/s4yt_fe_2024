@@ -4,10 +4,10 @@ import { createPortal } from "react-dom";
 interface Props extends React.ComponentProps<"div"> {
   show: boolean;
   setShow: React.Dispatch<React.SetStateAction<boolean>>;
+  "aria-label": string;
   height: React.CSSProperties["height"];
   width?: React.CSSProperties["width"];
   style?: React.CSSProperties;
-  label?: string;
   noExitBtn?: boolean;
 }
 
@@ -18,7 +18,6 @@ const ModalTemplate: React.FC<React.PropsWithChildren<Props>> = ({
   height,
   width,
   style,
-  label,
   noExitBtn,
   ...props
 }) => {
@@ -50,11 +49,11 @@ const ModalTemplate: React.FC<React.PropsWithChildren<Props>> = ({
           <div
             role="dialog"
             tabIndex={1}
-            aria-label={label ? label : "Popup"}
             className="modal"
             id="modal"
             onClick={(e) => e.stopPropagation()}
             style={{ maxHeight: height, maxWidth: width, ...(style && style) }}
+            {...(!props["aria-label"] && { "aria-label": "Popup" })}
             {...props}
           >
             {!noExitBtn && (

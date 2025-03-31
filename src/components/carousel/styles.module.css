@@ -1,7 +1,3 @@
-.container {
-
-}
-
 .container .controls {
   display: flex;
   justify-content: space-between;
@@ -14,17 +10,12 @@
   opacity: 0.8;
 }
 
-.container .controls button {
+.container .controls > button {
+  flex-shrink: 0;
   background: url("/images/arrow.webp") no-repeat center center/contain;
   height: 80px;
   width: 120px;
 }
-.container .controls button:first-child {
-  /* left: 0;
-  bottom: 0; */
-}
-.container .controls button:last-child {
+.container .controls > button:last-child {
   transform: rotate(180deg);
-  /* right: 0;
-  bottom: 0; */
 }

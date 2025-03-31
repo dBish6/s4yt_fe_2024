@@ -11,7 +11,7 @@ import Header from "@components/partials/header";
 import Content from "@components/partials/content";
 import Status from "@components/partials/status";
 import Spinner from "@components/loaders/spinner";
-import Pagination from "@components/pagination";
+import Carousel from "@components/carousel";
 import RaffleItemModal from "@components/modals/raffleItem";
 import AreYouSureModal from "@components/modals/areYouSure";
 import CooldownIndicator from "@components/forms/cooldownIndicator";
@@ -63,10 +63,6 @@ const Raffle: React.FC<Props> = ({
   useEffect(() => {
     isNotPlayer(true, "Only players can assign Dubl-U-Nes to raffle items");
   }, []);
-
-  useEffect(() => {
-    console.log("staked", staked);
-  }, [staked]);
   
   const handleStake = (type: "inc" | "dec", item_id: string) => {
     updateRaffleStake({
@@ -119,23 +115,23 @@ const Raffle: React.FC<Props> = ({
 
           {!loading ? (
             raffleItems.length ? (
-              <Pagination
+              <Carousel
                 aria-label="Raffle Items"
                 items={raffleItems}
                 numPerSlide={8}
                 className={s.products}
               >
-                {({ item, i }) => (
-                  <div key={i} aria-label={item.name} className={s.item}>
+                {({ entry, i }) => (
+                  <div key={i} aria-label={entry.name} className={s.item}>
                     <RaffleItemModal
                       className={s.imgContainer}
-                      item={item}
+                      item={entry}
                     >
-                      <img className={s.main} src={item.image_src} alt={item.name} />
+                      <img className={s.main} src={entry.image_src} alt={entry.name} />
 
                       <img
                         className={s.sliverGold}
-                        src={!item.silver ? "/images/coin-smallgolden.png" : "/images/coin-smallsilver.png"}
+                        src={!entry.silver ? "/images/coin-smallgolden.png" : "/images/coin-smallsilver.png"}
                         alt="Coin"
                       />
                       <img
@@ -145,30 +141,30 @@ const Raffle: React.FC<Props> = ({
                       />
                     </RaffleItemModal>
                     
-                    <h4 title={item.name}>{item.name}</h4>
+                    <h4 title={entry.name}>{entry.name}</h4>
 
                     <div className={s.controls}>
                       <button
                         className="fade move"
                         aria-label="Subtract"
-                        disabled={!cooldownElapsed || !item.coins || isNotPlayer()}
-                        onClick={() => handleStake("inc", item.item_id)}
+                        disabled={!cooldownElapsed || !entry.coins || isNotPlayer()}
+                        onClick={() => handleStake("inc", entry.item_id)}
                       >
                         -
                       </button>
-                      <p aria-label={`${item.coins} Stacked`}>{item.coins}</p>
+                      <p aria-label={`${entry.coins} Stacked`}>{entry.coins}</p>
                       <button
                         className="fade move"
                         aria-label="Add"
                         disabled={!cooldownElapsed || !staked.remainingCoins || isNotPlayer()}
-                        onClick={() => handleStake("dec", item.item_id)}
+                        onClick={() => handleStake("dec", entry.item_id)}
                       >
                         +
                       </button>
                     </div>
                   </div>
                 )}
-              </Pagination>
+              </Carousel>
             ) : (
               <p className={s.failed}>
                 Unexpectedly failed to retrieve raffle data.

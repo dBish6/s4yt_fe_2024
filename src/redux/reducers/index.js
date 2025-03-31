@@ -5,7 +5,7 @@ import formOptions from "./formOptions";
 import game from "./game";
 import gameConfig from "./gameConfig";
 import businesses from "./businesses";
-import getRaffleWinners from "./getRaffleWinners";
+import winners from "./winners";
 
 export default combineReducers({
   user,
@@ -14,5 +14,5 @@ export default combineReducers({
   game,
   gameConfig,
   businesses,
-  getRaffleWinners
+  winners
 });
