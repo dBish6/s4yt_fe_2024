@@ -1,4 +1,4 @@
-import { SET_WINNERS } from "@actions/index";
+import { SET_WINNERS, CLEAR_WINNERS } from "@actions/index";
 
 export interface RaffleWinner {
   name: string;
@@ -49,6 +49,8 @@ const winners = (
   switch (action.type) {
     case SET_WINNERS:
       return { ...state, partners: action.payload };
+    case CLEAR_WINNERS:
+      return initialState;
     default:
       return state;
   }

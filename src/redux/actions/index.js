@@ -36,3 +36,4 @@ export const CLEAR_BUSINESSES = "businesses.CLEAR_BUSINESSES";
 
 // winners
 export const SET_WINNERS = "winners.SET_WINNERS"
+export const CLEAR_WINNERS = "businesses.CLEAR_WINNERS"

@@ -30,7 +30,6 @@ import Error403 from "@views/errors/Error403";
 import Error401 from "@views/errors/Error401";
 import Error500 from "@views/errors/Error500";
 
-// NOTE: This is how I'm doing it, I am going page by page and they will be uncommented when started.
 export const routes = [
   { path: "/register", view: Register, restricted: 2, title: "Register" },
   { path: "/register/verify-email", view: VerifyEmail, restricted: 0, title: "Verify" },

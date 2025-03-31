@@ -13,7 +13,9 @@ import {
   // gameConfig
   CLEAR_CURRENT_CONFIG,
   // businesses
-  CLEAR_BUSINESSES
+  CLEAR_BUSINESSES,
+  // winners
+  CLEAR_WINNERS
 } from "@actions/index";
 import { addNotification } from "./notifications";
 import { updateConfiguration } from "./gameConfig";
@@ -165,6 +167,7 @@ export const logoutPlayer = () => (dispatch, _) => {
   dispatch({ type: CLEAR_GAME });
   dispatch({ type: CLEAR_CURRENT_CONFIG });
   dispatch({ type: CLEAR_BUSINESSES });
+  dispatch({ type: CLEAR_WINNERS });
   socket.disconnect();
   alert("User session timed out.");
 };

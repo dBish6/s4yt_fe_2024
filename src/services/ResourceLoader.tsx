@@ -36,8 +36,7 @@ const ResourceLoader: React.FC<Props> = ({
     if (userToken) {
       const promises = [];
 
-      // TODO: Better msg.
-      setConnecting("Loading user data");
+      setConnecting("Obtaining resources");
       delay(29000, () => {
         if (connecting) setConnecting("Taking longer than expected...");
       });

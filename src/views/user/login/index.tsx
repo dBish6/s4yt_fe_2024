@@ -126,7 +126,7 @@ const Login: React.FC<Props> = ({ loginPlayer }) => {
         rel="noopener noreferrer"
         className={`${s.privacy} privacy fade move`}
       >
-        Private Policy
+        Privacy Policy
       </a>
     </Layout>
   );

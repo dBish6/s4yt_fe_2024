@@ -1,5 +1,4 @@
 import { useState } from "react";
-import warning from "@static/warning.svg";
 
 interface Props extends React.ComponentProps<"select"> {
   id: string;
@@ -21,7 +20,7 @@ const Select: React.FC<Props> = ({ children, id, name, ...options }) => {
       >
         {children}
       </select>
-      <img src={warning} alt="Warning" className="warningIcon" />
+      <img src="/images/warning.svg" alt="Warning" className="warningIcon" />
     </div>
   );
 };
