@@ -17,8 +17,7 @@ export interface RaffleItem {
   image_src: string;
   raffle_partner: {
     name: string;
-    description: string;
-    logo: string;
+    logo: string; // Donated by logo.
     resource_name: string;
     resource_logo: string;
     resource_link: string;
