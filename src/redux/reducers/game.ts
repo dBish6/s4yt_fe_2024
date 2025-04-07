@@ -10,7 +10,6 @@ import {
   SET_LEARN_AND_EARN_CHESTS,
 } from "@actions/index";
 
-// TODO: From the response we don't need description in the raffle_partner and deleted.
 export interface RaffleItem {
   item_id: string;
   name: string;
@@ -19,9 +18,9 @@ export interface RaffleItem {
   raffle_partner: {
     name: string;
     description: string;
-    logo: string; // MIGHT BE DONATED BY NOW???
+    logo: string;
     resource_name: string;
-    resource_logo: string; // MIGHT BE ADDED FOR PROGRAM LOGO???
+    resource_logo: string;
     resource_link: string;
     resource_category: string;
   };
@@ -33,7 +32,7 @@ export interface RaffleItem {
 export type QuizChestGrouping = {
   question: string;
   answers: {
-    choice: {
+    choices: {
       a: string;
       b: string;
       c: string;

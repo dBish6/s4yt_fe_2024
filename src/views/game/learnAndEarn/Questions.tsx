@@ -38,12 +38,12 @@ const Questions: React.FC<Props> = ({
 
   const onAnswerSelected = (
     e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
-    choice: "a" | "b" | "c",
-    answer: Omit<QuizChestGrouping[number]["answers"], "choice">
+    choices: "a" | "b" | "c",
+    answer: Omit<QuizChestGrouping[number]["answers"], "choices">
   ) => {
     const target = e.currentTarget;
 
-    if (choice === answer.correct) {
+    if (choices === answer.correct) {
       setStage((prev) => ({ ...prev, process: true }));
     } else {
       setEarned((prev) => ({ ...prev, iteration: prev.iteration - 1 }));
@@ -183,8 +183,8 @@ const Questions: React.FC<Props> = ({
                 
                 <div role="radiogroup">
                   {chest.opened &&
-                    Object.entries(currentSet.answers.choice).map(([letter, answer]) => {
-                      const { choice: _, ...selected } = currentSet.answers;
+                    Object.entries(currentSet.answers.choices).map(([letter, answer]) => {
+                      const { choices: _, ...selected } = currentSet.answers;
 
                       return (
                         <button
