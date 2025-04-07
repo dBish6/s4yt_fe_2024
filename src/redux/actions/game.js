@@ -80,7 +80,12 @@ export const sendRaffleStakedItems = (stakedItems, raffleItems) => async (dispat
         type: SET_RAFFLE_TIMESTAMP,
         payload: { submission: Date.now() + 30 * 60 * 1000 } // 30 minutes.
       });
-      dispatch(updateUserCoins("dec", amount));
+      dispatch(
+        updateUserCoins(
+          "dec",
+          staked_items.reduce((acc, item) => acc + item.coins, 0)
+        )
+      );
     } else {
       showError(
         data,
