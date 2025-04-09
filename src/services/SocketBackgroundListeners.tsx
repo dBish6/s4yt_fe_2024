@@ -5,7 +5,7 @@ import type { BusinessReduxState } from "@reducers/businesses";
 import { connect } from "react-redux"
 import { useRef, useEffect } from "react";
 
-import { coinChangesListener, sliverAndGoldCoinsListener } from "@actions/game";
+import { coinChangesListener, silverAndGoldCoinsListener } from "@actions/game";
 import { businessChallengeAnswerSubmittedListener } from "@actions/businesses";
 
 import { socket } from "@services/socket";
@@ -14,7 +14,7 @@ interface Props {
   raffleItems: GameReduxState["raffleItems"];
   businesses: BusinessReduxState["businesses"];
   coinChangesListener: () => void;
-  sliverAndGoldCoinsListener: () => (data: any) => void;
+  silverAndGoldCoinsListener: () => (data: any) => void;
   businessChallengeAnswerSubmittedListener: () => (data: any) => void;
 }
 
@@ -22,13 +22,13 @@ const SocketBackgroundListeners: React.FC<Props> = ({
   raffleItems,
   businesses,
   coinChangesListener,
-  sliverAndGoldCoinsListener,
+  silverAndGoldCoinsListener,
   businessChallengeAnswerSubmittedListener
 }) => {
-  const sliverAndGoldCoinsListenerRef =
-      useRef<ReturnType<typeof sliverAndGoldCoinsListener>>(),
+  const silverAndGoldCoinsListenerRef =
+      useRef<ReturnType<typeof silverAndGoldCoinsListener> | null>(null),
     businessChallengeAnswerSubmittedListenerRef =
-      useRef<ReturnType<typeof businessChallengeAnswerSubmittedListener>>();
+      useRef<ReturnType<typeof businessChallengeAnswerSubmittedListener> | null>(null);
 
   useEffect(() => {
     coinChangesListener();
@@ -36,45 +36,51 @@ const SocketBackgroundListeners: React.FC<Props> = ({
 
   useEffect(() => {
     if (raffleItems.length) {
-      if (!socket.hasListeners("raffle_gold_sliver"))
-        sliverAndGoldCoinsListenerRef.current = sliverAndGoldCoinsListener();
+      silverAndGoldCoinsListenerRef.current = silverAndGoldCoinsListener();
     } else {
-      if (sliverAndGoldCoinsListenerRef.current)
+      if (silverAndGoldCoinsListenerRef.current) {
         socket.removeListener(
-          "raffle_gold_sliver",
-          sliverAndGoldCoinsListenerRef.current
+          "raffle_gold_silver",
+          silverAndGoldCoinsListenerRef.current
         );
+        silverAndGoldCoinsListenerRef.current = null;
+      }
     }
 
     // This is probably actually not needed because this component will never unmount, but oh well.
     return () => {
-      if (sliverAndGoldCoinsListenerRef.current)
+      if (silverAndGoldCoinsListenerRef.current) {
         socket.removeListener(
-          "raffle_gold_sliver",
-          sliverAndGoldCoinsListenerRef.current
+          "raffle_gold_silver",
+          silverAndGoldCoinsListenerRef.current
         );
+        silverAndGoldCoinsListenerRef.current = null;
+      }
     };
   }, [raffleItems]);
 
   useEffect(() => {
     if (businesses.length) {
-      if (socket.hasListeners("business_challenge_submitted"))
-        businessChallengeAnswerSubmittedListenerRef.current =
-          businessChallengeAnswerSubmittedListener();
+      businessChallengeAnswerSubmittedListenerRef.current =
+        businessChallengeAnswerSubmittedListener();
     } else {
-      if (businessChallengeAnswerSubmittedListenerRef.current)
+      if (businessChallengeAnswerSubmittedListenerRef.current) {
         socket.removeListener(
           "business_challenge_submitted",
           businessChallengeAnswerSubmittedListenerRef.current
         );
+        businessChallengeAnswerSubmittedListenerRef.current = null;
+      }
     }
 
     return () => {
-      if (businessChallengeAnswerSubmittedListenerRef.current)
+      if (businessChallengeAnswerSubmittedListenerRef.current) {
         socket.removeListener(
           "business_challenge_submitted",
           businessChallengeAnswerSubmittedListenerRef.current
         );
+        businessChallengeAnswerSubmittedListenerRef.current = null;
+      }
     };
   }, [businesses]);
 
@@ -87,7 +93,7 @@ const mapStateToProps = ({ game, businesses }: { game: GameReduxState, businesse
 });
 const mapDispatchToProps = (dispatch: Dispatch<any>) => ({
   coinChangesListener: () => dispatch(coinChangesListener()),
-  sliverAndGoldCoinsListener: () => dispatch(sliverAndGoldCoinsListener()),
+  silverAndGoldCoinsListener: () => dispatch(silverAndGoldCoinsListener()),
   businessChallengeAnswerSubmittedListener: () =>
     dispatch(businessChallengeAnswerSubmittedListener())
 });

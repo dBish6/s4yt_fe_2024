@@ -19,6 +19,7 @@ import CooldownIndicator from "@components/forms/cooldownIndicator";
 import s from "./styles.module.css";
 
 interface Props {
+  coins: number; // Initial coins/coins that's actually stored on the server.
   raffleItems: GameReduxState["raffleItems"];
   staked: GameReduxState["staked"];
   raffleTimestamp?: GameReduxState["raffleTimestamp"];
@@ -31,11 +32,13 @@ interface Props {
   ) => void;
   sendRaffleStakedItems: (
     stakedItems: GameReduxState["staked"]["raffleItem"],
-    raffleItems: GameReduxState["raffleItems"]
+    raffleItems: GameReduxState["raffleItems"],
+    remainingCoins: number
   ) => Promise<void>;
 }
 
 const Raffle: React.FC<Props> = ({
+  coins,
   raffleItems,
   staked,
   raffleTimestamp,
@@ -73,7 +76,7 @@ const Raffle: React.FC<Props> = ({
   };
 
   const handleSubmit = () => {
-    sendRaffleStakedItems(staked.raffleItem!, raffleItems);
+    sendRaffleStakedItems(staked.raffleItem!, raffleItems, staked.remainingCoins);
   };
 
   return (
@@ -191,7 +194,7 @@ const Raffle: React.FC<Props> = ({
             aria-label="Submit"
             text="Once you submit your raffle entries, you will not be able to change them for 30 minutes. Do you want to submit your current entries?"
             func={handleSubmit}
-            disabled={isNotPlayer() || !cooldownElapsed || !raffleItems.length}
+            disabled={isNotPlayer() || !cooldownElapsed || !raffleItems.length || !coins}
             className={s.submit}
           />
         </div>
@@ -202,6 +205,7 @@ const Raffle: React.FC<Props> = ({
 };
 
 const mapStateToProps = ({ game }: { game: GameReduxState }) => ({
+  coins: game.userCoins,
   raffleItems: game.raffleItems,
   staked: game.staked,
   raffleTimestamp: game.raffleTimestamp
@@ -218,8 +222,9 @@ const mapDispatchToProps = (dispatch: any) => ({
   ) => dispatch(updateRaffleItem(item_id, update)),
   sendRaffleStakedItems: (
     stakedItems: GameReduxState["staked"]["raffleItem"],
-    raffleItems: GameReduxState["raffleItems"]
-  ) => dispatch(sendRaffleStakedItems(stakedItems, raffleItems))
+    raffleItems: GameReduxState["raffleItems"],
+    remainingCoins: number
+  ) => dispatch(sendRaffleStakedItems(stakedItems, raffleItems, remainingCoins))
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(Raffle);

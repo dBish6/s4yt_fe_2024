@@ -129,6 +129,9 @@
   width: 215px;
   height: 215px;
 }
+.container .carousel > div[role="group"]:first-child .partnerWinners[data-type="main"] section.challenge > p {
+  color: var(--pbrown);
+}
 
 .container .carousel > div[role="group"]:first-child .partnerWinners[data-type="main"] section.challenge ul {
   max-height: 251px;
@@ -136,7 +139,8 @@
 .container .carousel > div[role="group"]:first-child .partnerWinners[data-type="main"] section.challenge ul li.winner:not(:last-child) {
   margin-bottom: 1rem;
 }
-.container .carousel > div[role="group"]:first-child .partnerWinners[data-type="main"] section.challenge ul li.winner h3 {
+.container .carousel > div[role="group"]:first-child .partnerWinners[data-type="main"] section.challenge ul li.winner h3,
+.container .carousel > div[role="group"]:first-child .partnerWinners[data-type="main"] section.challenge > p {
   font-size: var(--heading-28);
 }
 .container .carousel > div[role="group"]:first-child .partnerWinners[data-type="main"] section.challenge ul li.winner h3 span {

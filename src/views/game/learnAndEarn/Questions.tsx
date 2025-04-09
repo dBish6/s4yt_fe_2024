@@ -97,18 +97,21 @@ const Questions: React.FC<Props> = ({
    */
   useEffect(() => {
     if (stage.iteration > 1) {
-      setEarned((prev) => ({
-        ...prev,
-        iteration: 3,
-        final: prev.final + prev.iteration
-      }));
+      setEarned((prev) => {
+        const update = {
+          ...prev,
+          iteration: 3,
+          final: prev.final + prev.iteration
+        };
+        if (stage.iteration === 4) {
+          setEarned((pre) => ({ ...pre, processing: true }));
+          sendLearnAndEarnCoins(selectedChest.id, update.final).finally(() =>
+            setSelectedChest(null)
+          );
+        }
 
-      if (stage.iteration === 4) {
-        setEarned((prev) => ({ ...prev, processing: true }));
-        sendLearnAndEarnCoins(selectedChest.id, earned.final).finally(() =>
-          setSelectedChest(null)
-        );
-      }
+        return update;
+      });
     }
   }, [stage.iteration]);
 

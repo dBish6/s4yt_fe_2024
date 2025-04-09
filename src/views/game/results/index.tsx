@@ -81,6 +81,9 @@ const Results: React.FC<Props> = ({ partners, getWinners }) => {
                             ))}
                           </ul>
                         )}
+                        {!entry.winners.challenge?.length && !entry.winners.raffle?.length && ( 
+                          <p>No Winners</p>
+                        )}
                       </section>
 
                       {entry.winners.raffle?.length > 0 && (
@@ -96,10 +99,6 @@ const Results: React.FC<Props> = ({ partners, getWinners }) => {
                             />
                           ))}
                         </section>
-                      )}
-
-                      {!entry.winners.challenge?.length && !entry.winners.raffle?.length && ( 
-                        <p>No Winners</p>
                       )}
                     </>
                   )}

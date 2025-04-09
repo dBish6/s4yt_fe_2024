@@ -17,11 +17,11 @@ import { updateCurrentUser } from "./user";
 import { socket } from "@services/socket";
 
 /**
- * @param {"inc" | "dec"} type 
- * @param {number} coins  
+ * @param {number} coins Use a negative number to subtract from the total.
+ * @param {boolean} [override]
  */
-export const updateUserCoins = (type, coins) => (dispatch) => {
-  dispatch({ type: UPDATE_USER_COINS, payload: { type, coins } });
+export const updateUserCoins = (coins, override = false) => (dispatch) => {
+  dispatch({ type: UPDATE_USER_COINS, payload: { coins, override } });
 };
 
 /**
@@ -63,29 +63,26 @@ export const getRaffleItems = () => async (dispatch, _) => {
   }
 };
 
-export const sendRaffleStakedItems = (stakedItems, raffleItems) => async (dispatch, _) => {
+export const sendRaffleStakedItems = (stakedItems, raffleItems, remainingCoins) => async (dispatch, _) => {
   try {
     const stakedItemsIds = Object.keys(stakedItems),
       staked_items = [];
 
     for (const { item_id, coins } of raffleItems) {
-      if (stakedItemsIds.includes(item_id)) {
+      if (stakedItemsIds.includes(item_id))
         staked_items.push({ item_id, coins });
-      }
     }
 
-    const { data, meta } = await Api.post("/game/raffle/items", { staked_items });
+    const { data, meta } = await Api.post("/game/raffle/items", {
+      staked_items,
+      total_coins: remainingCoins
+    });
     if (meta.ok) {
       dispatch({
         type: SET_RAFFLE_TIMESTAMP,
         payload: { submission: Date.now() + 30 * 60 * 1000 } // 30 minutes.
       });
-      dispatch(
-        updateUserCoins(
-          "dec",
-          staked_items.reduce((acc, item) => acc + item.coins, 0)
-        )
-      );
+      dispatch(updateUserCoins(data.total_coins, true));
     } else {
       showError(
         data,
@@ -172,7 +169,6 @@ export const sendLearnAndEarnCoins = (chest_id, amount) => async (dispatch, _) =
 
     if (meta.ok) {
       dispatch(updateCurrentUser({ chests_submitted: data.chests_submitted }));
-      dispatch(updateUserCoins("inc", amount));
     } else {
       showError(
         data,
@@ -189,12 +185,13 @@ export const sendLearnAndEarnCoins = (chest_id, amount) => async (dispatch, _) =
 // <======================================/ Web Sockets \======================================>
 
 /**
- * Listens for any new coin changes. This should be triggered on every coins update for a 
+ * Listens for any new coin changes. This is triggered on certain coins updates for the 
  * user on the back-end.
  */
-export const coinChangesListener = () => (_) => {
+export const coinChangesListener = () => (dispatch, _) => {
   socket.on("coin_change", (data) => {
-    if (data.coins) retrieveCoins(null, data.coins);
+    // console.log("coin_change", data)
+    if (data.coins != null) dispatch(updateUserCoins(data.coins));
   });
 };
 
@@ -202,11 +199,15 @@ export const coinChangesListener = () => (_) => {
  * For the raffle. Listens for gold and silver coin changes on raffle items to indicate that 
  * this item has other users coins staked on that item.
  */
-export const sliverAndGoldCoinsListener = () => (dispatch, _) => {
+export const silverAndGoldCoinsListener = () => (dispatch, _) => {
   const listener = (data) => {
-    dispatch(updateRaffleItem(data.item_id, { silver: data.silver }));
+    // console.log("silverAndGoldCoinsListener data", data)
+    data.forEach((item) =>    
+      dispatch(updateRaffleItem(item.item_id, { silver: item.silver }))
+    );
   };
-  socket.on("raffle_gold_sliver", listener);
+  socket.removeListener("raffle_gold_silver", listener);
+  socket.on("raffle_gold_silver", listener);
 
   return listener;
 };

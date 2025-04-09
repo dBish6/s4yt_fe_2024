@@ -18,6 +18,7 @@ import OverlayLoader from "@components/loaders/overlayLoader";
 
 interface Props {
   userToken: string | undefined;
+  userEmail: string | undefined;
   newLogin: boolean | undefined;
   checkTotalCoins: () => Promise<void>;
   addNotification: (data: Omit<NotificationValues, "id">) => void;
@@ -25,8 +26,9 @@ interface Props {
 }
 
 const ResourceLoader: React.FC<Props> = ({
-  newLogin,
   userToken,
+  userEmail,
+  newLogin,
   addNotification,
   clearNewLoginFlag,
 }) => {
@@ -40,9 +42,8 @@ const ResourceLoader: React.FC<Props> = ({
       delay(29000, () => {
         if (connecting) setConnecting("Taking longer than expected...");
       });
-
       promises.push(
-        EstablishConnection().catch((error: Error) => {
+        EstablishConnection(userEmail!).catch((error: Error) => {
           addNotification({
             error: true,
             content: error.message,
@@ -66,6 +67,7 @@ const ResourceLoader: React.FC<Props> = ({
 
 const mapStateToProps = ({ user }: { user: UserReduxState }) => ({
   userToken: user.tokens.access,
+  userEmail: user.credentials?.email,
   newLogin: user.newLogin
 });
 const mapDispatchToProps = (dispatch: Dispatch<any>) => ({

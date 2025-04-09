@@ -111,6 +111,7 @@ export const businessChallengeAnswerSubmittedListener = () => (dispatch) => {
       })
     );
   };
+  socket.removeListener("business_challenge_submitted", listener);
   socket.on("business_challenge_submitted", listener);
 
   return listener;

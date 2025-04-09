@@ -79,10 +79,9 @@ const game = (
     case UPDATE_USER_COINS:
       return {
         ...state,
-        userCoins:
-          action.payload?.type === "inc"
-            ? state.userCoins + action.payload.coins
-            : state.userCoins - action.payload.coins
+        userCoins: action.payload.override
+          ? action.payload.coins
+          : state.userCoins + (action.payload.coins || 0)
       };
     case CLEAR_GAME:
       return initialState;
