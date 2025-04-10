@@ -20,8 +20,6 @@ interface Props {
   getWinners: () => Promise<void>;
 }
 
-const CURRENT_YEAR = new Date().getFullYear(); // TODO: Prob remove and just say 2025, but get the banner image first.
-
 const Results: React.FC<Props> = ({ partners, getWinners }) => {
   useLayoutEffect(() => {
     if (!(partners.main.length && partners.other.length)) getWinners();
@@ -38,8 +36,8 @@ const Results: React.FC<Props> = ({ partners, getWinners }) => {
         <div className={s.container}>
           <div className={s.banner}>
             <img
-              src="/images/eventResults/img_thankyou.png"
-              alt={`Thank you for Supporting $4YT ${CURRENT_YEAR}`}
+              src="/images/eventResults/img_thankyou.webp"
+              alt="Thank you for Supporting $4YT 2025"
             />
           </div>
 
