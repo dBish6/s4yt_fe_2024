@@ -25,7 +25,7 @@ const ChallengeInstructionsModal: React.FC<Props> = ({ ...props }) => {
         <div className={s.container}>
           <ul>
             <li>Create a separate google doc for each challenge</li>
-            <li>Set the sharing to "anyone with the link" can "view"</li>
+            <li>Set the sharing to "anyone with the link" can "edit"</li>
             <li>Add the content you wish to submit; including text, links, and images</li>
             <li>Do not add your name or any identifying info</li>
             <li>Copy and paste your google doc link into the input above and press submit</li>
