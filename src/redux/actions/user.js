@@ -175,6 +175,7 @@ export const logoutPlayer = () => (dispatch, _) => {
 export const isNotPlayer =
   (useNotification, message) => (dispatch, getState) => {
     if (getState().user.credentials?.role !== "Player") {
+    if (getState().user.credentials?.role !== "Player") {
       useNotification &&
         dispatch(
           addNotification({
@@ -232,6 +233,7 @@ export const updatePassword = (userData) => () => {
 export const updateProfile =
   (userData, formRef, setForm) => async (dispatch, _) => {
     try {
+      const { data, meta } = await Api.patch("/auth/player/profile", userData);
       const { data, meta } = await Api.patch("/auth/player/profile", userData);
 
       if (meta?.ok) {
