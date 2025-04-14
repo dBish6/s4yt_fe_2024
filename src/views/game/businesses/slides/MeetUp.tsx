@@ -41,7 +41,7 @@ const MeetUp: React.FC<Props> = ({
       <div id="meetupTxt">
         <h3>You're Invited!</h3>
         <p>Event results meeting and casual Q&A with challenge partners.</p>
-        <p>May 26 at 2PM EST</p>
+        <p>April 26 at 2PM EST</p>
       </div>
 
       <form

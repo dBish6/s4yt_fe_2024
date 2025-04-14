@@ -12,6 +12,8 @@ const sendRequest = async (method, url, params, body) => {
   const apiUrl = params
       ? `${target}${url}?${new URLSearchParams(params).toString()}`
       : `${target}${url}`,
+      ? `${target}${url}?${new URLSearchParams(params).toString()}`
+      : `${target}${url}`,
     tokens = store.getState().user.tokens;
 
   const response = await fetch(apiUrl, {
