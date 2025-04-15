@@ -324,9 +324,9 @@ const UserForm: React.FC<Props> = ({
             >
               <option value="">- Select -</option>
               <option value="Grade 9">Grade 9</option>
-              <option value="Grade 9">Grade 10</option>
-              <option value="Grade 9">Grade 11</option>
-              <option value="Grade 9">Grade 12</option>
+              <option value="Grade 10">Grade 10</option>
+              <option value="Grade 11">Grade 11</option>
+              <option value="Grade 12">Grade 12</option>
               <option value="Other">Other</option>
             </Select>
           </div>
