@@ -90,10 +90,6 @@ const UserForm: React.FC<Props> = ({
 
   const [searchParams] = useSearchParams();
 
-  // useEffect(() => {
-  //   console.log("currentData", currentData);
-  // }, [currentData]);
-
   useEffect(() => {
     if (!formOptions.countries.length) getCountries();
   }, []);
@@ -168,9 +164,6 @@ const UserForm: React.FC<Props> = ({
         }
       }
     }
-
-    // console.log("relevantData", relevantData)
-    // console.log("changedData", changedData)
 
     if (user.tokens.access && !Object.keys(changedData).length) {
       addNotification({
