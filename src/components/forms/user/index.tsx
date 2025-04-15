@@ -9,9 +9,7 @@ import { connect } from "react-redux";
 
 import { registerPlayer, updateProfile } from "@actions/user";
 import { getCountries, getRegions } from "@actions/formOptions";
-import { getCountries, getRegions } from "@actions/formOptions";
 import { addNotification } from "@actions/notifications";
-import { SET_REGIONS } from "@actions/index";
 import { SET_REGIONS } from "@actions/index";
 
 import updateField from "@utils/forms/updateField";
@@ -62,7 +60,6 @@ interface UserFormData {
   country: null | number;
   region: null | number;
   city: string;
-  city: string;
 }
 
 const UserForm: React.FC<Props> = ({
@@ -89,10 +86,13 @@ const UserForm: React.FC<Props> = ({
       country: user.credentials?.country ?? null,
       region: user.credentials?.region ?? null,
       city: user.credentials?.city ?? ""
-      city: user.credentials?.city ?? ""
     });
 
   const [searchParams] = useSearchParams();
+
+  // useEffect(() => {
+  //   console.log("currentData", currentData);
+  // }, [currentData]);
 
   useEffect(() => {
     if (!formOptions.countries.length) getCountries();
@@ -101,12 +101,6 @@ const UserForm: React.FC<Props> = ({
   useEffect(() => {
     if (currentData.country) {
       getRegions(currentData.country);
-      if (
-        user.tokens.access
-          ? currentData.country !== user.credentials?.country && currentData.region
-          : currentData.region
-      )
-        resetRegions(setCurrentData);
       if (
         user.tokens.access
           ? currentData.country !== user.credentials?.country && currentData.region
@@ -174,6 +168,9 @@ const UserForm: React.FC<Props> = ({
         }
       }
     }
+
+    // console.log("relevantData", relevantData)
+    // console.log("changedData", changedData)
 
     if (user.tokens.access && !Object.keys(changedData).length) {
       addNotification({
@@ -334,9 +331,9 @@ const UserForm: React.FC<Props> = ({
             >
               <option value="">- Select -</option>
               <option value="Grade 9">Grade 9</option>
-              <option value="Grade 9">Grade 10</option>
-              <option value="Grade 9">Grade 11</option>
-              <option value="Grade 9">Grade 12</option>
+              <option value="Grade 10">Grade 10</option>
+              <option value="Grade 11">Grade 11</option>
+              <option value="Grade 12">Grade 12</option>
               <option value="Other">Other</option>
             </Select>
           </div>
@@ -423,20 +420,14 @@ const UserForm: React.FC<Props> = ({
         </span>
 
         <div role="presentation">
-        <div role="presentation">
           <label htmlFor="city">City</label>
-          <Input
           <Input
             id="city"
             name="city"
             type="text"
-            type="text"
             onChange={(e) => updateField<UserFormData>(e, setCurrentData)}
             disabled={(!currentData.region && !currentData.city) || form.processing}
-            disabled={(!currentData.region && !currentData.city) || form.processing}
             {...(currentData.city && { value: currentData.city })}
-            autoComplete="off"
-          />
             autoComplete="off"
           />
         </div>
@@ -508,7 +499,6 @@ const mapDispatchToProps = (dispatch: Dispatch<any>) => ({
   resetRegions: (setCurrentData: React.Dispatch<React.SetStateAction<UserFormData>>) => {
     setCurrentData((prev) => ({ ...prev, region: null }));
     dispatch({ type: SET_REGIONS, payload: [] });
-  }
   }
 });
 

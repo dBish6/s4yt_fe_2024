@@ -61,7 +61,7 @@ const transformWinners = (data, dispatch) => {
 
 export const getWinners = () => async (dispatch, _) => {
   try {
-    const { data, meta } = await Api.get("/raffle/winners");
+    const { data, meta } = await Api.get("/game/results");
     if (!meta.ok) {
       showError(
         data,
