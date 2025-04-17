@@ -36,7 +36,7 @@ const ForgotPassword: React.FC<Props> = ({ sendResetPasswordEmail }) => {
 
   const [breakCenter, setBreakCenter] = useState(false);
 
-  const submit = async (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     const field = document.querySelector<HTMLInputElement>(
@@ -61,6 +61,7 @@ const ForgotPassword: React.FC<Props> = ({ sendResetPasswordEmail }) => {
         setBreakCenter(false);
       }
     };
+    handleResize();
 
     window.addEventListener("resize", handleResize);
     return () => {
@@ -84,7 +85,7 @@ const ForgotPassword: React.FC<Props> = ({ sendResetPasswordEmail }) => {
         <form
           aria-describedby="explanation"
           id="forgotPasswordForm"
-          onSubmit={(e) => submit(e)}
+          onSubmit={(e) => handleSubmit(e)}
           className={s.form}
           ref={formRef}
           autoComplete="off"

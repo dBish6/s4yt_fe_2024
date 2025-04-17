@@ -6,7 +6,7 @@ import Content from "@components/partials/content";
 import UserForm from "@components/forms/user";
 
 const Register: React.FC = () => {
-  // useRefreshReduxPersister(); // TODO: Use when starting. 
+  // useRefreshReduxPersister(); // TODO: Use when starting.
 
   return (
     <Layout style={{ position: "relative", maxWidth: "800px" }}>
@@ -25,7 +25,7 @@ const Register: React.FC = () => {
           bottom: "-24px",
         }}
       >
-        Private Policy
+        Privacy Policy
       </a>
     </Layout>
   );

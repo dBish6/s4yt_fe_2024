@@ -1,15 +1,15 @@
-import type { CoinTrackerState } from "@reducers/coinTracker";
+import type { GameReduxState } from "@reducers/game";
 import type { Dispatch } from "redux";
 
 import { useState, useLayoutEffect } from "react";
 import { connect } from "react-redux";
 
-import { getCoinsGainedHistory } from "@actions/coinTracker";
+import { getCoinsGainedHistory } from "@actions/game";
 
 import Spinner from "@components/loaders/spinner";
 
 import s from "./styles.module.css";
-import coins from "@static/coins_variant1.png";
+import coins from "/images/coins_variant1.webp";
 
 interface CoinsGainedDTO {
   source: string;
@@ -17,7 +17,7 @@ interface CoinsGainedDTO {
 }
 
 interface Props {
-  remainingCoins: number;
+  userCoins: number;
   getCoinsGainedHistory: (
     setCoinsGainedHistory: React.Dispatch<
       React.SetStateAction<CoinsGainedDTO[]>
@@ -25,7 +25,7 @@ interface Props {
   ) => Promise<void>;
 }
 
-const Coins: React.FC<Props> = ({ remainingCoins, getCoinsGainedHistory }) => {
+const Coins: React.FC<Props> = ({ userCoins, getCoinsGainedHistory }) => {
   const [coinsGainedHistory, setCoinsGainedHistory] = useState<
     CoinsGainedDTO[]
   >([]);
@@ -40,10 +40,10 @@ const Coins: React.FC<Props> = ({ remainingCoins, getCoinsGainedHistory }) => {
       <h2>My Dubl-u-nes Status</h2>
       <div>
         <div className={s.coins}>
-          <img src={coins} alt="Doblon Coins" />
+          <img src={coins} alt="Dubl-u-nes Stack" />
           <p>
             You got <br />
-            <b className={s.remain}>{remainingCoins}</b> <br />
+            <b className={s.remain}>{userCoins}</b> <br />
             <span className={s.dub}>Dubl-u-nes</span>
           </p>
         </div>
@@ -69,12 +69,8 @@ const Coins: React.FC<Props> = ({ remainingCoins, getCoinsGainedHistory }) => {
   );
 };
 
-const mapStateToProps = ({
-  coinTracker
-}: {
-  coinTracker: CoinTrackerState;
-}) => ({
-  remainingCoins: coinTracker.remainingCoins
+const mapStateToProps = ({ game }: { game: GameReduxState }) => ({
+  userCoins: game.userCoins
 });
 const mapDispatchToProps = (dispatch: Dispatch<any>) => ({
   getCoinsGainedHistory: (

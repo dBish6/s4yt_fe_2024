@@ -106,7 +106,7 @@ const UserForm: React.FC<Props> = ({
     }
   }, [currentData.country]);
 
-  const submit = async (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     const fields = document.querySelectorAll<
@@ -201,7 +201,7 @@ const UserForm: React.FC<Props> = ({
       )}
       <form
         id={user.tokens.access ? "userForm" : "registerForm"}
-        onSubmit={(e) => submit(e)}
+        onSubmit={(e) => handleSubmit(e)}
         className={s.form}
         ref={formRef}
         autoComplete="off"

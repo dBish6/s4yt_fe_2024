@@ -1,6 +1,7 @@
+import type { Dispatch } from "redux";
+
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { Dispatch } from "redux";
 import { connect } from "react-redux";
 
 import updateField from "@utils/forms/updateField";
@@ -40,7 +41,7 @@ const Login: React.FC<Props> = ({ loginPlayer }) => {
 
   // useRefreshReduxPersister(); // TODO: Use when starting.
 
-  const submit = async (event: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
     const fields =
@@ -71,7 +72,7 @@ const Login: React.FC<Props> = ({ loginPlayer }) => {
 
         <form
           id="loginForm"
-          onSubmit={(e) => submit(e)}
+          onSubmit={(e) => handleSubmit(e)}
           className={s.form}
           autoComplete="off"
           noValidate
@@ -114,7 +115,7 @@ const Login: React.FC<Props> = ({ loginPlayer }) => {
           </div>
 
           <div role="presentation">
-            <button className="okBtn" disabled={form.processing}></button>
+            <button type="submit" className="okBtn" disabled={form.processing} />
           </div>
         </form>
         <Link className="fade" to="/register" />
@@ -125,7 +126,7 @@ const Login: React.FC<Props> = ({ loginPlayer }) => {
         rel="noopener noreferrer"
         className={`${s.privacy} privacy fade move`}
       >
-        Private Policy
+        Privacy Policy
       </a>
     </Layout>
   );

@@ -1,14 +1,12 @@
-import { GameConfigReduxState } from "@reducers/gameConfig";
+import type { ThunkDispatch } from "redux-thunk";
+import type { AnyAction } from "redux";
+import type { GameConfigReduxState } from "@reducers/gameConfig";
 
 import { useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 
-import {
-  UPDATE_CONFIGURATION,
-  UPDATE_NEW_PERIOD,
-  ADD_NOTIFICATION,
-  LOGOUT,
-} from "@actions/index";
+import { UPDATE_CONFIGURATION, UPDATE_NEW_PERIOD, ADD_NOTIFICATION } from "@actions/index";
+import { logoutPlayer } from "@actions/user";
 
 import delay from "@utils/delay";
 
@@ -25,7 +23,7 @@ const useContinueCountdown = (
       (state: { gameConfig: GameConfigReduxState }) =>
         state.gameConfig.reviewStart
     ),
-    dispatch = useDispatch();
+    dispatch: ThunkDispatch<any, any, AnyAction> = useDispatch();
 
   const getSecondsInBetweenByTime = (from: number, till: number) => {
     return Math.max(0, Math.floor((till - from) / 1000));
@@ -51,7 +49,7 @@ const useContinueCountdown = (
     let countdownSeconds: number | undefined;
 
     /* 
-       This just sets the countdown and timestamps for the game. Some is not here, like the when the game haven't started 
+       This just sets the countdown and period booleans for the game. Some is not here, like the when the game haven't started 
        we don't have to worry about that one here because if the game haven't started restrictedAccess gets set from the login.
     */
     if (currentTimestamp < gameStartTimestamp) {
@@ -136,7 +134,7 @@ const useContinueCountdown = (
         }
       });
     }
-    // This is literally for the redirect useEffect in the gate, I didn't want to add the full list to useEffect; gameConfig.gameStart, etc.
+    // This is literally for the redirect useEffect in Redirects.tsx, I didn't want to add the full list to useEffect; gameConfig.gameStart, etc.
     dispatch({ type: UPDATE_NEW_PERIOD });
 
     let newCountdown: string | undefined;
@@ -165,14 +163,14 @@ const useContinueCountdown = (
               duration: 0,
             },
           });
-          delay(2500, () => dispatch({ type: LOGOUT }));
+          delay(2500, () => dispatch(logoutPlayer()));
         }
         clearInterval(countdownInterval);
       }
     }, 1000);
 
     return () => clearInterval(countdownInterval);
-  }, [counterRef.current]);
+  }, []);
 };
 
 export default useContinueCountdown;

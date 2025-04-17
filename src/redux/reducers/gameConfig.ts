@@ -23,7 +23,7 @@ export interface GameConfigReduxState {
 }
 
 const initialState: GameConfigReduxState = {
-  newPeriod: 0,
+  newPeriod: 0
 };
 
 const gameConfig = (

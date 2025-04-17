@@ -36,7 +36,7 @@ const VerifyEmail: React.FC<Props> = ({ sendVerifyEmail }) => {
 
   const [breakCenter, setBreakCenter] = useState(false);
 
-  const submit = async (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     const field = document.querySelector<HTMLInputElement>(
@@ -83,7 +83,7 @@ const VerifyEmail: React.FC<Props> = ({ sendVerifyEmail }) => {
         <form
           aria-describedby="explanation"
           id="verifyEmailForm"
-          onSubmit={(e) => submit(e)}
+          onSubmit={(e) => handleSubmit(e)}
           className={s.form}
           ref={formRef}
           autoComplete="off"
@@ -141,7 +141,7 @@ const mapDispatchToProps = (dispatch: Dispatch<any>) => ({
   ) =>
     dispatch(
       sendVerifyEmail(email, formRef, setForm) as unknown
-    ) as Promise<void>,
+    ) as Promise<void>
 });
 
 export default connect(null, mapDispatchToProps)(VerifyEmail);

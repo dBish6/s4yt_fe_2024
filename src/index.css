@@ -1,31 +1,47 @@
-/* TODO: Make getting fonts better. */
 @font-face {
   font-family: "Night Zone";
-  src: url("static/fonts/NightZone/night-zone.ttf") format("truetype");
+  src:
+    url("/fonts/NightZone/night-zone.woff2") format("woff2"),
+    url("/fonts/NightZone/night-zone.woff") format("woff"),
+    url("/fonts/NightZone/night-zone.eot") format("embedded-opentype"),
+    url("/fonts/NightZone/night-zone.eot?#iefix") format("embedded-opentype"),
+    url("/fonts/NightZone/night-zone.ttf") format("truetype");
 }
 
 @font-face {
   font-family: "BebasNeue";
-  src: url("static/fonts/BebasNeue/bebasneue-regular.ttf");
+  src:
+    url("/fonts/BebasNeue/bebasneue-regular.ttf") format("truetype"),
+    url("/fonts/BebasNeue/bebasneue-regular.eot") format("embedded-opentype"),
+    url("/fonts/BebasNeue/bebasneue-regular.eot?#iefix") format("embedded-opentype"),
+    url("/fonts/BebasNeue/bebasneue-regular.woff2") format("woff2"),
+    url("/fonts/BebasNeue/bebasneue-regular.woff") format("woff");
 }
 
 @font-face {
   font-family: "Corbel";
-  src: url("static/fonts/Corbel/corbel.ttf");
+  src:
+    url("/fonts/Corbel/corbel.woff2") format("woff2"),
+    url("/fonts/Corbel/corbel.woff") format("woff"),
+    url("/fonts/Corbel/corbel.eot") format("embedded-opentype"),
+    url("/fonts/Corbel/corbel.eot?#iefix") format("embedded-opentype"),
+    url("/fonts/Corbel/corbel.ttf") format("truetype");
   font-weight: 400;
 }
 @font-face {
   font-family: "Corbel";
-  src: url("static/fonts/Corbel/corbel-bold.ttf");
+  src:
+    url("/fonts/Corbel/corbel-bold.woff2") format("woff2"),
+    url("/fonts/Corbel/corbel-bold.woff") format("woff"),
+    url("/fonts/Corbel/corbel-bold.eot") format("embedded-opentype"),
+    url("/fonts/Corbel/corbel-bold.eot?#iefix") format("embedded-opentype"),
+    url("/fonts/Corbel/corbel-bold.ttf") format("truetype");
   font-weight: 700;
 }
 
 html {
-  background: url("static/bg.jpg") no-repeat center center fixed;
-  -webkit-background-size: cover;
-  -moz-background-size: cover;
-  -o-background-size: cover;
-  background-size: cover;
+  background: url("/images/bg.jpg") no-repeat center center/cover;
+  min-height: 100vh;
   color-scheme: light;
 
   --pbrown: #895734;
@@ -36,6 +52,7 @@ html {
   --black: #2c2c2c;
   --white: #f5f5f5;
   --form-red: #ff3939;
+  --status-green: #009846;
   --orange: #e68b4b;
 
   --heading-42: 42px;
@@ -125,11 +142,11 @@ select {
 }
 select {
   appearance: none;
-  background: var(--white) url("./static/caret-down.svg") no-repeat
+  background: var(--white) url("/images/caret-down.svg") no-repeat
     calc(100% - 6px);
 }
 select[data-focused="true"]:not(select:disabled) {
-  background: var(--white) url("./static/caret-up.svg") no-repeat
+  background: var(--white) url("/images/caret-up.svg") no-repeat
     calc(100% - 6px);
 }
 input:disabled,
@@ -171,11 +188,19 @@ button {
   background-color: inherit;
   cursor: pointer;
 }
+
+button.backBtn {
+  width: 150px;
+  height: 120px;
+  background: url("/images/btn_back.webp") no-repeat center
+    center/contain;
+}
+
 button.okBtn {
   position: relative;
   width: 120px;
   height: 120px;
-  background: url("./static/ok-btn-normal.png") no-repeat center/contain;
+  background: url("/images/ok-btn-normal.webp") no-repeat center/contain;
   border-radius: 60px 60px;
   cursor: pointer;
 }
@@ -184,7 +209,7 @@ button.okBtn:before {
   position: absolute;
   width: 200px;
   height: 341px;
-  background: url("./static/feather.png") no-repeat center/contain;
+  background: url("/images/feather.webp") no-repeat center/contain;
   pointer-events: none;
 }
 button.okBtn:not(.flip):before {
@@ -198,14 +223,15 @@ button.okBtn.flip:before {
   transform: rotate(260deg) scaleY(-1);
 }
 button.okBtn:hover {
-  background: url("./static/ok-btn-hover.png") no-repeat center/contain;
+  background: url("/images/ok-btn-hover.webp") no-repeat center/contain;
 }
 button.okBtn:active {
-  background: url("./static/ok-btn-press.png") no-repeat center/contain;
+  background: url("/images/ok-btn-press.webp") no-repeat center/contain;
 }
 button.okBtn[disabled] {
   opacity: 0.35;
 }
+
 button.updateBtn {
   position: relative;
   font-family: "Corbel", Arial;
@@ -225,30 +251,30 @@ button.updateBtn:active {
   background-color: #444;
 }
 
-/* TODO: (not important) Put this in a module? */
-.backdrop {
+.modalBackdrop {
   position: fixed;
-  top: 0;
-  left: 0;
+  inset: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
   width: 100vw;
-  min-height: 100vh;
+  height: 100vh;
   background-color: rgba(0, 0, 0, 0.4);
   transform: blur(2px);
   z-index: 10;
 }
-.modal {
-  position: fixed;
-  top: 50%;
-  left: 50%;
+.modalBackdrop .modal {
+  position: relative;
   padding: 1.5rem;
   border: 1px solid var(--cBorder);
   background-color: var(--sBeige);
-  animation: slideUpModal 0.9s ease-in-out forwards;
+  animation: slideUpModal 0.86s ease-in-out forwards;
   z-index: 10;
-  width: 90%;
+  width: 96%;
   max-width: 800px;
+  height: 100%;
 }
-.modal .exitBtn {
+.modalBackdrop .modal .exitBtn {
   position: absolute;
   top: -8px;
   right: -8px;
@@ -259,17 +285,22 @@ button.updateBtn:active {
   background-color: #eee;
   color: var(--black);
   transition: 0.2s ease background-color;
+  z-index: 1;
 }
-.modal .exitBtn::before {
+.modalBackdrop .modal .exitBtn::before {
   content: "\2715";
   font-size: 1rem;
   color: var(--black);
 }
-.modal .exitBtn:hover {
+.modalBackdrop .modal .exitBtn:hover {
   background-color: #ff5b5b;
 }
-.modal .exitBtn:active {
+.modalBackdrop .modal .exitBtn:active {
   top: -6px;
+}
+.modalBackdrop .modal .content {
+  height: inherit;
+  overflow: auto;
 }
 
 /* Use for clickable elements that doesn't have hover and active states. */
@@ -287,12 +318,12 @@ button.updateBtn:active {
 
 @keyframes slideUpModal {
   100% {
-    transform: translate(-50%, -50%);
+    transform: translateY(0);
   }
   80% {
-    transform: translate(-50%, -55%);
+    transform: translateY(-32px);
   }
   0% {
-    transform: translate(-50%, 120%);
+    transform: translateY(80vh);
   }
 }

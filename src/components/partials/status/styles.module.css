@@ -7,16 +7,26 @@
   gap: 0.5rem 1rem;
   margin-block: 1.5rem;
 }
+
+.container :global(.privacy) {
+  position: absolute;
+  left: 0;
+  bottom: -21px;
+}
+
 @media screen and (max-width: 914px) {
   .container {
     padding-inline: 0.5rem;
+  }
+  .container :global(.privacy) {
+    left: 0.5rem;
   }
 }
 
 .container > div {
   display: flex;
 }
-@media screen and (max-width: 711px) {
+@media screen and (max-width: 635px) {
   .container {
     justify-content: center;
   }
@@ -52,34 +62,20 @@
   }
 }
 
-.container div .chat {
-  background: url("../../../static/btn_chat_normal.png") no-repeat center
-    center/contain;
-}
-.container div .chat:hover {
-  background: url("../../../static/btn_chat_hover.png") no-repeat center
-    center/contain;
-}
-.container div .chat:active {
-  background: url("../../../static/btn_chat_pressed.png") no-repeat center
-    center/contain;
-}
-
 .container div .questions {
-  background: url("../../../static/btn_question_normal.png") no-repeat center
-    center/contain;
+  background: url("/images/btn_question_normal.webp") no-repeat center center/contain;
 }
 
 .container div .checkout {
-  background: url("../../../static/btn_checkout_normal.png") no-repeat center
+  background: url("/images/btn_checkout_normal.webp") no-repeat center
     center/contain;
 }
 .container div .checkout:hover {
-  background: url("../../../static/btn_checkout_hover.png") no-repeat center
+  background: url("/images/btn_checkout_hover.webp") no-repeat center
     center/contain;
 }
 .container div .checkout:active {
-  background: url("../../../static/btn_checkout_pressed.png") no-repeat center
+  background: url("/images/btn_checkout_pressed.webp") no-repeat center
     center/contain;
 }
 

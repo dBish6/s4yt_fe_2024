@@ -4,8 +4,8 @@ import UserCredentials from "@typings/UserCredentials";
 import { useState } from "react";
 import { connect } from "react-redux";
 
+import ModalTemplate from "../ModalTemplate";
 import s from "./styles.module.css";
-import ModalTemplate from "../ModelTemplate";
 
 interface Props {
   user?: UserCredentials;
@@ -19,24 +19,40 @@ const SupportModal: React.FC<Props> = ({ user }) => {
       <button
         onClick={() => setShow(true)}
         aria-label="Support"
-        className={`${s.questions} fade`}
+        className={`${s.trigger} fade`}
       />
-      <ModalTemplate show={show} setShow={setShow} label="Raffle Item Details">
-        <div className={s.modalContainer}>
+      <ModalTemplate
+        show={show}
+        setShow={setShow}
+        aria-label="Contact Support"
+        height={294}
+      >
+        <div className={s.container}>
           <h2>Support</h2>
-          <div className={s.supportContainer}>
+          <div>
             <p>
               Hey, {user ? user.name : "NA"}! If you need help with anything
               feel free to contact us via our email:
-              <a onClick={() => window.open("mailto:connect@building-U.com")}>
+              <a
+                href="mailto:connect@building-U.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="fade move"
+              >
                 connect@building-U.com
               </a>
             </p>
             <p>
               Additionally, if you are a part of our discord community, we would
-              be happy to provide help in our 'SUPPORT' channel:
-              {/* TODO: Need to get the link. */}
-              <a>Discord Link</a>
+              be happy to provide help in our "SUPPORT" channel:
+              <a
+                href="https://discord.com/invite/A3dpd9Ex"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="fade move"
+              >
+                Discord
+              </a>
             </p>
           </div>
         </div>
