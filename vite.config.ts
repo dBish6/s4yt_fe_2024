@@ -10,7 +10,8 @@ export default defineConfig(({ mode }) => {
         "/api": {
           target: "https://localhost:4000",
           changeOrigin: true,
-          secure: true
+          secure: true,
+          rewrite: (path) => path.replace(/^\/api/, "/api/v2")
         },
         "/socket.io/": {
           target: "https://localhost:4000",
