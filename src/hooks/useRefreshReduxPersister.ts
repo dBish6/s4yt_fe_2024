@@ -12,10 +12,8 @@ export const useRefreshReduxPersister = () => {
       !localStorage.getItem("refreshed")
     ) {
       localStorage.removeItem("persist:root");
-      delay(1000, () => {
-        window.location.reload();
-        localStorage.setItem("refreshed", "true");
-      });
+      localStorage.setItem("refreshed", "true");
+      delay(850, () => window.location.reload());
     }
   }, []);
 

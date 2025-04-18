@@ -39,7 +39,7 @@ const Login: React.FC<Props> = ({ loginPlayer }) => {
       password: ""
     });
 
-  // useRefreshReduxPersister(); // TODO: Use when starting.
+  useRefreshReduxPersister();
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
