@@ -17,6 +17,7 @@ import AreYouSureModal from "@components/modals/areYouSure";
 import CooldownIndicator from "@components/forms/cooldownIndicator";
 
 import s from "./styles.module.css";
+import { INITIALIZE_RAFFLE_STAKE } from "@root/redux/actions";
 
 interface Props {
   coins: number; // Initial coins/coins that's actually stored on the server.
@@ -24,6 +25,7 @@ interface Props {
   staked: GameReduxState["staked"];
   raffleTimestamp?: GameReduxState["raffleTimestamp"];
   isNotPlayer: (useNotification?: boolean, message?: string) => boolean;
+  initializeStake: (coins: number) => void;
   getRaffleItems: () => Promise<any>;
   updateRaffleStake: (staked: GameReduxState["staked"]) => void;
   updateRaffleItem: (
@@ -43,6 +45,7 @@ const Raffle: React.FC<Props> = ({
   staked,
   raffleTimestamp,
   isNotPlayer,
+  initializeStake,
   getRaffleItems,
   updateRaffleStake,
   updateRaffleItem,
@@ -52,6 +55,8 @@ const Raffle: React.FC<Props> = ({
     [cooldownElapsed, setCooldownElapsed] = useState(true);
 
   useLayoutEffect(() => {
+    initializeStake(coins);
+
     if (
       !raffleItems.length ||
       (raffleTimestamp?.getRaffleItems && Date.now() >= raffleTimestamp.getRaffleItems)
@@ -70,7 +75,7 @@ const Raffle: React.FC<Props> = ({
   const handleStake = (type: "inc" | "dec", item_id: string) => {
     updateRaffleStake({
       remainingCoins: type === "inc" ? 1 : -1,
-      raffleItem: { [item_id]: true }
+      raffleItem: { [item_id]: type === "dec" ? 1 : -1 }
     });
     updateRaffleItem(item_id, { coins: type === "dec" ? 1 : -1 });
   };
@@ -213,6 +218,8 @@ const mapStateToProps = ({ game }: { game: GameReduxState }) => ({
 const mapDispatchToProps = (dispatch: any) => ({
   isNotPlayer: (useNotification?: boolean, message?: string) =>
     dispatch(isNotPlayer(useNotification, message)),
+  initializeStake: (coins: number) =>
+    dispatch({ type: INITIALIZE_RAFFLE_STAKE, payload: { coins } }),
   getRaffleItems: () => dispatch(getRaffleItems()),
   updateRaffleStake: (staked: GameReduxState["staked"]) =>
     dispatch(updateRaffleStake(staked)),

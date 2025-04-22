@@ -17,6 +17,7 @@ export const LOGOUT = "user.LOGOUT";
 export const INITIALIZE_COINS = "game.INITIALIZE_COINS";
 export const UPDATE_USER_COINS = "game.UPDATE_USER_COINS";
 export const CLEAR_GAME = "game.CLEAR_GAME";
+export const INITIALIZE_RAFFLE_STAKE = "game.INITIALIZE_RAFFLE_STAKE";
 export const SET_RAFFLE_ITEMS = "game.SET_RAFFLE_ITEMS";
 export const UPDATE_RAFFLE_ITEM = "game.UPDATE_RAFFLE_ITEM";
 export const UPDATE_RAFFLE_STAKE = "game.UPDATE_RAFFLE_STAKE";
