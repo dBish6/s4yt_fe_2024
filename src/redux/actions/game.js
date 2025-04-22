@@ -25,7 +25,7 @@ export const updateUserCoins = (coins, override = false) => (dispatch) => {
 };
 
 /**
- * @param {{ remainingCoins: number; raffleItem?: { [item_id: string]: boolean } }} staked
+ * @param {{ remainingCoins: number; raffleItem?: { [item_id: string]: number } }} staked
  */
 export const updateRaffleStake = (staked) => (dispatch) => {
   dispatch({ type: UPDATE_RAFFLE_STAKE, payload: staked });

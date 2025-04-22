@@ -2,6 +2,7 @@ import {
   INITIALIZE_COINS,
   UPDATE_USER_COINS,
   CLEAR_GAME,
+  INITIALIZE_RAFFLE_STAKE,
   SET_RAFFLE_ITEMS,
   UPDATE_RAFFLE_ITEM,
   UPDATE_RAFFLE_STAKE,
@@ -51,7 +52,7 @@ export interface GameReduxState {
   raffleItems: RaffleItem[];
   staked: {
     remainingCoins: number;
-    raffleItem?: { [item_id: string]: boolean };
+    raffleItem?: { [item_id: string]: number };
   };
   raffleTimestamp?: { getRaffleItems: number, submission: number } // Timestamps is in milliseconds.
   // Learn and Earn
@@ -86,6 +87,15 @@ const game = (
     case CLEAR_GAME:
       return initialState;
     // <======================================/ Raffle \======================================>
+    case INITIALIZE_RAFFLE_STAKE:
+    return {
+      ...state,
+      staked: {
+        ...state.staked,
+        remainingCoins:
+          action.payload - Object.values(state.staked.raffleItem || {}).reduce((sum, val) => sum + val, 0),
+      },
+    };
     case SET_RAFFLE_ITEMS:
       return {
         ...state,
@@ -108,6 +118,9 @@ const game = (
         ),
       };
     case UPDATE_RAFFLE_STAKE:
+      const [key, value] = Object.entries(
+        action.payload.raffleItem as Record<string, number>
+      )[0];
       return {
         ...state,
         staked: {
@@ -115,7 +128,7 @@ const game = (
             state.staked.remainingCoins + (action.payload.remainingCoins || 0),
           raffleItem: {
             ...state.staked.raffleItem,
-            ...action.payload.raffleItem
+            [key]: ((state.staked.raffleItem || {})[key] || 0) + value
           }
         }
       };
