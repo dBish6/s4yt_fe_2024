@@ -93,7 +93,8 @@ const game = (
       staked: {
         ...state.staked,
         remainingCoins:
-          action.payload - Object.values(state.staked.raffleItem || {}).reduce((sum, val) => sum + val, 0),
+          action.payload.coins - Object.values(state.staked.raffleItem || {}).reduce((sum, val) => sum + val, 0),
+        ...(action.payload.clearItems && { raffleItems: {} })
       },
     };
     case SET_RAFFLE_ITEMS:

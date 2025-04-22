@@ -219,7 +219,7 @@ const mapDispatchToProps = (dispatch: any) => ({
   isNotPlayer: (useNotification?: boolean, message?: string) =>
     dispatch(isNotPlayer(useNotification, message)),
   initializeStake: (coins: number) =>
-    dispatch({ type: INITIALIZE_RAFFLE_STAKE, payload: coins }),
+    dispatch({ type: INITIALIZE_RAFFLE_STAKE, payload: { coins } }),
   getRaffleItems: () => dispatch(getRaffleItems()),
   updateRaffleStake: (staked: GameReduxState["staked"]) =>
     dispatch(updateRaffleStake(staked)),
