@@ -84,7 +84,10 @@ export const sendRaffleStakedItems = (stakedItems, raffleItems, remainingCoins) 
         payload: { submission: Date.now() + 30 * 60 * 1000 } // 30 minutes.
       });
       dispatch(updateUserCoins(data.total_coins, true));
-      dispatch(INITIALIZE_RAFFLE_STAKE({ coins: data.total_coins, clearItems: true }));
+      dispatch({
+        type: INITIALIZE_RAFFLE_STAKE,
+        payload: { coins: data.total_coins, clearItems: true }
+      });
     } else {
       showError(
         data,
