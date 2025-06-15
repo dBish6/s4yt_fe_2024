@@ -1,10 +1,10 @@
 {
-  "name": "s4yt_fe_2025",
-  "version": "3.0.0",
+  "name": "s4yt_fe",
+  "version": "2.0.8",
   "private": true,
   "author": "David Bishop",
   "contributors": ["David Bishop", "Koki Vasileski"],
-  "description": "This is the special event/'game' front-end for Building-u, which is called Dollars for Your Thoughts ($4YT).",
+  "description": "This is the special event/'game' front-end for Building-u, which is called Dollars for Your Thoughts ($4YT) 2025.",
   "repository": {
     "type": "git",
     "url": "https://github.com/buildingu/s4yt_fe_2023"
