@@ -1,0 +1,25 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 100%;
+}
+.container p {
+  font-size: 21px;
+  color: var(--pbrown);
+  text-align: left;
+}
+.container p:first-child {
+  margin-bottom: 0.75rem;
+}
+.container p:last-of-type {
+  margin-bottom: 1.5rem;
+}
+.container button {
+  font-family: "BebasNeue", Arial;
+  font-size: 18px;
+  color: var(--pbrown);
+  text-decoration: underline;
+  width: fit-content;
+  align-self: flex-end;
+}

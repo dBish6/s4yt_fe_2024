@@ -4,10 +4,10 @@ import type { FormOptionsState } from "@reducers/formOptions";
 import type NotificationValues from "@typings/NotificationValues";
 
 import { useRef, useState, useEffect } from "react";
-import { useSearchParams, Link } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { connect } from "react-redux";
 
-import { registerPlayer, updateProfile } from "@actions/user";
+import { updateProfile } from "@actions/user";
 import { getCountries, getRegions } from "@actions/formOptions";
 import { addNotification } from "@actions/notifications";
 import { SET_REGIONS } from "@actions/index";
@@ -29,15 +29,6 @@ interface Props {
   getRegions: (countryName: number) => Promise<void>;
   resetRegions: (setCurrentData: React.Dispatch<React.SetStateAction<UserFormData>>) => void;
   user: UserReduxState;
-  registerPlayer: (
-    userData: UserFormData,
-    formRef: React.RefObject<HTMLFormElement>,
-    setForm: React.Dispatch<
-      React.SetStateAction<{
-        processing: boolean;
-      }>
-    >
-  ) => Promise<void>;
   updateProfile: (
     userData: UserFormData,
     formRef: React.RefObject<HTMLFormElement>,
@@ -68,7 +59,6 @@ const UserForm: React.FC<Props> = ({
   getRegions,
   resetRegions,
   user,
-  registerPlayer,
   updateProfile,
   addNotification
 }) => {
@@ -87,8 +77,6 @@ const UserForm: React.FC<Props> = ({
       region: user.credentials?.region ?? null,
       city: user.credentials?.city ?? ""
     });
-
-  const [searchParams] = useSearchParams();
 
   useEffect(() => {
     if (!formOptions.countries.length) getCountries();
@@ -178,15 +166,8 @@ const UserForm: React.FC<Props> = ({
         await updateProfile(relevantData, formRef, setForm);
       } else {
         setForm((prev) => ({ ...prev, processing: true }));
-        const referral_code = searchParams.get("referral_code");
-
-        await registerPlayer(
-          {
-            ...relevantData,
-            ...(referral_code && { referral_code })
-          },
-          formRef,
-          setForm
+        alert(
+          "This is the demo version, you cannot register a user. Please use the test user that's already provided at the login page to view the demo."
         );
       }
     }
@@ -466,16 +447,6 @@ const mapDispatchToProps = (dispatch: Dispatch<any>) => ({
   getCountries: () => dispatch(getCountries() as unknown) as Promise<void>,
   getRegions: (countryName: number) =>
     dispatch(getRegions(countryName) as unknown) as Promise<void>,
-  registerPlayer: (
-    userData: UserFormData,
-    formRef: React.RefObject<HTMLFormElement>,
-    setForm: React.Dispatch<
-      React.SetStateAction<{ processing: boolean }>
-    >
-  ) =>
-    dispatch(
-      registerPlayer(userData, formRef, setForm) as unknown
-    ) as Promise<void>,
   updateProfile: (
     userData: UserFormData,
     formRef: React.RefObject<HTMLFormElement>,

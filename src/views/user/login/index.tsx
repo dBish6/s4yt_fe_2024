@@ -4,7 +4,6 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import { connect } from "react-redux";
 
-import updateField from "@utils/forms/updateField";
 import checkValidity from "@utils/forms/checkValidity";
 import checkValidEmail from "@root/utils/forms/checkValidEmail";
 
@@ -16,6 +15,7 @@ import Layout from "@components/partials/layout";
 import Header from "@components/partials/header";
 import Content from "@components/partials/content";
 import Input from "@components/forms/controls/Input";
+import DemoDisclaimerModal from "@components/modals/demoDisclaimer";
 
 import s from "./styles.module.css";
 
@@ -34,9 +34,9 @@ interface LoginFormData {
 
 const Login: React.FC<Props> = ({ loginPlayer }) => {
   const [form, setForm] = useState({ processing: false }),
-    [currentData, setCurrentData] = useState<LoginFormData>({
-      email: "",
-      password: ""
+    [currentData, _] = useState<LoginFormData>({
+      email: "tester@test.ca",
+      password: "David123$"
     });
 
   useRefreshReduxPersister();
@@ -63,72 +63,76 @@ const Login: React.FC<Props> = ({ loginPlayer }) => {
   };
 
   return (
-    <Layout style={{ position: "relative", maxWidth: "600px" }}>
-      <Header title="Login" />
-      <Content addCoins="coins1">
-        <Link className={`${s.resend} fade move`} to="/register/verify-email">
-          Resend Verification Email?
-        </Link>
+    <>
+      <Layout style={{ position: "relative", maxWidth: "600px" }}>
+        <Header title="Login" />
+        <Content addCoins="coins1">
+          <Link className={`${s.resend} fade move`} to="/register/verify-email">
+            Resend Verification Email?
+          </Link>
 
-        <form
-          id="loginForm"
-          onSubmit={(e) => handleSubmit(e)}
-          className={s.form}
-          autoComplete="off"
-          noValidate
+          <form
+            id="loginForm"
+            onSubmit={(e) => handleSubmit(e)}
+            className={s.form}
+            autoComplete="off"
+            noValidate
+          >
+            <div role="presentation">
+              <label htmlFor="email">Email</label>
+              <Input
+                id="email"
+                name="email"
+                type="email"
+                errorMsg="Not a valid email address"
+                value={currentData.email}
+                disabled
+                autoComplete="off"
+                required
+              />
+            </div>
+
+            <div role="presentation">
+              <label htmlFor="password" aria-label="Password">
+                Pass
+              </label>
+              <Input
+                id="password"
+                name="password"
+                type="password"
+                value={currentData.password}
+                disabled
+                autoComplete="off"
+                minLength={8}
+                maxLength={24}
+                required
+              />
+            </div>
+
+            <div role="presentation">
+              <Link to="/login/forgot" className={`${s.forgot} fade move`}>
+                Forgot pass?
+              </Link>
+            </div>
+
+            <div role="presentation">
+              <button type="submit" className="okBtn" disabled={form.processing} />
+            </div>
+          </form>
+          <Link className="fade" to="/register" />
+        </Content>
+        <a
+          href="http://building-u.com/wp-content/uploads/Privacy-Notice.pdf"
+          target="_blank"
+          rel="noopener noreferrer"
+          className={`${s.privacy} privacy fade move`}
         >
-          <div role="presentation">
-            <label htmlFor="email">Email</label>
-            <Input
-              id="email"
-              name="email"
-              type="email"
-              errorMsg="Not a valid email address"
-              onChange={(e) => updateField<LoginFormData>(e, setCurrentData)}
-              disabled={form.processing}
-              autoComplete="off"
-              required
-            />
-          </div>
+          Privacy Policy
+        </a>
+      </Layout>
 
-          <div role="presentation">
-            <label htmlFor="password" aria-label="Password">
-              Pass
-            </label>
-            <Input
-              id="password"
-              name="password"
-              type="password"
-              onChange={(e) => updateField<LoginFormData>(e, setCurrentData)}
-              disabled={form.processing}
-              autoComplete="off"
-              minLength={8}
-              maxLength={24}
-              required
-            />
-          </div>
-
-          <div role="presentation">
-            <Link to="/login/forgot" className={`${s.forgot} fade move`}>
-              Forgot pass?
-            </Link>
-          </div>
-
-          <div role="presentation">
-            <button type="submit" className="okBtn" disabled={form.processing} />
-          </div>
-        </form>
-        <Link className="fade" to="/register" />
-      </Content>
-      <a
-        href="http://building-u.com/wp-content/uploads/Privacy-Notice.pdf"
-        target="_blank"
-        rel="noopener noreferrer"
-        className={`${s.privacy} privacy fade move`}
-      >
-        Privacy Policy
-      </a>
-    </Layout>
+      <DemoDisclaimerModal />
+    </>
   );
 };
 
