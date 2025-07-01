@@ -1,6 +1,6 @@
 import { io } from "socket.io-client";
 
-export const socket = io(import.meta.env.DEV ? "http://localhost:4000" : undefined, {
+export const socket = io(import.meta.env.DEV ? "http://localhost:4000" : "https://s4yt-demo.fly.dev", {
   autoConnect: false,
   reconnection: false,
   transports: ["websocket", "polling"]

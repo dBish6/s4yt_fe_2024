@@ -4,21 +4,7 @@ import tsconfigPaths from "vite-tsconfig-paths";
 
 export default defineConfig(({ mode }) => {
   return {
-    server: {
-      port: 3000,
-      proxy: {
-        "/api": {
-          target: "https://localhost:4000",
-          changeOrigin: true,
-          secure: true
-        },
-        "/socket.io/": {
-          target: "https://localhost:4000",
-          changeOrigin: true,
-          ws: true
-        }
-      }
-    },
+    server: { port: 3000 },
     css: {
       modules: {
         localsConvention: "camelCaseOnly",
