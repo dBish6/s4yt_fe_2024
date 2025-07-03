@@ -1,10 +1,12 @@
 .container {
   position: relative;
+  padding-top: 14px;
   margin: 1.5rem 0 3rem 0;
   /* max-width: 900px; */
 }
 @media screen and (max-width: 916px) {
   .container {
+    padding-top: 17px;
     margin: 1.5rem 0.5rem 3rem 0.5rem;
   }
 }
