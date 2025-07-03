@@ -14,6 +14,13 @@ createRoot(document.getElementById("root") as HTMLElement).render(
   <Provider store={store}>
     <PersistGate loading={null} persistor={persistor}>
       <BrowserRouter>
+        <p
+          className="demoTxt"
+          title="Since the original event has ended, demo mode is activated to view."
+        >
+          Demo Mode <span />
+        </p>
+
         <HistoryProvider />
         <RoutesProvider />
       </BrowserRouter>

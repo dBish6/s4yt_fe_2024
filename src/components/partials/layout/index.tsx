@@ -35,13 +35,6 @@ const Layout: React.FC<Props> & React.HTMLAttributes<HTMLDivElement> = ({
   return (
     <>
       <div className={s.container} style={style} {...options}>
-        <p
-          className={s.demoTxt}
-          title="Since the original event has ended, demo mode is activated to view."
-        >
-          Demo Mode <span />
-        </p>
-
         {children}
       </div>
       <Notification />
